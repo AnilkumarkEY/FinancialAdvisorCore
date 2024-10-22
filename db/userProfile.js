@@ -24,6 +24,20 @@ async function getUsers() {
   }
 }
 
+async function getLeadData() {
+  try {
+    const query = `select l.idmeta_lead_type as type from oppurtunity."lead" l `;
+    const res = await client.query(query);
+    return res.rows; // Return the result rows
+  } catch (err) {
+    console.error("Error executing query", err.stack);
+    throw err; // Rethrow the error for handling in the controller
+  }
+}
+
+
+
 module.exports = {
-    getUsers
+    getUsers,
+    getLeadData
 }

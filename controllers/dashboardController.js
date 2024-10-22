@@ -1,23 +1,24 @@
 const responseFormatter = require("../utils/responseFormatter");
 const STATUS_CODES = require("../utils/statusCodes");
-const leadData = require("../dummyData/lead");
+// const leadData = require("../dummyData/lead");
+let leadData = require("../db/lead")
+
 
 exports.getLeadCountByType = async (request, reply) => {
   try {
-    // Create an object to hold the counts
-    const typeCounts = {};
+    const typeCounts = { Hot: 0, Warm: 0, Cold: 0 };
 
-    // Count leads by type
-    leadData.forEach((lead) => {
-      if (typeCounts[lead.type]) {
+    const leads = await leadData.getLeadData();
+
+    const typeSet = new Set(["Hot", "Warm", "Cold"]);
+
+    leads.forEach((lead) => {
+      if (typeSet.has(lead.type)) {
         typeCounts[lead.type]++;
-      } else {
-        typeCounts[lead.type] = 1;
       }
     });
 
-    // Format the response
-    const response = Object.entries(typeCounts).map(([type, count]) => ({
+    const leadTypeRes = Object.entries(typeCounts).map(([type, count]) => ({
       type,
       count,
     }));
@@ -28,7 +29,7 @@ exports.getLeadCountByType = async (request, reply) => {
         responseFormatter(
           STATUS_CODES.OK,
           "Lead counts by type retrieved successfully",
-          response
+         { leadTypeRes:leadTypeRes}
         )
       );
   } catch (error) {
@@ -44,33 +45,33 @@ exports.getLeadCountByType = async (request, reply) => {
   }
 };
 
-exports.getLeadStatusCount = async (request, reply) => {
+exports.getLeadStatusCount = async(request,reply)=>{
   try {
-    // Create an object to hold the counts
-    const statusCounts = {};
+    const leadStatusCounts = { "Not Interested": 0, New: 0 , Inprogress:0, "Not Contactable":0};
+    const leads = await leadData.getLeadData();
+    const statusSet = new Set(["Not Interested", "New", "Inprogress"]);
 
-    // Count leads by status
-    leadData.forEach((lead) => {
-      if (statusCounts[lead.status]) {
-        statusCounts[lead.status]++;
-      } else {
-        statusCounts[lead.status] = 1;
+    leads.forEach((lead) => {
+      if (statusSet.has(lead.type)) {
+        if( lead.type == "Contacted" || lead.type == "Interested" || lead.type == "Qualified" || lead.type == "Proposal Sent" || lead.type == "Negotiation" &&(lead.type != "Hot" || lead.type != "Warm" || lead.type != "Cold"))
+        leadStatusCounts[lead.type == "In progress"]++;
+      }
+      else{
+        leadStatusCounts[lead.type]++;
       }
     });
-
-    // Format the response
-    const response = Object.entries(statusCounts).map(([status, count]) => ({
+console.log(statusSet)
+    const leadStatusRes = Object.entries(leadStatusCounts).map(([status, count]) => ({
       status,
       count,
     }));
-
     return reply
       .status(STATUS_CODES.OK)
       .send(
         responseFormatter(
           STATUS_CODES.OK,
-          "Lead status counts retrieved successfully",
-          response
+          "Lead counts by type retrieved successfully",
+         { leadStatusRes :leadStatusRes}
         )
       );
   } catch (error) {
@@ -82,14 +83,14 @@ exports.getLeadStatusCount = async (request, reply) => {
           STATUS_CODES.INTERNAL_SERVER_ERROR,
           "An unexpected error occurred"
         )
-      );
+    );
   }
-};
+}
+
 
 exports.getLeadsByStatusWithPagination = async (request, reply) => {
   try {
     const { status, page = 1, pageSize = 10 } = request.body;
-
     // Validate request body
     if (!status) {
       return reply
@@ -100,7 +101,16 @@ exports.getLeadsByStatusWithPagination = async (request, reply) => {
     }
 
     // Filter leads by status
-    const filteredLeads = leadData.filter((lead) => lead.status === status);
+    
+    const leads = await leadData.allLeads()
+    console.log(leads);
+    
+    // const filteredLeads = leads.filter((lead) => lead.type === status);
+    const filteredLeads = leads.filter((lead) => {
+      console.log(`Evaluating lead: ${JSON.stringify(lead)}, Status: ${status}`);
+      return lead.type === status;
+    });
+    
 
     // Pagination logic
     const totalLeads = filteredLeads.length;
