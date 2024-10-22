@@ -6,22 +6,17 @@ let leadData = require("../db/lead")
 
 exports.getLeadCountByType = async (request, reply) => {
   try {
-    const typeCounts = { Hot: 0, Warm: 0, Cold: 0 };
+    const processedLeads = [];
 
     const leads = await leadData.getLeadData();
-
-    const typeSet = new Set(["Hot", "Warm", "Cold"]);
-
     leads.forEach((lead) => {
-      if (typeSet.has(lead.type)) {
-        typeCounts[lead.type]++;
-      }
+      const storedLead = {
+        metaData: lead.lead_meta_data,
+        type: lead.lead_type,
+        count: parseInt(lead.lead_count) // Convert to integer
+      };
+      processedLeads.push(storedLead);
     });
-
-    const leadTypeRes = Object.entries(typeCounts).map(([type, count]) => ({
-      type,
-      count,
-    }));
 
     return reply
       .status(STATUS_CODES.OK)
@@ -29,7 +24,7 @@ exports.getLeadCountByType = async (request, reply) => {
         responseFormatter(
           STATUS_CODES.OK,
           "Lead counts by type retrieved successfully",
-         { leadTypeRes:leadTypeRes}
+         { leadTypeRes:processedLeads}
         )
       );
   } catch (error) {
