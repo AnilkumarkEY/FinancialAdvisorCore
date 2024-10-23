@@ -172,7 +172,6 @@ const insertEntity = async (entityData) => {
 
 const updateEntity = async (query, entityData) => {
   // Start building the query
-  let query = query;
   const values = [];
   let setClauses = [];
   let index = 1;
