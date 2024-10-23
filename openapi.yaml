@@ -180,18 +180,19 @@ paths:
                     type: string
                     example: "12345"
 
-  /lead/product-interested/{leadId}:
+  /lead/product-interested:
     get:
       summary: Get products interested by lead
       description: Retrieves the list of products a lead is interested in.
       operationId: getProductInterested
       parameters:
         - name: leadId
-          in: path
+          in: query
           required: true
-          description: The ID of the lead.
+          description: The ID of the lead for which products are to be fetched.
           schema:
             type: string
+            example: "c9357f00e6524ef7ba0b045dbfcfeba5"
         - name: authorization
           in: header
           required: true
