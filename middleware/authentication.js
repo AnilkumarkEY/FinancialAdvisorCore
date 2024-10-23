@@ -13,10 +13,15 @@ const authentication = async (request, reply) => {
   try {
     const jwtToken = accessToken.split(".");
     // Decode the JWT token
+    console.log("jwtToken", jwtToken)
+
     const decoded = JSON.parse(
       Buffer.from(jwtToken[1], "base64").toString("utf8")
     );
+    console.log("decoded", decoded)
+
     const checkActiveFlag = await userProfile.checkActiveFlag(decoded.oid);
+    console.log("checkActiveFlag", checkActiveFlag)
     if (checkActiveFlag[0]?.activeflag) {
       await userProfile.insertSessionData(decoded.oid, decoded.uti, decoded.exp);
       request.user = decoded;

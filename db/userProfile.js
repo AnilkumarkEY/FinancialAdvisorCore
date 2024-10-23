@@ -39,8 +39,8 @@ async function checkActiveFlag(oid) {
     const res = await client.query(query, [oid]);
     return res.rows;
   } catch (error) {
-    console.error("Error executing query", err.stack);
-    throw err; // Rethrow the error for handling in the controller
+    console.error("Error executing query", error.stack);
+    throw error; // Rethrow the error for handling in the controller
   }
 }
 
@@ -120,6 +120,7 @@ const insertEventTransaction = async (data) => {
 };
 
 const insertEntity = async (entityData) => {
+  const pool = await client.connect();  // Get a client from the pool
   const query = `
           INSERT INTO core.entity (
             fullname,
@@ -135,38 +136,40 @@ const insertEntity = async (entityData) => {
             middlename,
             eff_from_date,
             dob,
-            modified_date,
             eff_to_date,
             identity,
             idmeta_data_gender
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, NOW(), $13, $14)
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15)
+          RETURNING *;
         `;
 
-  const values = [
-    entityData.fullname || null,
-    entityData.lastname || null,
-    entityData.sortorder || null,
-    entityData.idmeta_data_entitytype || null,
-    entityData.inactivedate || null,
-    entityData.activeflag !== undefined ? entityData.activeflag : null,
-    entityData.createdby || null,
-    entityData.firstname || null,
-    entityData.modifiedby || null,
-    entityData.middlename || null,
-    entityData.eff_from_date || null,
-    entityData.dob || null,
-    entityData.eff_to_date || null,
-    entityData.identity || null,
-    entityData.idmeta_data_gender || null,
-  ];
+        const values = [
+          entityData.fullname || null,
+          entityData.lastname || null,
+          entityData.sortorder || null,
+          entityData.idmeta_data_entitytype || null,
+          entityData.inactivedate || null,
+          entityData.activeflag !== undefined ? entityData.activeflag : null,
+          entityData.createdby || null,
+          entityData.firstname || null,
+          entityData.modifiedby || null,
+          entityData.middlename || null,
+          entityData.eff_from_date || null,
+          entityData.dob || null,
+          entityData.eff_to_date || null,
+          entityData.identity || null,
+          entityData.idmeta_data_gender || null,
+        ];
 
   try {
-    const res = await client.query(query, values);
+    const res = await pool.query(query, values);
     console.log("Insert successful:", res);
+    return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);
   } finally {
-    await client.end();
+    // await client.end();
+    pool.release();
   }
 };
 
@@ -259,6 +262,7 @@ const insertEntityUrcAuth = async (entityUrcAuthData) => {
 };
 
 const insertEntityContact = async (entityContactData) => {
+  const pool = await client.connect();  // Get a client from the pool
   const query = `
       INSERT INTO core.entity_contact (
         eff_to_date,
@@ -282,8 +286,9 @@ const insertEntityContact = async (entityContactData) => {
         eff_from_date,
         pincode,
         created_date
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
-    `;
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+      RETURNING *;
+`;
 
   const values = [
     entityContactData.eff_to_date || null,
@@ -294,7 +299,6 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.countrycode || null,
     entityContactData.dialingcode || null,
     entityContactData.location_name || null,
-    entityContactData.createdby || null,
     entityContactData.modified_date || null,
     entityContactData.sortorder || null,
     entityContactData.contact_value || null,
@@ -310,14 +314,16 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.pincode || null,
     entityContactData.created_date || null,
   ];
-
+  console.log("Insert successful:", values);
   try {
-    const res = await client.query(query, values);
+    const res = await pool.query(query, values);
     console.log("Insert successful:", res);
+    return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);
   } finally {
-    await client.end();
+    // await client.end();
+    pool.release();
   }
 };
 

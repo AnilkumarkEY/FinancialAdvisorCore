@@ -94,3 +94,155 @@ paths:
                   message:
                     type: string
                     example: "Username and password are required."
+/lead/create-lead:
+    post:
+      summary: Create a new lead
+      description: Creates a new lead with the provided details.
+      operationId: createLead
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - gender
+                - mobileNumber
+                - leadType
+                - city
+                - state
+                - isNRI
+                - isHNI
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the lead.
+                gender:
+                  type: string
+                  description: Gender of the lead.
+                mobileNumber:
+                  type: string
+                  description: Mobile number of the lead.
+                leadType:
+                  type: string
+                  description: Type of the lead.
+                email:
+                  type: string
+                  description: Email address of the lead.
+                productIntrstedIn:
+                  type: array
+                  items:
+                    type: string
+                  description: List of product IDs the lead is interested in.
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the lead.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the lead.
+                zipCode:
+                  type: string
+                  description: Zip code of the lead's address.
+                city:
+                  type: string
+                  description: City of the lead's address.
+                state:
+                  type: string
+                  description: State of the lead's address.
+                isNRI:
+                  type: string
+                  description: Whether the lead is an NRI.
+                isHNI:
+                  type: string
+                  description: Whether the lead is an HNI.
+      responses:
+        '200':
+          description: Lead created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+
+/lead/product-intrested/{leadId}:
+    get:
+      summary: Get products interested by lead
+      description: Retrieves the list of products a lead is interested in.
+      operationId: getProductInterested
+      parameters:
+        - name: leadId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the lead.
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: object
+                
+/lead/get-lead-list/{leadId}:
+    get:
+      summary: Get lead list
+      description: Retrieves the list of leads.
+      operationId: getLeadList
+      parameters:
+        - name: leadId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the lead.
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        '200':
+          description: Lead list
+          content:
+            application/json:
+              schema:
+                type: object
+
+/lead/get-all-products:
+    get:
+      summary: Get all products
+      description: Retrieves the list of all products.
+      operationId: getAllProducts
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        '200':
+          description: List of all products
+          content:
+            application/json:
+              schema:
+                type: object

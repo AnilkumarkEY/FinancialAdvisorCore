@@ -1,10 +1,10 @@
 require("dotenv").config();
-const { Client } = require("pg");
+const { Pool } = require("pg");
 const fs = require("fs");
 
 // const caCert = fs.readFileSync(process.env.DB_CACERT).toString();
 // Connect to the PostgreSQL server using environment variables
-const client = new Client({
+const client = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   password: process.env.DB_PASSWORD,

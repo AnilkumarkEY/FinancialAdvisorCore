@@ -23,6 +23,7 @@ const createEntity = async (data) => {
   try {
     let insertEntity = await userProfile.insertEntity(data);
     console.log("inserted entity with data:", insertEntity);
+    return insertEntity;
   } catch (error) {
     throw new Error(error);
   }

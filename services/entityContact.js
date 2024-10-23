@@ -23,6 +23,7 @@ const createEntityContact = async (data) => {
     try {
         let insertEntity = await userProfile.insertEntityContact(data);
         console.log("inserted entity with data:", insertEntity);
+        return insertEntity;
     } catch (error) {
         throw new Error(error);
     }
