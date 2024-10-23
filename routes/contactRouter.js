@@ -1,4 +1,5 @@
 const { contactControllers } = require('../controllers');
+const {authentication} = require('../middleware/authentication')
 
 async function contactRoutes(fastify, options) {
     // Define dashboard routes
