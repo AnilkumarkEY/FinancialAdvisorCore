@@ -3,7 +3,7 @@ exports.entityServices = {
     action: "Create",
     service: "createEntity", // Replace with your actual create entity function
   },
-  fd789c2918db4db4852813cd147bacb0: {
+  "fd789c2918db4db4852813cd147bacb0": {
     action: "Edit",
     service: "updateEntity", // Replace with your actual update entity function
   },
