@@ -77,7 +77,7 @@ exports.createLead = async (request, reply) => {
     if (entity.length > 0) {
       const contsact_json = {
         identity_contact: entity[0]?.identity,
-        idmeta_contact_type: mobileNumber,
+        idmeta_contact_type: "eef8f47d787041b59afd37937deed705",
         contact_value: mobileNumber,
         countrycode: "IN",
         dialingcode: "+91",
@@ -85,9 +85,7 @@ exports.createLead = async (request, reply) => {
         address_line_2: addressLine2,
         location_name: zipCode,
         state: state,
-        pincode: Number(zipCode),
-        eff_from_date: 20231023, // Example timestamp
-        eff_to_date: 20231023, // Example timestamp
+        pincode: Number(zipCode)
       };
       const entity_contact = await saveContact.performAction(id, contsact_json);
       if (entity_contact.length > 0) {

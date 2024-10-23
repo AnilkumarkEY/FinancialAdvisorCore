@@ -99,6 +99,14 @@ paths:
       summary: Create a new lead
       description: Creates a new lead with the provided details.
       operationId: createLead
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       requestBody:
         required: true
         content:
@@ -176,6 +184,13 @@ paths:
           schema:
             type: string
             description: The ID of the lead.
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
         '200':
           description: List of products
@@ -196,6 +211,13 @@ paths:
           schema:
             type: string
             description: The ID of the lead.
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
         '200':
           description: Lead list
@@ -209,6 +231,14 @@ paths:
       summary: Get all products
       description: Retrieves the list of all products.
       operationId: getAllProducts
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
         '200':
           description: List of all products
