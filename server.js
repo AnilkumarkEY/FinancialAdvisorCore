@@ -15,12 +15,12 @@ fastify.register(cors, {
 fastify.register(routes);
 
 // Start server
-fastify.listen({ port: PORT },async (err, address) => {
+fastify.listen({ port: 8080, host: '0.0.0.0' }, async (err) => {
     if (err) {
         fastify.log.error(err);
         process.exit(1);
     }
     await connectToDatabase();
-    fastify.log.info(`Server listening at ${address}`);
+    fastify.log.info(`Server listening a`);
 });
 

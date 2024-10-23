@@ -9,6 +9,7 @@ exports.getUsers = async (request, reply) => {
     // Respond with the list of users
     const user = await userProfile.getUsers();
     if(user){
+        await userProfile.insertEventTransaction(request.isValid);
         return reply
         .status(STATUS_CODES.OK)
         .send(
