@@ -151,7 +151,8 @@ exports.createLead = async (request, reply) => {
 
 exports.prodcutIntrested = async (request, reply) => {
   try {
-    const leadId = request.params.leadId;
+    // const leadId = request.params.leadId;
+    const { leadId } = request.query;
     const data = await getProductIntrested(leadId);
     if (data.length > 0) {
       await userProfile.insertEventTransaction(request.isValid);
@@ -190,7 +191,8 @@ exports.prodcutIntrested = async (request, reply) => {
 
 exports.getLeadList = async (request, reply) => {
   try {
-    const leadId = request.params.leadId;
+    // const leadId = request.params.leadId;
+    const { leadId } = request.query;
     const data = await getLeadList(leadId);
     if (data) {
       await userProfile.insertEventTransaction(request.isValid);
@@ -199,7 +201,7 @@ exports.getLeadList = async (request, reply) => {
         .send(
           responseFormatter(
             STATUS_CODES.OK,
-            "Lead entity inserted successfully",
+            "fetching lead records successfully",
             data
           )
         );

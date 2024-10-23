@@ -7,7 +7,7 @@ servers:
   - url: http://localhost:8080
     description: Development server
 paths:
-  /users/login:
+/users/login:
     post:
       summary: User Login
       description: Authenticates a user and returns a token if successful.
@@ -95,7 +95,7 @@ paths:
                     type: string
                     example: "Username and password are required."
   
-  /lead/create-lead:
+/lead/create-lead:
     post:
       summary: Create a new lead
       description: Creates a new lead with the provided details.
@@ -180,18 +180,19 @@ paths:
                     type: string
                     example: "12345"
 
-  /lead/product-interested/{leadId}:
+/lead/product-interested:
     get:
       summary: Get products interested by lead
       description: Retrieves the list of products a lead is interested in.
       operationId: getProductInterested
       parameters:
         - name: leadId
-          in: path
+          in: query
           required: true
-          description: The ID of the lead.
+          description: The ID of the lead for which products are to be fetched.
           schema:
             type: string
+            example: "c9357f00e6524ef7ba0b045dbfcfeba5"
         - name: authorization
           in: header
           required: true
@@ -206,18 +207,20 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  products:
-                    type: array
-                    items:
-                      type: string
-
-  /lead/get-lead-list:
+                
+/lead/get-lead-list:
     get:
       summary: Get lead list
       description: Retrieves the list of leads.
       operationId: getLeadList
       parameters:
+        - name: leadId
+          in: query
+          required: true
+          description: The ID of the lead for which activities are to be fetched.
+          schema:
+            type: string
+            example: "c9357f00e6524ef7ba0b045dbfcfeba5"
         - name: authorization
           in: header
           required: true
@@ -232,18 +235,8 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  leads:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        leadId:
-                          type: string
-                        fullName:
-                          type: string
 
-  /lead/get-all-products:
+/lead/get-all-products:
     get:
       summary: Get all products
       description: Retrieves the list of all products.
@@ -263,13 +256,3 @@ paths:
             application/json:
               schema:
                 type: object
-                properties:
-                  products:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        productId:
-                          type: string
-                        productName:
-                          type: string
