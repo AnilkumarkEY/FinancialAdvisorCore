@@ -48,6 +48,8 @@ exports.getUsers = async (request, reply) => {
 exports.loginUser = async (request, reply) => {
   try {
     const { userName, password } = request.body;
+    console.log(request.body);
+    
     // Validate request body
     if (!userName || !password) {
       return reply
