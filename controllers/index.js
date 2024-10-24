@@ -1,9 +1,7 @@
-const userController = require('./userController');
-const dashboardController = require('./dashboardController');
-const leadControllers = require('./leadControllers');
+const user = require("./user");
+const lead = require("./lead");
 
 module.exports = {
-  userController,
-  dashboardController,
-  leadControllers
+  user,
+  lead,
 };

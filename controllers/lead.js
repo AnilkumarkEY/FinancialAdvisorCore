@@ -1,20 +1,17 @@
-const responseFormatter = require("../utils/responseFormatter");
-const STATUS_CODES = require("../utils/statusCodes");
-const {userProfile} = require("../db")
+const {responseFormatter, statusCodes, uniqueString} = require("../utils");
+const { event } = require("../db");
 const {
-  createLeadModule,
+  createLead,
   getProductIntrested,
   getLeadList,
-  createproductModule,
-  getProducts
-} = require("../module/leadModule");
-const saveEntity = require("../services/entity");
-const saveContact = require("../services/entityContact");
-const generateUniqueString = require("../utils/generateUniqueString");
+  createproduct,
+  getProducts,
+} = require("../module/lead");
+const {entityService, entityContact} = require("../services");
 
 exports.createLead = async (request, reply) => {
   try {
-    let uId = generateUniqueString();
+    let uId = uniqueString();
     const {
       fullName,
       gender,
@@ -46,7 +43,7 @@ exports.createLead = async (request, reply) => {
     );
     // validation check.
     if (missingFields.length > 0) {
-      return reply.status(400).send({
+      return reply.status(statusCodes.BAD_REQUEST).send({
         error: "Validation failed",
         missingFields: missingFields,
       });
@@ -70,12 +67,9 @@ exports.createLead = async (request, reply) => {
       isNRI: isNRI,
       isHNI: isHNI,
     };
-    const entity = await saveEntity.performAction(id, entity_json);
-    // first entity creation
-    // entity id from entity:  second entity contract store
-    let data = {};
+    const entity = await entityService.performAction(id, entity_json);
     if (entity.length > 0) {
-      const contsact_json = {
+      const contact_json = {
         identity_contact: entity[0]?.identity,
         idmeta_contact_type: "eef8f47d787041b59afd37937deed705",
         contact_value: mobileNumber,
@@ -85,9 +79,9 @@ exports.createLead = async (request, reply) => {
         address_line_2: addressLine2,
         location_name: zipCode,
         state: state,
-        pincode: Number(zipCode)
+        pincode: Number(zipCode),
       };
-      const entity_contact = await saveContact.performAction(id, contsact_json);
+      const entity_contact = await entityContact.performAction(id, contact_json);
       if (entity_contact.length > 0) {
         const data = {
           idlead: uId,
@@ -100,34 +94,36 @@ exports.createLead = async (request, reply) => {
           identity_lead_createdby: entity_contact[0].identity_contact,
           idmeta_source_type: "8dba7a199d904c0699b0da6b5510d318", // from frontend
         };
-        const leadRes = await createLeadModule(data);
+        const leadRes = await createLead(data);
         if (leadRes.length > 0) {
           const nProductIntrstedIn = productIntrstedIn.map((val) => {
             return {
               idproduct_ref_id: val,
-              idprospect_interest: generateUniqueString(),
+              idprospect_interest: uniqueString(),
               idlead: leadRes[0]?.idlead,
               identity_lead_createdby: leadRes[0]?.identity_lead_createdby,
             };
           });
-          const productRes = await createproductModule(nProductIntrstedIn);
+          const productRes = await createproduct(nProductIntrstedIn);
           if (productRes.length > 0) {
-            await userProfile.insertEventTransaction(request.isValid);
+            await event.insertEventTransaction(request.isValid);
             return reply
-              .status(STATUS_CODES.CREATED)
+              .status(statusCodes.CREATED)
               .send(
                 responseFormatter(
-                  STATUS_CODES.CREATED,
+                  statusCodes.CREATED,
                   "Lead entity inserted successfully",
                   { lead: leadRes, product: productRes }
                 )
               );
           } else {
+            console.log("ssssssssssssssssssssssssssssssssssssssssssssss");
+            
             return reply
-              .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+              .status(statusCodes.INTERNAL_SERVER_ERROR)
               .send(
                 responseFormatter(
-                  STATUS_CODES.INTERNAL_SERVER_ERROR,
+                  statusCodes.INTERNAL_SERVER_ERROR,
                   "An unexpected error occurred",
                   { lead: leadRes, product: productRes }
                 )
@@ -139,10 +135,10 @@ exports.createLead = async (request, reply) => {
   } catch (error) {
     console.error(error);
     return reply
-      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
       .send(
         responseFormatter(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          statusCodes.INTERNAL_SERVER_ERROR,
           "An unexpected error occurred"
         )
       );
@@ -155,22 +151,22 @@ exports.prodcutIntrested = async (request, reply) => {
     const { leadId } = request.query;
     const data = await getProductIntrested(leadId);
     if (data.length > 0) {
-      await userProfile.insertEventTransaction(request.isValid);
+      await event.insertEventTransaction(request.isValid);
       return reply
-        .status(STATUS_CODES.OK)
+        .status(statusCodes.OK)
         .send(
           responseFormatter(
-            STATUS_CODES.OK,
+            statusCodes.OK,
             "prodcutIntrested data fetch successfully",
             data
           )
         );
     } else {
       return reply
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .status(statusCodes.INTERNAL_SERVER_ERROR)
         .send(
           responseFormatter(
-            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            statusCodes.INTERNAL_SERVER_ERROR,
             "An unexpected error occurred",
             data
           )
@@ -179,10 +175,10 @@ exports.prodcutIntrested = async (request, reply) => {
   } catch (error) {
     console.error(error);
     return reply
-      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
       .send(
         responseFormatter(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          statusCodes.INTERNAL_SERVER_ERROR,
           "An unexpected error occurred"
         )
       );
@@ -195,22 +191,22 @@ exports.getLeadList = async (request, reply) => {
     const { idlead } = request.query;
     const data = await getLeadList(idlead);
     if (data) {
-      await userProfile.insertEventTransaction(request.isValid);
+      await event.insertEventTransaction(request.isValid);
       return reply
-        .status(STATUS_CODES.OK)
+        .status(statusCodes.OK)
         .send(
           responseFormatter(
-            STATUS_CODES.OK,
+            statusCodes.OK,
             "fetching lead records successfully",
             data
           )
         );
     } else {
       return reply
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .status(statusCodes.INTERNAL_SERVER_ERROR)
         .send(
           responseFormatter(
-            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            statusCodes.INTERNAL_SERVER_ERROR,
             "An unexpected error occurred",
             data
           )
@@ -219,37 +215,36 @@ exports.getLeadList = async (request, reply) => {
   } catch (error) {
     console.error(error);
     return reply
-      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
       .send(
         responseFormatter(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          statusCodes.INTERNAL_SERVER_ERROR,
           "An unexpected error occurred"
         )
       );
   }
 };
 
-
 exports.getProducts = async (request, reply) => {
   try {
-   const data = await getProducts();
-    if (data.length>0) {
-      await userProfile.insertEventTransaction(request.isValid);
+    const data = await getProducts();
+    if (data.length > 0) {
+      await event.insertEventTransaction(request.isValid);
       return reply
-        .status(STATUS_CODES.OK)
+        .status(statusCodes.OK)
         .send(
           responseFormatter(
-            STATUS_CODES.OK,
+            statusCodes.OK,
             "product data fetch successfully",
             data
           )
         );
     } else {
       return reply
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .status(statusCodes.INTERNAL_SERVER_ERROR)
         .send(
           responseFormatter(
-            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            statusCodes.INTERNAL_SERVER_ERROR,
             "An unexpected error occurred",
             data
           )
@@ -258,10 +253,10 @@ exports.getProducts = async (request, reply) => {
   } catch (error) {
     console.error(error);
     return reply
-      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
       .send(
         responseFormatter(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          statusCodes.INTERNAL_SERVER_ERROR,
           "An unexpected error occurred"
         )
       );

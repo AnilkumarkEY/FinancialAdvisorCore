@@ -29,9 +29,13 @@ const createEntityUserAuth = async (data) => {
 };
 
 const updateEntityUserAuth = async (data) => {
-  let query = `UPDATE core.entity_urc_auth SET `;
-  let updateEntity = await userProfile.updateEntity(query, data);
-  console.log("Updating entity with data:", updateEntity);
+  try {
+    let query = `UPDATE core.entity_urc_auth SET `;
+    let updateEntity = await userProfile.updateEntity(query, data);
+    console.log("Updating entity with data:", updateEntity);
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 module.exports = {
