@@ -128,7 +128,7 @@ exports.createLead = async (request, reply) => {
               .send(
                 responseFormatter(
                   STATUS_CODES.INTERNAL_SERVER_ERROR,
-                  "some issue",
+                  "An unexpected error occurred",
                   { lead: leadRes, product: productRes }
                 )
               );
@@ -171,7 +171,7 @@ exports.prodcutIntrested = async (request, reply) => {
         .send(
           responseFormatter(
             STATUS_CODES.INTERNAL_SERVER_ERROR,
-            "some issue",
+            "An unexpected error occurred",
             data
           )
         );
@@ -192,8 +192,8 @@ exports.prodcutIntrested = async (request, reply) => {
 exports.getLeadList = async (request, reply) => {
   try {
     // const leadId = request.params.leadId;
-    const { leadId } = request.query;
-    const data = await getLeadList(leadId);
+    const { idlead } = request.query;
+    const data = await getLeadList(idlead);
     if (data) {
       await userProfile.insertEventTransaction(request.isValid);
       return reply
@@ -211,7 +211,7 @@ exports.getLeadList = async (request, reply) => {
         .send(
           responseFormatter(
             STATUS_CODES.INTERNAL_SERVER_ERROR,
-            "some issue",
+            "An unexpected error occurred",
             data
           )
         );
@@ -250,7 +250,7 @@ exports.getProducts = async (request, reply) => {
         .send(
           responseFormatter(
             STATUS_CODES.INTERNAL_SERVER_ERROR,
-            "some issue",
+            "An unexpected error occurred",
             data
           )
         );
