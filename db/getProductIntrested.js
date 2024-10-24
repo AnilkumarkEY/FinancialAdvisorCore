@@ -60,7 +60,7 @@ async function getLead(idlead) {
     inner join core.entity e on e."identity" = l.identity_lead_createdby 
     inner join core.entity_urc_auth eua on eua."identity" = e."identity" 
     left join core.entity_contact ec on ec.identity_urc_auth = eua.identity_urc_auth 
-    where l.identity_lead_createdby = '${idlead}'
+    where l.idlead = '${idlead}'
     `;
     const res = await client.query(query);
     return res.rows; // Return the result rows
