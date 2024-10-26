@@ -167,10 +167,7 @@ const insertEntity = async (entityData) => {
     return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);
-  } finally {
-    // await client.end();
-    pool.release();
-  }
+  } 
 };
 
 const updateEntity = async (query, entityData) => {
@@ -204,9 +201,7 @@ const updateEntity = async (query, entityData) => {
     console.log("Update successful:", res);
   } catch (error) {
     console.error("Error updating data:", error);
-  } finally {
-    await client.end();
-  }
+  } 
 };
 
 const insertEntityUrcAuth = async (entityUrcAuthData) => {
@@ -285,8 +280,9 @@ const insertEntityContact = async (entityContactData) => {
         idmeta_contact_type,
         eff_from_date,
         pincode,
-        created_date
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+        created_date,
+        identity
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
       RETURNING *;
 `;
 
@@ -313,6 +309,7 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.eff_from_date || null,
     entityContactData.pincode || null,
     entityContactData.created_date || null,
+    entityContactData.identity || null,
   ];
   console.log("Insert successful:", values);
   try {

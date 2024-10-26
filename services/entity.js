@@ -23,6 +23,7 @@ const createEntity = async (data) => {
   try {
     let insertEntity = await userProfile.insertEntity(data);
     console.log("inserted entity with data:", insertEntity);
+    return insertEntity
   } catch (error) {
     throw new Error(error);
   }
@@ -32,6 +33,7 @@ const updateEntity = async (data) => {
   let query = `UPDATE core.entity SET `;
   let updateEntity = await userProfile.updateEntity(query, data);
   console.log("Updating entity with data:", updateEntity);
+  return updateEntity
 };
 
 module.exports = {

@@ -5,7 +5,7 @@ async function createLeadDb(data) {
     const query = `
   INSERT INTO oppurtunity.lead (
     idlead, 
-    idmeta_lead_type, 
+    idmeta_lead_type, performAction
     identity_oppurtunity, 
     idmeta_lead_status, 
     identity_subscriber, 

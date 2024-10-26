@@ -1,28 +1,144 @@
-const { userProfile } = require("../db");
+const responseFormatter = require("../utils/responseFormatter");
+const STATUS_CODES = require("../utils/statusCodes");
+const saveContact = require("../services/entityContact");
+const generateUniqueString = require("../utils/generateUniqueString");
 
-const addEntityContact = async (data) => {
-    try {
-        let insertEntity = await userProfile.insertEntityContact(data);
-        console.log("inserted entity with data:", insertEntity);
-        return insertEntity;
-    } catch (error) {
-        throw new Error(error);
+exports.addEntityContact = async (request, reply) => {
+  try {
+    // Extracting data from the request body
+    const requestData = request.body;
+
+    // Generating a unique ID for the contact
+    let uId = generateUniqueString();
+
+    // Pre-defined ID for the action (as per your example)
+    const id = "2c6348cacf9a404b89667136562d3ee6";
+    console.log(requestData);
+    // Creating the entity JSON object to be inserted
+    const entity_json = {
+      identity_contact: uId,
+      address_line_1: requestData.addressLine1,
+      address_line_2: requestData.addressLine2,
+      idmeta_contact_type: requestData.idmetaContactType,
+      contact_value: requestData.contactValue,
+      countrycode: requestData.countryCode,
+      dialingcode: "91",
+      location_name: requestData.locationName,
+      state: requestData.state,
+      pincode: requestData.pincode,
+      identity: requestData.identity,
+    };
+    // Performing the action to save the contact
+    const insertEntity = await saveContact.performAction(id, entity_json);
+
+    console.log("Inserted entity with Data:", insertEntity);
+
+    // If the insertion is successful, return a success response
+    if (insertEntity) {
+      return reply
+        .status(STATUS_CODES.CREATED) // Using the CREATED status code
+        .send(
+          responseFormatter(
+            STATUS_CODES.CREATED,
+            "Entity contact inserted successfully",
+          )
+        );
+    } else {
+      // Handle the case where insertion is not successful
+      return reply
+        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .send(
+          responseFormatter(
+            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            "Failed to insert contact entity",
+            { entity: insertEntity }
+          )
+        );
     }
+  } catch (error) {
+    console.error("Error adding entity contact:", error);
+
+    // Formatting and sending the error response in case of an exception
+    return reply
+      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+};
+
+exports.updateEntityContact = async (request,reply) => {
+  try {
+    // Extracting data from the request body
+    const requestData = request.body;
+
+    // Generating a unique ID for the contact
+    let uId = generateUniqueString();
+
+    // Pre-defined ID for the action (as per your example)
+    const id = "fd789c2918db4db4852813cd147bacb0";
+
+    // Creating the entity JSON object to be inserted
+    const entity_json = {
+      identity_contact: uId,
+      address_line_1: requestData.addressLine1,
+      address_line_2: requestData.addressLine2,
+      idmeta_contact_type: requestData.idmetaContactType,
+      contact_value: requestData.contactValue,
+      countrycode: requestData.countryCode,
+      dialingcode: requestData.dialingCode,
+      location_name: requestData.locationName,
+      state: requestData.state,
+      pincode: requestData.pincode,
+      identity: requestData.identity,
+    };
+
+    // Performing the action to save the contact
+    const updateEntity = await saveContact.performAction(id, entity_json);
+
+    console.log("UpdateEntity with data:", updateEntity);
+    console.log(updateEntity);
+    
+    // If the insertion is successful, return a success response
+    if (updateEntity) {
+      return reply
+        .status(STATUS_CODES.CREATED) // Using the CREATED status code
+        .send(
+          responseFormatter(
+            STATUS_CODES.CREATED,
+            "Entity contact updated successfully"
+          )
+        );
+    } else {
+      // Handle the case where insertion is not successful
+      return reply
+        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .send(
+          responseFormatter(
+            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            "Failed to update contact entity",
+            { entity: insertEntity }
+          )
+        );
+    }
+  } catch (error) {
+    console.error("Error updating entity contact:", error);
+
+    // Formatting and sending the error response in case of an exception
+    return reply
+      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
 };
 
 
-const updateEntityContact = async (data) => {
-    try {
-      let query = `UPDATE core.entity_contact SET `;
-      let updateEntity = await userProfile.updateEntity(query, data);
-      console.log("Updating entity with data:", updateEntity);
-    } catch (error) {
-      throw new Error(error);
-    }
-  };
-
-
-module.exports = {
-    addEntityContact,
-    updateEntityContact
-}
