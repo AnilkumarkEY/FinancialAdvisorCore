@@ -3,12 +3,12 @@ const { authentication, validation } = require("../middleware");
 async function contactRoutes(fastify, options) {
   // Define dashboard routes
   fastify.post(
-    "/contact/create-contact",
+    "/create-contact",
     { preHandler: [authentication, validation] },
     contact.addEntityContact
   );
   fastify.put(
-    "/contact/update-contact",
+    "/update-contact",
     { preHandler: [authentication, validation] },
     contact.updateEntityContact
   );

@@ -81,7 +81,6 @@ exports.updateEntityContact = async (request, reply) => {
 
     // Creating the entity JSON object to be inserted
     const entity_json = {
-      identity_contact: uId,
       address_line_1: requestData.addressLine1,
       address_line_2: requestData.addressLine2,
       idmeta_contact_type: requestData.idmetaContactType,
@@ -91,7 +90,8 @@ exports.updateEntityContact = async (request, reply) => {
       location_name: requestData.locationName,
       state: requestData.state,
       pincode: requestData.pincode,
-      identity: requestData.identity,
+      identity_contact : requestData.idContact,
+      fieldToMatch : "identity_contact"
     };
 
     // Performing the action to save the contact
@@ -117,7 +117,7 @@ exports.updateEntityContact = async (request, reply) => {
           responseFormatter(
             statusCodes.INTERNAL_SERVER_ERROR,
             "Failed to update contact entity",
-            { entity: insertEntity }
+            { entity: updateEntity }
           )
         );
     }
