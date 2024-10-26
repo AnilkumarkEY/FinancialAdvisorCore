@@ -274,3 +274,147 @@ paths:
                           type: string
                         productName:
                           type: string
+
+  /contact/update-contact:
+    put:
+      summary: Update an existing contact
+      description: Updates an existing contact with the provided details.
+      operationId: updateContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiasfsgergdte"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressLine1
+                - idmetaContactType
+                - contactValue
+                - countryCode
+                - state
+                - pincode
+                - idContact
+              properties:
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the contact.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the contact.
+                idmetaContactType:
+                  type: string
+                  description: Meta contact type ID.
+                contactValue:
+                  type: string
+                  description: Contact value, such as phone number or email.
+                countryCode:
+                  type: string
+                  description: Country code.
+                locationName:
+                  type: string
+                  description: Name of the location.
+                state:
+                  type: string
+                  description: State of the contact's address.
+                pincode:
+                  type: string
+                  description: Pincode of the contact's address.
+                idContact:
+                  type: string
+                  description: Unique identifier of the contact.
+      responses:
+        '201':
+          description: Entity contact updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Entity contact updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: Additional data (if any)
+
+  /contact/create-contact:
+    post:
+      summary: Create a new contact
+      description: Creates a new contact with the provided details.
+      operationId: createContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressLine1
+                - idmetaContactType
+                - contactValue
+                - countryCode
+                - state
+                - pincode
+              properties:
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the contact.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the contact.
+                idmetaContactType:
+                  type: string
+                  description: Meta contact type ID.
+                contactValue:
+                  type: string
+                  description: Contact value, such as phone number or email.
+                countryCode:
+                  type: string
+                  description: Country code.
+                locationName:
+                  type: string
+                  description: Name of the location.
+                state:
+                  type: string
+                  description: State of the contact's address.
+                pincode:
+                  type: string
+                  description: Pincode of the contact's address.
+      responses:
+        '201':
+          description: Entity contact inserted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Entity contact inserted successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: Additional data (if any)
