@@ -23,7 +23,7 @@ exports.addEntityContact = async (request, reply) => {
       location_name: requestData.locationName,
       state: requestData.state,
       pincode: requestData.pincode,
-      identity: requestData.identity,
+      identity: request.isValid.identity,
     };
     // Performing the action to save the contact
     const insertEntity = await entityContact.performAction(id, entity_json);
