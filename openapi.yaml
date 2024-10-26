@@ -180,7 +180,7 @@ paths:
                     type: string
                     example: "12345"
 
-  /lead/product-interested:
+  /lead/product-intrested:
     get:
       summary: Get products interested by lead
       description: Retrieves the list of products a lead is interested in.

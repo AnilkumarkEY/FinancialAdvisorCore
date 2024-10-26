@@ -1,7 +1,5 @@
-const responseFormatter = require("../utils/responseFormatter");
-const STATUS_CODES = require("../utils/statusCodes");
-const saveContact = require("../services/entityContact");
-const generateUniqueString = require("../utils/generateUniqueString");
+const { responseFormatter, statusCodes, uniqueString } = require("../utils");
+const { entityContact } = require("../services");
 
 exports.addEntityContact = async (request, reply) => {
   try {
@@ -9,11 +7,10 @@ exports.addEntityContact = async (request, reply) => {
     const requestData = request.body;
 
     // Generating a unique ID for the contact
-    let uId = generateUniqueString();
+    let uId = uniqueString();
 
     // Pre-defined ID for the action (as per your example)
     const id = "2c6348cacf9a404b89667136562d3ee6";
-    console.log(requestData);
     // Creating the entity JSON object to be inserted
     const entity_json = {
       identity_contact: uId,
@@ -29,27 +26,27 @@ exports.addEntityContact = async (request, reply) => {
       identity: requestData.identity,
     };
     // Performing the action to save the contact
-    const insertEntity = await saveContact.performAction(id, entity_json);
+    const insertEntity = await entityContact.performAction(id, entity_json);
 
     console.log("Inserted entity with Data:", insertEntity);
 
     // If the insertion is successful, return a success response
     if (insertEntity) {
       return reply
-        .status(STATUS_CODES.CREATED) // Using the CREATED status code
+        .status(statusCodes.CREATED) // Using the CREATED status code
         .send(
           responseFormatter(
-            STATUS_CODES.CREATED,
-            "Entity contact inserted successfully",
+            statusCodes.CREATED,
+            "Entity contact inserted successfully"
           )
         );
     } else {
       // Handle the case where insertion is not successful
       return reply
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .status(statusCodes.INTERNAL_SERVER_ERROR)
         .send(
           responseFormatter(
-            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            statusCodes.INTERNAL_SERVER_ERROR,
             "Failed to insert contact entity",
             { entity: insertEntity }
           )
@@ -60,10 +57,10 @@ exports.addEntityContact = async (request, reply) => {
 
     // Formatting and sending the error response in case of an exception
     return reply
-      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
       .send(
         responseFormatter(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          statusCodes.INTERNAL_SERVER_ERROR,
           "Internal server error occurred",
           { error: error.message }
         )
@@ -71,13 +68,13 @@ exports.addEntityContact = async (request, reply) => {
   }
 };
 
-exports.updateEntityContact = async (request,reply) => {
+exports.updateEntityContact = async (request, reply) => {
   try {
     // Extracting data from the request body
     const requestData = request.body;
 
     // Generating a unique ID for the contact
-    let uId = generateUniqueString();
+    let uId = uniqueString();
 
     // Pre-defined ID for the action (as per your example)
     const id = "fd789c2918db4db4852813cd147bacb0";
@@ -98,28 +95,27 @@ exports.updateEntityContact = async (request,reply) => {
     };
 
     // Performing the action to save the contact
-    const updateEntity = await saveContact.performAction(id, entity_json);
+    const updateEntity = await entityContact.performAction(id, entity_json);
 
     console.log("UpdateEntity with data:", updateEntity);
-    console.log(updateEntity);
-    
+
     // If the insertion is successful, return a success response
     if (updateEntity) {
       return reply
-        .status(STATUS_CODES.CREATED) // Using the CREATED status code
+        .status(statusCodes.CREATED) // Using the CREATED status code
         .send(
           responseFormatter(
-            STATUS_CODES.CREATED,
+            statusCodes.CREATED,
             "Entity contact updated successfully"
           )
         );
     } else {
       // Handle the case where insertion is not successful
       return reply
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .status(statusCodes.INTERNAL_SERVER_ERROR)
         .send(
           responseFormatter(
-            STATUS_CODES.INTERNAL_SERVER_ERROR,
+            statusCodes.INTERNAL_SERVER_ERROR,
             "Failed to update contact entity",
             { entity: insertEntity }
           )
@@ -130,15 +126,13 @@ exports.updateEntityContact = async (request,reply) => {
 
     // Formatting and sending the error response in case of an exception
     return reply
-      .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
       .send(
         responseFormatter(
-          STATUS_CODES.INTERNAL_SERVER_ERROR,
+          statusCodes.INTERNAL_SERVER_ERROR,
           "Internal server error occurred",
           { error: error.message }
         )
       );
   }
 };
-
-

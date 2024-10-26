@@ -1,16 +1,16 @@
-const { createLeadDb, getProduct } = require("../db");
-exports.createLeadModule = async (lead) => {
+const { lead, product, entity } = require("../db");
+exports.createLead = async (leadData) => {
   try {
-    const data = createLeadDb.createLeadDb(lead);
+    const data = await lead.createLead(leadData);
     return data;
   } catch (error) {
     return error;
   }
 };
 
-exports.createproductModule = async (productIntrstedIn) => {
+exports.createproduct = async (productIntrstedIn) => {
   try {
-    const data = createLeadDb.createProduct(productIntrstedIn);
+    const data = product.createProduct(productIntrstedIn);
     return data;
   } catch (error) {
     return error;
@@ -19,7 +19,7 @@ exports.createproductModule = async (productIntrstedIn) => {
 
 exports.getProductIntrested = async (leadId) => {
   try {
-    const data = await getProduct.prospectInterest(leadId);
+    const data = await product.getProspectInterest(leadId);
     return data;
   } catch (error) {
     return error;
@@ -29,10 +29,10 @@ exports.getProductIntrested = async (leadId) => {
 exports.getLeadList = async (leadId) => {
   try {
     let obj = { contact: "", lead: "" };
-    const data = await getProduct.getLead(leadId);
+    const data = await lead.getLead(leadId);
     if (data.length > 0) {
       let id = data[0].identity_urc_auth;
-      obj.contact = await getProduct.getContact(id);
+      obj.contact = await entity.getEntityContact(id);
     }
     obj.lead = data;
     return obj;
@@ -41,9 +41,9 @@ exports.getLeadList = async (leadId) => {
   }
 };
 
-exports.getProducts=async () => {
+exports.getProducts = async () => {
   try {
-    const data = await getProduct.getAllProducts();
+    const data = await product.getAllProducts();
     return data;
   } catch (error) {
     return error;

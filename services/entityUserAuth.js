@@ -1,5 +1,5 @@
 const entityValues = require("../config/entityValues");
-const { userProfile } = require("../db");
+const { entity } = require("../db");
 
 // Example usage
 const performAction = (id, data) => {
@@ -21,17 +21,23 @@ const performAction = (id, data) => {
 // Dummy functions to represent service actions
 const createEntityUserAuth = async (data) => {
   try {
-    let insertEntity = await userProfile.insertEntityUrcAuth(data);
+    let insertEntity = await entity.insertEntityUrcAuth(data);
     console.log("inserted entity with data:", insertEntity);
+    return insertEntity;
   } catch (error) {
     throw new Error(error);
   }
 };
 
 const updateEntityUserAuth = async (data) => {
-  let query = `UPDATE core.entity_urc_auth SET `;
-  let updateEntity = await userProfile.updateEntity(query, data);
-  console.log("Updating entity with data:", updateEntity);
+  try {
+    let query = `UPDATE core.entity_urc_auth SET `;
+    let updateEntity = await entity.updateEntity(query, data);
+    console.log("Updating entity with data:", updateEntity);
+    return updateEntity;
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
 module.exports = {

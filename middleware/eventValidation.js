@@ -1,40 +1,27 @@
 const routeValues = require("../config/routesValues");
-const { userProfile } = require("../db");
-const generateUniqueString = require("../utils/generateUniqueString");
+const { validation } = require("../db");
+const {uniqueString} = require("../utils");
 async function eventValidation(request, reply) {
-    // let eventDefination = routeValues.routeValues[request.url]!==undefined?routeValues.routeValues[request.url]:
-    // routeValues.routeValues[makeUrl(request.url)];
-    // console.log("eventDefination", eventDefination)
-    let route = request.url;
-    if (route.includes("?")) {
-      route = route.split("?")[0];
-    } else {
-      route;
-    }
-    console.log(route, "req-url");
-    let eventDefination = routeValues.routeValues[route];
-    const isValid = await userProfile.checkValidRoute(request.user.oid,eventDefination);
-    request.isValid = isValid[0];
-    console.log("request", request);
-    request.isValid["idevent_transaction"] = generateUniqueString();
-    console.log("request.isValid", request.isValid)
-    if(!isValid.length){
-        return reply.status(403).send({ message: 'You do not have permission to access this route.' });
-    }
+  let route = request.url;
+  if (route.includes("?")) {
+    route = route.split("?")[0];
+  } else {
+    route;
   }
+  console.log(route, "req-url");
+  let eventDefination = routeValues.routeValues[route];
+  const isValid = await validation.checkValidRoute(
+    request.user.oid,
+    eventDefination
+  );
+  request.isValid = isValid[0];
+  request.isValid["idevent_transaction"] = uniqueString();
+  console.log("request.isValid", request.isValid);
+  if (!isValid.length) {
+    return reply
+      .status(403)
+      .send({ message: "You do not have permission to access this route." });
+  }
+}
 
-  function makeUrl(urls) {
-    // const url = urls;
-    // const segments = url.split("/");
-    // const desiredSegment = `/${segments[1]}/${segments[2]}`;
-    // console.log(desiredSegment);
-    // return desiredSegment;
-    let route = urls;
-    if (route.includes("?")) {
-      route = route.split("?")[0];
-    } else {
-      route;
-    }
-  }
-  
-module.exports = { eventValidation };
+module.exports =  eventValidation ;

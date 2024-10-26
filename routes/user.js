@@ -1,14 +1,16 @@
-const { userController } = require('../controllers');
-const {eventValidation} = require("../middleware/eventValidation");
-const {authentication} = require("../middleware/authentication")
+const { user } = require("../controllers");
+const {authentication,validation} = require("../middleware")
 
 async function userRoutes(fastify, options) {
-
   // Define user routes
-  fastify.get('/users/get-users',{ preHandler: [authentication,eventValidation]}, userController.getUsers);
-  fastify.post('/users/login', userController.loginUser);
-  fastify.post('/users/forgot-password', userController.sendOtp);
-  fastify.post('/users/change-password', userController.changePassword);
+  fastify.get(
+    "/get-users",
+    { preHandler: [authentication, validation] },
+    user.getUsers
+  );
+  fastify.post("/login", user.loginUser);
+  fastify.post("/get-otp", user.sendOtp);
+  fastify.post("/change-password", user.changePassword);
 }
 
 module.exports = userRoutes;
