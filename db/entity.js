@@ -254,10 +254,41 @@ async function getEntityContact(idlead) {
   }
 }
 
+const getEntityContactByIdentity = async (identity) => {
+  try {
+    const query = `SELECT 
+    ec.identity_contact,
+    cm.meta_data_name AS contact_type,
+    ec.contact_value,
+    ec.countrycode,
+    ec.dialingcode,
+    ec.address_line_1,
+    ec.address_line_2,
+    ec.location_name,
+    ec.state,
+    ec.pincode,
+    ec.district,
+    ec.country,
+    ec.eff_from_date
+FROM core.entity_contact ec
+INNER JOIN core.cr_metadata cm ON cm.idmetadata = ec.idmeta_contact_type
+WHERE ec.identity = $1;
+`;
+    console.log(query);
+
+    const res = await client.query(query, [identity]);
+    return res.rows;
+  } catch (err) {
+    console.error("Error executing query", err.stack);
+    throw err;
+  }
+};
+
 module.exports = {
   insertEntity,
   updateEntity,
   insertEntityUrcAuth,
   insertEntityContact,
   getEntityContact,
+  getEntityContactByIdentity,
 };

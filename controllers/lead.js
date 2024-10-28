@@ -1,5 +1,5 @@
-const {responseFormatter, statusCodes, uniqueString} = require("../utils");
-const { event } = require("../db");
+const { responseFormatter, statusCodes, uniqueString } = require("../utils");
+const { event, entity } = require("../db");
 const {
   createLead,
   getProductIntrested,
@@ -7,7 +7,7 @@ const {
   createproduct,
   getProducts,
 } = require("../module/lead");
-const {entityService, entityContact} = require("../services");
+const { entityService, entityContact } = require("../services");
 
 exports.createLead = async (request, reply) => {
   try {
@@ -81,7 +81,10 @@ exports.createLead = async (request, reply) => {
         state: state,
         pincode: Number(zipCode),
       };
-      const entity_contact = await entityContact.performAction(id, contact_json);
+      const entity_contact = await entityContact.performAction(
+        id,
+        contact_json
+      );
       if (entity_contact.length > 0) {
         const data = {
           idlead: uId,
@@ -118,7 +121,7 @@ exports.createLead = async (request, reply) => {
               );
           } else {
             console.log("ssssssssssssssssssssssssssssssssssssssssssssss");
-            
+
             return reply
               .status(statusCodes.INTERNAL_SERVER_ERROR)
               .send(
@@ -237,6 +240,52 @@ exports.getProducts = async (request, reply) => {
             statusCodes.OK,
             "product data fetch successfully",
             data
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.INTERNAL_SERVER_ERROR)
+        .send(
+          responseFormatter(
+            statusCodes.INTERNAL_SERVER_ERROR,
+            "An unexpected error occurred",
+            data
+          )
+        );
+    }
+  } catch (error) {
+    console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
+
+exports.getLeadContactList = async (request, reply) => {
+  try {
+    // const leadId = request.params.leadId;
+    const identity = request.isValid.identity;
+    const data = await entity.getEntityContactByIdentity(identity);
+    if (data) {
+      const filteredData = data.map((record) => {
+        // Filter out any null values
+        return Object.fromEntries(
+          Object.entries(record).filter(([_, value]) => value !== null)
+        );
+      });
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "fetching lead contact records successfully",
+            filteredData
           )
         );
     } else {
