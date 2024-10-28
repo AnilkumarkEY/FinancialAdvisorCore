@@ -261,6 +261,7 @@ const getEntityContactByIdentity = async (identity) => {
     cm.meta_data_name AS contact_type,
     ec.contact_value,
     ec.countrycode,
+    cn.countryname,
     ec.dialingcode,
     ec.address_line_1,
     ec.address_line_2,
@@ -268,11 +269,12 @@ const getEntityContactByIdentity = async (identity) => {
     ec.state,
     ec.pincode,
     ec.district,
-    ec.country,
     ec.eff_from_date
 FROM core.entity_contact ec
 INNER JOIN core.cr_metadata cm ON cm.idmetadata = ec.idmeta_contact_type
+LEFT JOIN core.country cn ON ec.countrycode = cn.countrycode
 WHERE ec.identity = $1;
+
 `;
     console.log(query);
 

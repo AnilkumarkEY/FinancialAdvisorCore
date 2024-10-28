@@ -1,15 +1,15 @@
-const {responseFormatter, statusCodes} = require("../utils");
+const { responseFormatter, statusCodes } = require("../utils");
 const loginData = require("../dummyData/login");
-const { tokenService } = require("../services");
-const {user, event} = require("../db")
+const { tokenService, otpService } = require("../services");
+const { user, event, otp } = require("../db");
 
 exports.getUsers = async (request, reply) => {
   try {
     // Respond with the list of users
     const userData = await user.getUsers();
-    if(userData){
-        await event.insertEventTransaction(request.isValid);
-        return reply
+    if (userData) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
         .status(statusCodes.OK)
         .send(
           responseFormatter(
@@ -18,18 +18,11 @@ exports.getUsers = async (request, reply) => {
             userData
           )
         );
-    }else{
-        return reply
+    } else {
+      return reply
         .status(statusCodes.OK)
-        .send(
-          responseFormatter(
-            statusCodes.OK,
-            "no data found",
-            {}
-          )
-        );
+        .send(responseFormatter(statusCodes.OK, "no data found", {}));
     }
-
   } catch (error) {
     // Handle unexpected errors
     console.error(error);
@@ -61,7 +54,7 @@ exports.loginUser = async (request, reply) => {
         );
     }
 
-    const validUser =  await user.checkValidUser(userName);
+    const validUser = await user.checkValidUser(userName);
 
     if (validUser[0].user_exists) {
       // Successful login
@@ -122,21 +115,42 @@ exports.sendOtp = async (request, reply) => {
     if (!agent_code) {
       return reply
         .status(statusCodes.BAD_REQUEST)
-        .send(responseFormatter(statusCodes.BAD_REQUEST, "Agent code is required"));
+        .send(
+          responseFormatter(statusCodes.BAD_REQUEST, "Agent code is required")
+        );
     }
 
     // Find user based on agent code
-    const user = await userProfile.getUserDataForOtp(request.isValid.identity,agent_code);
-    if (user) {
+    const userData = await user.getUserDataForOtp(
+      request.isValid.identity,
+      agent_code
+    );
+    if (userData.length) {
       // Simulate sending OTP (in a real scenario, you would send the OTP via email/SMS)
-      return reply.status(statusCodes.OK).send(
-        responseFormatter(statusCodes.OK, "OTP sent successfully", {
-          otp: user.otp,
-        })
-      );
+      const sentOtp = await otpService.sendOTP(userData[0], request.isValid);
+      if (sentOtp) {
+        const addOtpToVerify = await otp.insertOtp(
+          request.isValid.identity,
+          sentOtp
+        );
+        if (addOtpToVerify) {
+          await event.insertEventTransaction(request.isValid);
+          return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "OTP sent successfully"));
+        } else {
+          return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "OTP not sent"));
+        }
+      } else {
+        return reply
+          .status(statusCodes.OK)
+          .send(responseFormatter(statusCodes.NOT_FOUND, "OTP not sent"));
+      }
     } else {
       return reply
-        .status(statusCodes.NOT_FOUND)
+        .status(statusCodes.OK)
         .send(responseFormatter(statusCodes.NOT_FOUND, "User not found"));
     }
   } catch (error) {
@@ -152,6 +166,42 @@ exports.sendOtp = async (request, reply) => {
   }
 };
 
+exports.verifyOtp = async (request, reply) => {
+  try {
+    const { otpToVerify } = request.body;
+    const isValidOtp = await otp.verifyOtp(
+      otpToVerify,
+      request.isValid.identity
+    );
+    if (isValidOtp) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(statusCodes.OK, "Provided OTP is correct", true)
+        );
+    } else {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.BAD_REQUEST,
+            "Provided OTP is incorrect"
+          )
+        );
+    }
+  } catch (error) {
+    console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
 exports.changePassword = async (request, reply) => {
   try {
     const { email, otp, newPassword } = request.body;
