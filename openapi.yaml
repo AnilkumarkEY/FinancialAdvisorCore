@@ -788,3 +788,69 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
+
+  /lead/get-lead-contact-list:
+    get:
+      summary: Get lead contact list
+      description: Retrieves the contact details for leads.
+      operationId: getLeadContactList
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        '200':
+          description: Lead contact records retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "fetching lead contact records successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        identity_contact:
+                          type: string
+                          description: Unique identifier for the contact
+                        contact_type:
+                          type: string
+                          description: Type of contact information
+                        contact_value:
+                          type: string
+                          description: Contact value (e.g., phone number)
+                        countrycode:
+                          type: string
+                          description: Country code associated with the contact
+                        countryname:
+                          type: string
+                          description: Name of the country associated with the contact
+                        dialingcode:
+                          type: string
+                          description: Dialing code for the country
+                        address_line_1:
+                          type: string
+                          description: First line of the address
+                        address_line_2:
+                          type: string
+                          description: Second line of the address
+                        location_name:
+                          type: string
+                          description: Location name for the contact
+                        state:
+                          type: string
+                          description: State of the contact address
+                        pincode:
+                          type: integer
+                          description: Pincode of the contact address

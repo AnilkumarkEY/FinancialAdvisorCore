@@ -1,5 +1,5 @@
 const { responseFormatter, statusCodes, uniqueString } = require("../utils");
-const { event, lead } = require("../db");
+const { event, entity, lead } = require("../db");
 const {
   createLead,
   getProductIntrested,
@@ -268,6 +268,51 @@ exports.getProducts = async (request, reply) => {
   }
 };
 
+exports.getLeadContactList = async (request, reply) => {
+  try {
+    // const leadId = request.params.leadId;
+    const identity = request.isValid.identity;
+    const data = await entity.getEntityContactByIdentity(identity);
+    if (data) {
+      const filteredData = data.map((record) => {
+        // Filter out any null values
+        return Object.fromEntries(
+          Object.entries(record).filter(([_, value]) => value !== null)
+        );
+      });
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "fetching lead contact records successfully",
+            filteredData
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.INTERNAL_SERVER_ERROR)
+        .send(
+          responseFormatter(
+            statusCodes.INTERNAL_SERVER_ERROR,
+            "An unexpected error occurred",
+            data
+          )
+        );
+    }
+  } catch (error) {
+    console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
 exports.getLeadTags = async (request, reply) => {
   try {
     const leadTags = await lead.getLeadTags();
