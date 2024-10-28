@@ -1,4 +1,5 @@
 const { client } = require("../config/db");
+const { uniqueString } = require("../utils");
 async function createLead(data) {
   try {
     const query = `
@@ -78,7 +79,148 @@ async function getLead(idlead) {
   }
 }
 
+async function getLeadTags() {
+  try {
+    const query = `
+      select 
+      idmetadata as tagmetadata,
+      meta_data_name as tagname
+      from oppurtunity.op_metadata om 
+      where 
+      idmetamaster = 'd7e962cce2db4dbdaafaaafd91f1fe16' -- hardcode
+      and sub_meta_detail -> 'tagfilter' ->> 'value' = '21f7a30d537546c38c51ee5f6124e815' -- hardcode
+    `;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error;
+  }
+}
+
+async function getLeadZipcode(zipcode) {
+  try {
+    const query = `
+    select 
+      d.id_district,
+      d.description as district,
+      s.id_state,
+      s.description as state,
+      c.idcountry,
+      c.countryname as countryname,
+      c.dialingcode
+      from core.locality l 
+      inner join core.pincode_master p on p.id_pincode = l.id_pincode 
+      inner join core.district d on d.id_district = l.id_district
+      inner join core.state s on s.id_state = d.id_state 
+      inner join core.country c on c.idcountry = c.idcountry
+      where p.pincode = $1
+      group by d.id_district,
+      d.description,
+      s.id_state,
+      s.description,
+      c.idcountry,
+      c.countryname,
+      c.dialingcode; 
+    `;
+    const res = await client.query(query, [zipcode]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error;
+  }
+}
+
+async function getLeadTagsById(idlead) {
+  try {
+    const query = `
+      select idmeta_tag_type,tag from oppurtunity.opp_tag ot
+      where tag_reference_id = $1
+    `;
+    const res = await client.query(query, [idlead]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error;
+  }
+}
+
+async function getLeadById(idlead) {
+  try {
+    const query = `
+      select
+      l.idlead,
+      e.fullname,
+      l.idmeta_lead_status,
+      om1.meta_data_name as leadstatus,
+      l.idmeta_lead_type,
+      om2.meta_data_name as leadtype,
+      l.idmeta_source_type,
+      om.meta_data_name as source
+      from oppurtunity."lead" l
+      inner join core.entity e on e."identity" = l.identity_oppurtunity 
+      inner join oppurtunity.op_metadata om on om.idmetadata = l.idmeta_source_type 
+      inner join oppurtunity.op_metadata om1 on om1.idmetadata  = l.idmeta_lead_status 
+      inner join oppurtunity.op_metadata om2 on om2.idmetadata = l.idmeta_lead_type 
+      where l.idlead = $1
+    `;
+    const res = await client.query(query, [idlead]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error;
+  }
+}
+
+async function getOppTag(oppTag) {
+  try {
+    const query = `
+      SELECT om.meta_data_name, om.idmetadata 
+      FROM oppurtunity.op_metadata om 
+      WHERE om.idmetadata::uuid = ANY($1::uuid[]);
+    `;
+    const res = await client.query(query, [oppTag]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error;
+  }
+}
+
+async function addOppTag(oppTag, tagReferenceId) {
+  try {
+    const insertTagQuery = `
+      INSERT INTO oppurtunity.opp_tag (idopp_tag, idmeta_tag_type, tag_reference_id, tag)
+      VALUES ($1, $2, $3, $4);
+    `;
+
+    for (const tag of oppTag) {
+      const idoppTag = uniqueString(); // Generate the unique ID for the tag
+
+      // Execute the insert query
+      await client.query(insertTagQuery, [
+        idoppTag,
+        tag.idmetadata,
+        tagReferenceId,
+        tag.meta_data_name,
+      ]);
+      console.log(`Inserted tag: ${tag.meta_data_name} with ID: ${idoppTag}`);
+    }
+
+    console.log("All tags inserted successfully.");
+  } catch (error) {
+    console.error("Error inserting tags", error.stack);
+    throw error;
+  }
+}
+
 module.exports = {
   createLead,
   getLead,
+  getLeadTags,
+  getLeadZipcode,
+  getLeadTagsById,
+  getLeadById,
+  getOppTag,
+  addOppTag,
 };

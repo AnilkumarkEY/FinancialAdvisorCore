@@ -30,8 +30,8 @@ async function getUserDataForOtp(identity, agent_code) {
         SELECT uad.reg_mobile_number, uad.reg_email
         FROM core.user_auth_data uad 
         JOIN core.profile p ON uad.identity = p.identity
-        WHERE p.business_code = $1  
-        AND uad.identity = $2;
+        WHERE p.business_code = $2
+        AND uad.identity = $1;
         `;
     const res = await client.query(query, [identity, agent_code]);
     return res.rows;
