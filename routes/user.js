@@ -1,5 +1,5 @@
 const { user } = require("../controllers");
-const {authentication,validation} = require("../middleware")
+const { authentication, validation } = require("../middleware");
 
 async function userRoutes(fastify, options) {
   // Define user routes
@@ -9,7 +9,16 @@ async function userRoutes(fastify, options) {
     user.getUsers
   );
   fastify.post("/login", user.loginUser);
-  fastify.post("/get-otp", user.sendOtp);
+  fastify.post(
+    "/get-otp",
+    { preHandler: [authentication, validation] },
+    user.sendOtp
+  );
+  fastify.post(
+    "/verify-otp",
+    { preHandler: [authentication, validation] },
+    user.verifyOtp
+  );
   fastify.post("/change-password", user.changePassword);
 }
 
