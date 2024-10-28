@@ -274,3 +274,517 @@ paths:
                           type: string
                         productName:
                           type: string
+
+  /contact/update-contact:
+    put:
+      summary: Update an existing contact
+      description: Updates an existing contact with the provided details.
+      operationId: updateContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiasfsgergdte"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressLine1
+                - idmetaContactType
+                - contactValue
+                - countryCode
+                - state
+                - pincode
+                - idContact
+              properties:
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the contact.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the contact.
+                idmetaContactType:
+                  type: string
+                  description: Meta contact type ID.
+                contactValue:
+                  type: string
+                  description: Contact value, such as phone number or email.
+                countryCode:
+                  type: string
+                  description: Country code.
+                locationName:
+                  type: string
+                  description: Name of the location.
+                state:
+                  type: string
+                  description: State of the contact's address.
+                pincode:
+                  type: string
+                  description: Pincode of the contact's address.
+                idContact:
+                  type: string
+                  description: Unique identifier of the contact.
+      responses:
+        '201':
+          description: Entity contact updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Entity contact updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: Additional data (if any)
+
+  /contact/create-contact:
+    post:
+      summary: Create a new contact
+      description: Creates a new contact with the provided details.
+      operationId: createContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressLine1
+                - idmetaContactType
+                - contactValue
+                - countryCode
+                - state
+                - pincode
+              properties:
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the contact.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the contact.
+                idmetaContactType:
+                  type: string
+                  description: Meta contact type ID.
+                contactValue:
+                  type: string
+                  description: Contact value, such as phone number or email.
+                countryCode:
+                  type: string
+                  description: Country code.
+                locationName:
+                  type: string
+                  description: Name of the location.
+                state:
+                  type: string
+                  description: State of the contact's address.
+                pincode:
+                  type: string
+                  description: Pincode of the contact's address.
+      responses:
+        '201':
+          description: Entity contact inserted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Entity contact inserted successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: Additional data (if any)
+  
+  /users/get-otp:
+    post:
+      summary: Get OTP
+      description: Sends an OTP to the user based on the provided agent code.
+      operationId: getOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agent_code:
+                  type: string
+                  description: The agent code for which the OTP is requested.
+                  example: "786"
+      responses:
+        '200':
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "OTP sent successfully"
+                  data:
+                    type: object
+                    nullable: true
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+        '400':
+          description: Bad Request - Invalid agent code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid agent code."
+
+  /users/verify-otp:
+    post:
+      summary: Verify OTP
+      description: Verifies the provided OTP against the stored value.
+      operationId: verifyOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otpToVerify:
+                  type: string
+                  description: The OTP to verify.
+                  example: "771089"
+      responses:
+        '200':
+          description: Provided OTP is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Provided OTP is correct"
+                  data:
+                    type: boolean
+                    description: Indicates if the OTP verification was successful
+                    example: true
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+        '400':
+          description: Bad Request - Missing or invalid OTP
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid or missing OTP."
+
+  /lead/get-lead-tags:
+    get:
+      summary: Get Lead Tags
+      description: Fetches all available lead tags.
+      operationId: getLeadTags
+      responses:
+        '200':
+          description: Lead Tags fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Lead Tags fetch successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tagmetadata:
+                          type: string
+                          description: Unique identifier for the tag
+                          example: "0d744c04a320452d8d8343147f1089ba"
+                        tagname:
+                          type: string
+                          description: Name of the lead tag
+                          example: "HNI"
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-lead-zipcode:
+    post:
+      summary: Get Lead ZipCodes
+      description: Fetches lead details based on the provided zipcode.
+      operationId: getLeadZipCodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zipcode:
+                  type: string
+                  description: The zipcode to fetch lead details for.
+                  example: "110094"
+      responses:
+        '200':
+          description: Lead ZipCodes fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Lead ZipCodes fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id_district:
+                          type: integer
+                          description: Unique identifier for the district
+                          example: 118
+                        district:
+                          type: string
+                          description: Name of the district
+                          example: "East Delhi"
+                        id_state:
+                          type: integer
+                          description: Unique identifier for the state
+                          example: 10
+                        state:
+                          type: string
+                          description: Name of the state
+                          example: "Delhi"
+                        idcountry:
+                          type: string
+                          description: Unique identifier for the country
+                          example: "ff604a944f1c4810b265519937d1ceb8"
+                        countryname:
+                          type: string
+                          description: Name of the country
+                          example: "India"
+                        dialingcode:
+                          type: string
+                          description: Dialing code for the country
+                          example: "+91"
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-lead-tags-by-id:
+    post:
+      summary: Get Lead Tags by ID
+      description: Fetches tags associated with a specific lead based on the provided lead ID.
+      operationId: getLeadTagsById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idlead:
+                  type: string
+                  description: The unique identifier for the lead.
+                  example: "974fc64c97b34dd6a9ec547a8532fcff"
+      responses:
+        '200':
+          description: Lead tags fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Lead tags fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmeta_tag_type:
+                          type: string
+                          description: Unique identifier for the meta tag type
+                          example: "0d744c04a320452d8d8343147f1089ba"
+                        tag:
+                          type: string
+                          description: Name of the tag
+                          example: "HNI"
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-lead-by-id:
+    post:
+      summary: Get Lead by ID
+      description: Fetches details of a lead based on the provided lead ID.
+      operationId: getLeadById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idlead:
+                  type: string
+                  description: The unique identifier for the lead.
+                  example: "974fc64c97b34dd6a9ec547a8532fcff"
+      responses:
+        '200':
+          description: Lead fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Lead fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idlead:
+                          type: string
+                          description: Unique identifier for the lead
+                          example: "974fc64c97b34dd6a9ec547a8532fcff"
+                        fullname:
+                          type: string
+                          description: Full name of the lead
+                          example: "Rajesh Gupta"
+                        idmeta_lead_status:
+                          type: string
+                          description: Identifier for the lead status
+                          example: "eb50fefac7f147d09049ccd156679a66"
+                        leadstatus:
+                          type: string
+                          description: Current status of the lead
+                          example: "Not Contacted"
+                        idmeta_lead_type:
+                          type: string
+                          description: Identifier for the lead type
+                          example: "b59726e1c21b4d3ab4067d08b27196b3"
+                        leadtype:
+                          type: string
+                          description: Type of the lead
+                          example: "Hot"
+                        idmeta_source_type:
+                          type: string
+                          description: Identifier for the source type
+                          example: "8dba7a199d904c0699b0da6b5510d318"
+                        source:
+                          type: string
+                          description: Source of the lead
+                          example: "Own"
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."

@@ -46,25 +46,68 @@ const insertEntity = async (entityData) => {
     return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);
-  } 
+  }
 };
 
+// const updateEntity = async (query, entityData) => {
+
+//   // Start building the query
+//   const values = [];
+//   let setClauses = [];
+//   let index = 1;
+
+//   const {fieldToMatch} = entityData
+//   delete entityData.fieldToMatch;
+//   // Loop through the entityData to build the dynamic update set clauses
+//   for (const key in entityData) {
+//     if (key !== "identity" && entityData[key] !== undefined) {
+//       setClauses.push(`${key} = $${index}`);
+//       values.push(entityData[key] || null);
+//       index++;
+//     }
+//   }
+
+//   // If there are no fields to update, return an early response
+//   if (setClauses.length === 0) {
+//     console.log("No fields to update.");
+//     return;
+//   }
+
+//   // Join the set clauses into the query
+//   query += setClauses.join(", ");
+//   query += ` WHERE ${fieldToMatch} = $${index}`;
+
+//   // values.push(entityData.identity); // Add the identity for the WHERE clause
+//   console.log(query,values);
+
+//   try {
+//     const res = await client.query(query, values);
+//     console.log("Update successful:", res);
+//   } catch (error) {
+//     console.error("Error updating data:", error);
+//   }
+// };
 const updateEntity = async (query, entityData) => {
   // Start building the query
   const values = [];
   let setClauses = [];
   let index = 1;
 
-  // Loop through the entityData to build the dynamic update set clauses
+  // Destructure fieldToMatch from entityData and delete it
+  const { fieldToMatch } = entityData;
+  delete entityData.fieldToMatch;
+
+  // Loop through entityData to build the dynamic update set clauses
   for (const key in entityData) {
-    if (key !== "identity" && entityData[key] !== undefined) {
+    // Exclude identity_contact from the SET clause
+    if (key !== fieldToMatch && entityData[key] !== undefined) {
       setClauses.push(`${key} = $${index}`);
       values.push(entityData[key] || null);
       index++;
     }
   }
 
-  // If there are no fields to update, return an early response
+  // If there are no fields to update, return early
   if (setClauses.length === 0) {
     console.log("No fields to update.");
     return;
@@ -72,12 +115,15 @@ const updateEntity = async (query, entityData) => {
 
   // Join the set clauses into the query
   query += setClauses.join(", ");
-  query += ` WHERE identity = $${index}`;
-  values.push(entityData.identity); // Add the identity for the WHERE clause
+  query += ` WHERE ${fieldToMatch} = $${index}`;
+  values.push(entityData[fieldToMatch]); // Add fieldToMatch value for the WHERE clause
+
+  console.log(query, values);
 
   try {
     const res = await client.query(query, values);
     console.log("Update successful:", res);
+    return res.rowCount;
   } catch (error) {
     console.error("Error updating data:", error);
   }
@@ -213,5 +259,5 @@ module.exports = {
   updateEntity,
   insertEntityUrcAuth,
   insertEntityContact,
-  getEntityContact
+  getEntityContact,
 };
