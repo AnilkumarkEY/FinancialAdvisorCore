@@ -134,7 +134,7 @@ async function getLeadZipcode(zipcode) {
 async function getLeadTagsById(idlead) {
   try {
     const query = `
-      select idmeta_tag_type,tag from oppurtunity.opp_tag ot
+      select idmeta_tag_type,tag,activeflag from oppurtunity.opp_tag ot
       where tag_reference_id = $1
     `;
     const res = await client.query(query, [idlead]);
@@ -215,6 +215,19 @@ async function addOppTag(oppTag) {
   }
 }
 
+async function getIdentity(idLead) {
+  try {
+    const query = `
+    select l.identity_oppurtunity from oppurtunity."lead" l where idlead = $1
+    `;
+    const res = await client.query(query, [idLead]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error inserting tags", error.stack);
+    throw error;
+  }
+}
+
 module.exports = {
   createLead,
   getLead,
@@ -224,4 +237,5 @@ module.exports = {
   getLeadById,
   getOppTag,
   addOppTag,
+  getIdentity,
 };

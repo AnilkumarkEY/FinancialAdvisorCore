@@ -22,8 +22,6 @@ const insertEntity = async (entityData) => {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15)
             RETURNING *;
           `;
-  console.log(entityData, "aaaaaaaaaaaaaaaaaaaaa");
-
   const values = [
     entityData.fullName || null,
     entityData.lastname || null,
@@ -166,10 +164,12 @@ const insertEntityContact = async (entityContactData) => {
     eff_from_date,
     pincode,
     created_date,
-    identity
+    identity,
+    district,
+    countryname
   ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), 
   $8, $9, $10, $11, $12, $13, $14, $15, $16,
-  $17, $18, $19, $20, $21)
+  $17, $18, $19, $20, $21, $22, $23)
   RETURNING *;
 `;
 
@@ -195,6 +195,8 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.pincode || null,
     entityContactData.created_date || null,
     entityContactData.identity || null,
+    entityContactData.district,
+    entityContactData.countryname,
   ];
   console.log("Values:", values);
   try {
