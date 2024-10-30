@@ -2,7 +2,7 @@ const { client } = require("../config/db");
 
 async function createProduct(prospectInterestData) {
   const query = `
-      INSERT INTO prospect_interests (
+      INSERT INTO oppurtunity.prospect_interest (
         idprospect_interest,
         idlead,
         idproduct_ref_id,

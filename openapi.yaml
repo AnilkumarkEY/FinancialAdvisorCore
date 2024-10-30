@@ -790,7 +790,7 @@ paths:
                     example: "Unauthorized access."
 
   /lead/get-lead-contact-list:
-    get:
+    post:
       summary: Get lead contact list
       description: Retrieves the contact details for leads.
       operationId: getLeadContactList

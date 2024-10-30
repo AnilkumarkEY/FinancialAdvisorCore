@@ -20,49 +20,67 @@ exports.createLead = async (request, reply) => {
     const entity = await entityService.performAction(id, leadData);
     if (entity.length) {
       const contactData = {
-        countrycode: "IN",
-        dialingcode: "+91",
-        location_name: request.body?.locationName,
-        state: leadData.state,
-        address_line_1: leadData.addressLine1,
-        address_line_2: leadData.addressLine2,
-        pincode: leadData.zipCode,
         identity: leadData.identity,
         createdby: request.isValid.identity,
       };
       let contact;
       if (leadData.mobileNumber.value) {
-        contactData.identity_contact = uniqueString();
-        contactData.contact_value = leadData.mobileNumber.value;
-        contactData.idmeta_contact_type = leadData.mobileNumber.metaId;
-        contact = await entityContact.performAction(id, contactData);
+        const mobileData = {};
+        mobileData.identity_contact = uniqueString();
+        mobileData.countrycode = "IN";
+        mobileData.dialingcode = "+91";
+        mobileData.contact_value = leadData.mobileNumber.value;
+        mobileData.idmeta_contact_type = leadData.mobileNumber.metaId;
+        mobileData.identity = contactData.identity;
+        mobileData.createdby = contactData.createdby;
+        contact = await entityContact.performAction(id, mobileData);
       }
       if (leadData.email.value) {
-        contactData.identity_contact = uniqueString();
-        contactData.contact_value = leadData.email.value;
-        contactData.idmeta_contact_type = leadData.email.metaId;
-        contact = await entityContact.performAction(id, contactData);
+        const emailData = {};
+        emailData.identity_contact = uniqueString();
+        emailData.contact_value = leadData.email.value;
+        emailData.idmeta_contact_type = leadData.email.metaId;
+        emailData.identity = contactData.identity;
+        emailData.createdby = contactData.createdby;
+        contact = await entityContact.performAction(id, emailData);
+      }
+      if (leadData.address.value.addressLine1) {
+        const address = leadData.address.value;
+        const addressData = {};
+        addressData.identity_contact = uniqueString();
+        addressData.idmeta_contact_type = leadData.address.metaId;
+        addressData.address_line_1 = address.addressLine1;
+        addressData.address_line_2 = address.addressLine2;
+        addressData.pincode = address.zipCode;
+        addressData.location_name = address.city;
+        addressData.state = address.state;
+        addressData.district = address.district;
+        addressData.countryname = address.country;
+        addressData.identity = contactData.identity;
+        addressData.createdby = contactData.createdby;
+        addressData.contact_value = `${address.addressLine1}, ${address.addressLine2}, ${address.city}, ${address.state}, ${address.district}, ${address.zipCode}, ${address.country}`;
+        contact = await entityContact.performAction(id, addressData);
       }
       if (contact.length) {
         const dataForLead = {
           idlead: uniqueString(),
-          idmeta_lead_type: lead.idmeta_data_entitytype,
-          identity_oppurtunity: lead.identity,
+          idmeta_lead_type: leadData.leadType,
+          identity_oppurtunity: leadData.identity,
           idmeta_lead_status: "721fe429ffcb4453ba09354ed4cef3fa",
           identity_subscriber: "86cc888b5e7a4ee49b5541242f8e228b",
-          identity_assignee: lead.identity,
-          identity_assisgned_to: lead.identity,
-          identity_lead_createdby: lead.identity,
+          identity_assignee: leadData.identity,
+          identity_assisgned_to: leadData.identity,
+          identity_lead_createdby: leadData.identity,
           idmeta_source_type: "8dba7a199d904c0699b0da6b5510d318",
         };
         const createdLead = await createLead(dataForLead);
-        if (lead.productIntrestedIn) {
-          lead.productIntrestedIn.forEach(async (productId) => {
+        if (leadData.productIntrestedIn) {
+          leadData.productIntrestedIn.forEach(async (productId) => {
             const prospectInterestData = {
               idprospect_interest: uniqueString(),
               idlead: dataForLead.idlead,
               idproduct_ref_id: productId,
-              identity_lead_createdby: lead.identity,
+              identity_lead_createdby: request.isValid.identity,
               createdby: request.isValid.identity,
             };
             await createproduct(prospectInterestData);
@@ -248,32 +266,46 @@ exports.getProducts = async (request, reply) => {
 exports.getLeadContactList = async (request, reply) => {
   try {
     // const leadId = request.params.leadId;
-    const identity = request.isValid.identity;
-    const data = await entity.getEntityContactByIdentity(identity);
-    if (data) {
-      const filteredData = data.map((record) => {
-        // Filter out any null values
-        return Object.fromEntries(
-          Object.entries(record).filter(([_, value]) => value !== null)
-        );
-      });
-      await event.insertEventTransaction(request.isValid);
+    const identity = await lead.getIdentity(request.body.idLead);
+    if (identity.length) {
+      const data = await entity.getEntityContactByIdentity(
+        identity[0].identity_oppurtunity
+      );
+      if (data) {
+        const filteredData = data.map((record) => {
+          // Filter out any null values
+          return Object.fromEntries(
+            Object.entries(record).filter(([_, value]) => value !== null)
+          );
+        });
+        await event.insertEventTransaction(request.isValid);
+        return reply
+          .status(statusCodes.OK)
+          .send(
+            responseFormatter(
+              statusCodes.OK,
+              "fetching lead contact records successfully",
+              filteredData
+            )
+          );
+      } else {
+        return reply
+          .status(statusCodes.INTERNAL_SERVER_ERROR)
+          .send(
+            responseFormatter(
+              statusCodes.INTERNAL_SERVER_ERROR,
+              "An unexpected error occurred",
+              data
+            )
+          );
+      }
+    } else {
       return reply
         .status(statusCodes.OK)
         .send(
           responseFormatter(
             statusCodes.OK,
-            "fetching lead contact records successfully",
-            filteredData
-          )
-        );
-    } else {
-      return reply
-        .status(statusCodes.INTERNAL_SERVER_ERROR)
-        .send(
-          responseFormatter(
-            statusCodes.INTERNAL_SERVER_ERROR,
-            "An unexpected error occurred",
+            "No leads found with the given lead id",
             data
           )
         );

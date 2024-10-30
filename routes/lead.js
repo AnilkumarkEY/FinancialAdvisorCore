@@ -43,7 +43,7 @@ async function leadRoutes(fastify, options) {
     { preHandler: [authentication, validation] },
     lead.getLeadById
   );
-  fastify.get(
+  fastify.post(
     "/get-lead-contact-list",
     { preHandler: [authentication, validation] },
     lead.getLeadContactList
