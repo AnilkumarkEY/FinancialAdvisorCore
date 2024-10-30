@@ -187,27 +187,28 @@ async function getOppTag(oppTag) {
   }
 }
 
-async function addOppTag(oppTag, tagReferenceId) {
+async function addOppTag(oppTag) {
   try {
-    const insertTagQuery = `
-      INSERT INTO oppurtunity.opp_tag (idopp_tag, idmeta_tag_type, tag_reference_id, tag)
-      VALUES ($1, $2, $3, $4);
+    const query = `
+      INSERT INTO oppurtunity.opp_tag (
+      idopp_tag, 
+      idmeta_tag_type, 
+      tag_reference_id, 
+      tag,
+      activeflag
+      ) VALUES (
+       $1, $2, $3, $4, $5
+      );
     `;
-
-    for (const tag of oppTag) {
-      const idoppTag = uniqueString(); // Generate the unique ID for the tag
-
-      // Execute the insert query
-      await client.query(insertTagQuery, [
-        idoppTag,
-        tag.idmetadata,
-        tagReferenceId,
-        tag.meta_data_name,
-      ]);
-      console.log(`Inserted tag: ${tag.meta_data_name} with ID: ${idoppTag}`);
-    }
-
-    console.log("All tags inserted successfully.");
+    const values = [
+      oppTag.idopp_tag,
+      oppTag.tagmetadata,
+      oppTag.referenceId,
+      oppTag.tagname,
+      oppTag.activeFlag,
+    ];
+    const res = await client.query(query, values);
+    console.log("Inserted OPPTAG", res.rows);
   } catch (error) {
     console.error("Error inserting tags", error.stack);
     throw error;
