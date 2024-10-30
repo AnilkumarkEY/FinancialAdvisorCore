@@ -18,7 +18,7 @@ async function leadRoutes(fastify, options) {
     { preHandler: [authentication, validation] },
     lead.getLeadList
   );
-  fastify.get(
+  fastify.post(
     "/get-all-products",
     { preHandler: [authentication, validation] },
     lead.getProducts

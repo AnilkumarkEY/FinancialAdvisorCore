@@ -22,15 +22,16 @@ const insertEntity = async (entityData) => {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15)
             RETURNING *;
           `;
+  console.log(entityData, "aaaaaaaaaaaaaaaaaaaaa");
 
   const values = [
-    entityData.fullname || null,
+    entityData.fullName || null,
     entityData.lastname || null,
     entityData.sortorder || null,
-    entityData.idmeta_data_entitytype || null,
+    entityData.metaEntityType || null,
     entityData.inactivedate || null,
     entityData.activeflag !== undefined ? entityData.activeflag : null,
-    entityData.createdby || null,
+    entityData.isValid.identity || null,
     entityData.firstname || null,
     entityData.modifiedby || null,
     entityData.middlename || null,
@@ -38,7 +39,7 @@ const insertEntity = async (entityData) => {
     entityData.dob || null,
     entityData.eff_to_date || null,
     entityData.identity || null,
-    entityData.idmeta_data_gender || null,
+    entityData.gender || null,
   ];
   try {
     const res = await client.query(query, values);
@@ -49,44 +50,6 @@ const insertEntity = async (entityData) => {
   }
 };
 
-// const updateEntity = async (query, entityData) => {
-
-//   // Start building the query
-//   const values = [];
-//   let setClauses = [];
-//   let index = 1;
-
-//   const {fieldToMatch} = entityData
-//   delete entityData.fieldToMatch;
-//   // Loop through the entityData to build the dynamic update set clauses
-//   for (const key in entityData) {
-//     if (key !== "identity" && entityData[key] !== undefined) {
-//       setClauses.push(`${key} = $${index}`);
-//       values.push(entityData[key] || null);
-//       index++;
-//     }
-//   }
-
-//   // If there are no fields to update, return an early response
-//   if (setClauses.length === 0) {
-//     console.log("No fields to update.");
-//     return;
-//   }
-
-//   // Join the set clauses into the query
-//   query += setClauses.join(", ");
-//   query += ` WHERE ${fieldToMatch} = $${index}`;
-
-//   // values.push(entityData.identity); // Add the identity for the WHERE clause
-//   console.log(query,values);
-
-//   try {
-//     const res = await client.query(query, values);
-//     console.log("Update successful:", res);
-//   } catch (error) {
-//     console.error("Error updating data:", error);
-//   }
-// };
 const updateEntity = async (query, entityData) => {
   // Start building the query
   const values = [];
@@ -181,42 +144,43 @@ const insertEntityUrcAuth = async (entityUrcAuthData) => {
 
 const insertEntityContact = async (entityContactData) => {
   const query = `
-        INSERT INTO core.entity_contact (
-          eff_to_date,
-          activeflag,
-          identity_contact,
-          countrycode,
-          dialingcode,
-          location_name,
-          createdby,
-          modified_date,
-          sortorder,
-          contact_value,
-          state,
-          identity_urc_auth,
-          address_line_1,
-          inactivedate,
-          address_line_2,
-          modifiedby,
-          identity_subscription,
-          idmeta_contact_type,
-          eff_from_date,
-          pincode,
-          created_date
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
-        RETURNING *;
-  `;
+  INSERT INTO core.entity_contact (
+    eff_to_date,
+    activeflag,
+    identity_contact,
+    countrycode,
+    dialingcode,
+    location_name,
+    createdby,
+    modified_date,
+    sortorder,
+    contact_value,
+    state,
+    identity_urc_auth,
+    address_line_1,
+    inactivedate,
+    address_line_2,
+    modifiedby,
+    identity_subscription,
+    idmeta_contact_type,
+    eff_from_date,
+    pincode,
+    created_date,
+    identity
+  ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), 
+  $8, $9, $10, $11, $12, $13, $14, $15, $16,
+  $17, $18, $19, $20, $21)
+  RETURNING *;
+`;
 
   const values = [
     entityContactData.eff_to_date || null,
-    entityContactData.activeflag !== undefined
-      ? entityContactData.activeflag
-      : null,
+    entityContactData.activeflag || null,
     entityContactData.identity_contact || null,
     entityContactData.countrycode || null,
     entityContactData.dialingcode || null,
     entityContactData.location_name || null,
-    entityContactData.modified_date || null,
+    entityContactData.createdby || null,
     entityContactData.sortorder || null,
     entityContactData.contact_value || null,
     entityContactData.state || null,
@@ -230,11 +194,12 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.eff_from_date || null,
     entityContactData.pincode || null,
     entityContactData.created_date || null,
+    entityContactData.identity || null,
   ];
-  console.log("Insert successful:", values);
+  console.log("Values:", values);
   try {
     const res = await client.query(query, values);
-    console.log("Insert successful:", res);
+    console.log("Insert successful:", res.rows);
     return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);
@@ -256,28 +221,27 @@ async function getEntityContact(idlead) {
 
 const getEntityContactByIdentity = async (identity) => {
   try {
-    const query = `SELECT 
-    ec.identity_contact,
-    cm.meta_data_name AS contact_type,
-    ec.contact_value,
-    ec.countrycode,
-    cn.countryname,
-    ec.dialingcode,
-    ec.address_line_1,
-    ec.address_line_2,
-    ec.location_name,
-    ec.state,
-    ec.pincode,
-    ec.district,
-    ec.eff_from_date
-FROM core.entity_contact ec
-INNER JOIN core.cr_metadata cm ON cm.idmetadata = ec.idmeta_contact_type
-LEFT JOIN core.country cn ON ec.countrycode = cn.countrycode
-WHERE ec.identity = $1;
-
-`;
+    const query = `
+      SELECT 
+      ec.identity_contact,
+      cm.meta_data_name AS contact_type,
+      ec.contact_value,
+      ec.countrycode,
+      cn.countryname,
+      ec.dialingcode,
+      ec.address_line_1,
+      ec.address_line_2,
+      ec.location_name,
+      ec.state,
+      ec.pincode,
+      ec.district,
+      ec.eff_from_date
+      FROM core.entity_contact ec
+      INNER JOIN core.cr_metadata cm ON cm.idmetadata = ec.idmeta_contact_type
+      LEFT JOIN core.country cn ON ec.countrycode = cn.countrycode
+      WHERE ec.identity = $1;
+    `;
     console.log(query);
-
     const res = await client.query(query, [identity]);
     return res.rows;
   } catch (err) {
