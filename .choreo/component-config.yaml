@@ -1,0 +1,11 @@
+apiVersion: core.choreo.dev/v1beta1
+kind: ComponentConfig
+schemaVersion: 1.0
+spec:
+  inbound:
+    - name: cobrowsing-poc
+      port: 8081
+      type: REST
+      networkVisibility: Public
+      context: /
+      schemaFilePath: openapi.yaml

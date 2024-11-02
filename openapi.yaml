@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: CoBrowsing Backend API
+  description: Backend service for token generation.
+  version: "1.0"
+servers:
+  - url: http://localhost:3000
+    description: Development server
+paths:
+  /getToken:
+    post:
+      summary: Generate Token
+      description: Retrieves a token for a specific room and participant.
+      operationId: generateToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roomName:
+                  type: string
+                  example: "testName"
+                participantName:
+                  type: string
+                  example: "test"
+      responses:
+        "200":
+          description: Token retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiJ9.eyJ2aWRlbyI6eyJyb29tSm9pbiI6dHJ1ZSwicm9vbSI6InRlc3ROYW1lIn0sImlzcyI6IkFQSXBkTmk2OFJlZVAyZCIsImV4cCI6MTczMDU2MzAxNSwibmJmIjowLCJzdWIiOiJ0ZXN0In0.XqZU-Z2Hpjtk8uzkSCyh2M7tF4g2Xs6sGYZIEP43SU0"
+        "400":
+          description: Bad Request - Missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Room name and participant name are required."
