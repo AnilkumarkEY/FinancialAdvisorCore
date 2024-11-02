@@ -17,7 +17,7 @@ const createToken = async (roomData) => {
 
 const app = express();
 app.use(express.json());
-const port = 3000;
+const port = 8081;
 
 app.post("/getToken", async (req, res) => {
   try {
