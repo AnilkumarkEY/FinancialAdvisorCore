@@ -13,4 +13,6 @@ exports.routeValues = {
   '/lead/get-lead-contact-list':"c2a04e70f16541f5b52f1b0803ee46d3",
   "/contact/create-contact": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/contact/update-contact": "c2a04e70f16541f5b52f1b0803ee46d3", //done
+  "/profile/get-entity-contact-list": "c2a04e70f16541f5b52f1b0803ee46d3", //done
+  "/profile/get-nominee-details": "c2a04e70f16541f5b52f1b0803ee46d3", //done
 };
