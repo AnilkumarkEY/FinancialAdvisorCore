@@ -41,9 +41,9 @@ exports.getLeadList = async (leadId) => {
   }
 };
 
-exports.getProducts = async () => {
+exports.getProducts = async (pagination) => {
   try {
-    const data = await product.getAllProducts();
+    const data = await product.getAllProducts(pagination);
     return data;
   } catch (error) {
     return error;

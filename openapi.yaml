@@ -28,7 +28,7 @@ paths:
                   description: The password for the user account.
                   example: "your_password"
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
@@ -74,7 +74,7 @@ paths:
                         type: string
                         description: The ID token
                         example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
-        '401':
+        "401":
           description: Unauthorized - Invalid credentials
           content:
             application/json:
@@ -84,7 +84,7 @@ paths:
                   message:
                     type: string
                     example: "Invalid username or password."
-        '400':
+        "400":
           description: Bad Request - Missing parameters
           content:
             application/json:
@@ -94,7 +94,7 @@ paths:
                   message:
                     type: string
                     example: "Username and password are required."
-  
+
   /lead/create-lead:
     post:
       summary: Create a new lead
@@ -166,7 +166,7 @@ paths:
                   type: string
                   description: Whether the lead is an HNI.
       responses:
-        '200':
+        "200":
           description: Lead created successfully
           content:
             application/json:
@@ -201,7 +201,7 @@ paths:
             type: string
             example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
-        '200':
+        "200":
           description: List of products interested by the lead
           content:
             application/json:
@@ -227,7 +227,7 @@ paths:
             type: string
             example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
-        '200':
+        "200":
           description: Lead list retrieved successfully
           content:
             application/json:
@@ -245,7 +245,7 @@ paths:
                           type: string
 
   /lead/get-all-products:
-    get:
+    post:
       summary: Get all products
       description: Retrieves the list of all products.
       operationId: getAllProducts
@@ -258,7 +258,7 @@ paths:
             type: string
             example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
-        '200':
+        "200":
           description: List of all products
           content:
             application/json:
@@ -331,7 +331,7 @@ paths:
                   type: string
                   description: Unique identifier of the contact.
       responses:
-        '201':
+        "201":
           description: Entity contact updated successfully
           content:
             application/json:
@@ -401,7 +401,7 @@ paths:
                   type: string
                   description: Pincode of the contact's address.
       responses:
-        '201':
+        "201":
           description: Entity contact inserted successfully
           content:
             application/json:
@@ -418,7 +418,7 @@ paths:
                     type: object
                     nullable: true
                     description: Additional data (if any)
-  
+
   /users/get-otp:
     post:
       summary: Get OTP
@@ -436,7 +436,7 @@ paths:
                   description: The agent code for which the OTP is requested.
                   example: "786"
       responses:
-        '200':
+        "200":
           description: OTP sent successfully
           content:
             application/json:
@@ -454,7 +454,7 @@ paths:
                   data:
                     type: object
                     nullable: true
-        '401':
+        "401":
           description: Unauthorized - Invalid token
           content:
             application/json:
@@ -464,7 +464,7 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
-        '400':
+        "400":
           description: Bad Request - Invalid agent code
           content:
             application/json:
@@ -492,7 +492,7 @@ paths:
                   description: The OTP to verify.
                   example: "771089"
       responses:
-        '200':
+        "200":
           description: Provided OTP is correct
           content:
             application/json:
@@ -511,7 +511,7 @@ paths:
                     type: boolean
                     description: Indicates if the OTP verification was successful
                     example: true
-        '401':
+        "401":
           description: Unauthorized - Invalid token
           content:
             application/json:
@@ -521,7 +521,7 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
-        '400':
+        "400":
           description: Bad Request - Missing or invalid OTP
           content:
             application/json:
@@ -538,7 +538,7 @@ paths:
       description: Fetches all available lead tags.
       operationId: getLeadTags
       responses:
-        '200':
+        "200":
           description: Lead Tags fetched successfully
           content:
             application/json:
@@ -566,7 +566,7 @@ paths:
                           type: string
                           description: Name of the lead tag
                           example: "HNI"
-        '401':
+        "401":
           description: Unauthorized - Invalid token
           content:
             application/json:
@@ -594,7 +594,7 @@ paths:
                   description: The zipcode to fetch lead details for.
                   example: "110094"
       responses:
-        '200':
+        "200":
           description: Lead ZipCodes fetched successfully
           content:
             application/json:
@@ -642,7 +642,7 @@ paths:
                           type: string
                           description: Dialing code for the country
                           example: "+91"
-        '401':
+        "401":
           description: Unauthorized - Invalid token
           content:
             application/json:
@@ -670,7 +670,7 @@ paths:
                   description: The unique identifier for the lead.
                   example: "974fc64c97b34dd6a9ec547a8532fcff"
       responses:
-        '200':
+        "200":
           description: Lead tags fetched successfully
           content:
             application/json:
@@ -698,7 +698,7 @@ paths:
                           type: string
                           description: Name of the tag
                           example: "HNI"
-        '401':
+        "401":
           description: Unauthorized - Invalid token
           content:
             application/json:
@@ -726,7 +726,7 @@ paths:
                   description: The unique identifier for the lead.
                   example: "974fc64c97b34dd6a9ec547a8532fcff"
       responses:
-        '200':
+        "200":
           description: Lead fetched successfully
           content:
             application/json:
@@ -778,7 +778,7 @@ paths:
                           type: string
                           description: Source of the lead
                           example: "Own"
-        '401':
+        "401":
           description: Unauthorized - Invalid token
           content:
             application/json:
@@ -790,7 +790,7 @@ paths:
                     example: "Unauthorized access."
 
   /lead/get-lead-contact-list:
-    get:
+    post:
       summary: Get lead contact list
       description: Retrieves the contact details for leads.
       operationId: getLeadContactList
@@ -803,7 +803,7 @@ paths:
             type: string
             example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
-        '200':
+        "200":
           description: Lead contact records retrieved successfully
           content:
             application/json:

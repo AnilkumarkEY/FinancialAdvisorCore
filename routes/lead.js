@@ -18,7 +18,7 @@ async function leadRoutes(fastify, options) {
     { preHandler: [authentication, validation] },
     lead.getLeadList
   );
-  fastify.get(
+  fastify.post(
     "/get-all-products",
     { preHandler: [authentication, validation] },
     lead.getProducts
@@ -43,7 +43,7 @@ async function leadRoutes(fastify, options) {
     { preHandler: [authentication, validation] },
     lead.getLeadById
   );
-  fastify.get(
+  fastify.post(
     "/get-lead-contact-list",
     { preHandler: [authentication, validation] },
     lead.getLeadContactList
