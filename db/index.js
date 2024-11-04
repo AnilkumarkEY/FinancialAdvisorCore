@@ -2,6 +2,7 @@ const entity = require("./entity");
 const event = require("./event");
 const lead = require("./lead");
 const product = require("./product");
+const profile = require("./profile");
 const user = require("./user");
 const validation = require("./validation");
 const otp = require("./otp");
@@ -12,6 +13,7 @@ module.exports = {
   event,
   lead,
   product,
+  profile,
   user,
   validation,
   otp,
