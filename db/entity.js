@@ -195,8 +195,8 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.pincode || null,
     entityContactData.created_date || null,
     entityContactData.identity || null,
-    entityContactData.district,
-    entityContactData.countryname,
+    entityContactData.district || null,
+    entityContactData.countryname || null,
   ];
   console.log("Values:", values);
   try {
