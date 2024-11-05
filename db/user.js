@@ -43,13 +43,16 @@ async function getUserDataForOtp(identity, agent_code) {
 
 async function checkValidUser(userName) {
   try {
+    // const query = `
+    //     SELECT EXISTS (
+    //         SELECT 1 FROM core.user_auth_data uad WHERE upn_iam = $1
+    //     ) AS user_exists
+    //     `;
     const query = `
-        SELECT EXISTS (
-            SELECT 1 FROM core.user_auth_data uad WHERE upn_iam = $1
-        ) AS user_exists
-        `;
+      SELECT uad.identity FROM core.user_auth_data uad WHERE upn_iam = $1
+    `;
     const res = await client.query(query, [userName]);
-    return res.rows;
+    return res.rows[0];
   } catch (error) {
     console.error("Error executing query", error.stack);
     throw error; // Rethrow the error for handling in the controller
@@ -58,5 +61,5 @@ async function checkValidUser(userName) {
 module.exports = {
   getUsers,
   getUserDataForOtp,
-  checkValidUser
+  checkValidUser,
 };
