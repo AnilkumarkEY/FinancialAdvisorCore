@@ -284,7 +284,7 @@ exports.getLeadContactList = async (request, reply) => {
           .send(
             responseFormatter(
               statusCodes.OK,
-              "fetching lead contact records successfully",
+              "Contact records fetched successfully",
               filteredData
             )
           );
