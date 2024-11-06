@@ -1011,7 +1011,7 @@ paths:
     post:
       summary: Update the contact details
       description: Update the contact details with the provided information.
-      operationId: updateContact
+      operationId: updateProfileContact
       parameters:
         - name: authorization
           in: header
