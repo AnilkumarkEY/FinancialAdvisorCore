@@ -804,7 +804,7 @@ paths:
             example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
       responses:
         "200":
-          description: Lead contact records retrieved successfully
+          description: Contact records fetched successfully
           content:
             application/json:
               schema:
@@ -815,7 +815,7 @@ paths:
                     example: 200
                   message:
                     type: string
-                    example: "fetching lead contact records successfully"
+                    example: "Contact records fetched successfully"
                   data:
                     type: array
                     items:
@@ -854,3 +854,208 @@ paths:
                         pincode:
                           type: integer
                           description: Pincode of the contact address
+
+  /profile/get-entity-contact-list:
+    post:
+      summary: Get entity contact list
+      description: Retrieves the contact details for entity.
+      operationId: getLeadContactList
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Contact records fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Contact records fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        identity_contact:
+                          type: string
+                          description: Unique identifier for the contact
+                        contact_type:
+                          type: string
+                          description: Type of contact information
+                        contact_value:
+                          type: string
+                          description: Contact value (e.g., phone number)
+                        countrycode:
+                          type: string
+                          description: Country code associated with the contact
+                        countryname:
+                          type: string
+                          description: Name of the country associated with the contact
+                        dialingcode:
+                          type: string
+                          description: Dialing code for the country
+                        address_line_1:
+                          type: string
+                          description: First line of the address
+                        address_line_2:
+                          type: string
+                          description: Second line of the address
+                        location_name:
+                          type: string
+                          description: Location name for the contact
+                        state:
+                          type: string
+                          description: State of the contact address
+                        pincode:
+                          type: integer
+                          description: Pincode of the contact address
+
+  /profile/get-nominee-details:
+    post:
+      summary: Get Nominee details
+      description: Retrieves the nominee details for entity.
+      operationId: getNomineeDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Nominee details fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Nominee details fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity_nominee:
+                          type: string
+                          description: Unique identifier for the Nominee
+                        nominee_title:
+                          type: string
+                          description: Title of the Nominee
+                        fullname:
+                          type: string
+                          description: Name of the Nominee
+                        nominee_relationship:
+                          type: string
+                          description: Relationship of the Nominee with the entity
+                        nominee_dob:
+                          type: string
+                          description: DOB of the Nominee
+
+  /profile/update-contact:
+    post:
+      summary: Update the contact details
+      description: Update the contact details with the provided details.
+      operationId: updateContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - identity_sr_createdby
+                - sr_meta_value
+                  - idmeta_contact_type
+                  - oldValues
+                    - contact_value
+                    - address_line_1
+                    - address_line_2
+                    - location_name
+                    - state
+                    - pincode
+                  - newValues
+                    - contact_value
+                    - address_line_1
+                    - address_line_2
+                    - location_name
+                    - state
+                    - pincode
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction
+                identity_sr_createdby:
+                  type: string
+                  description: Identity of the requester
+                sr_meta_value:
+                  type: object
+                  description: Object containing details that needs to be updated
+                idmeta_contact_type:
+                  type: string
+                  description: Contact type id that needs to changed (e.g. Primary phone/Email, Address)
+                oldValues:
+                  type: object
+                  description: Existing values that needs to be updated
+                contact_value:
+                  type: string
+                  description: Phone/Email value
+                address_line_1:
+                  type: string
+                  description: Address line 1 of the lead.
+                address_line_2:
+                  type: string
+                  description: Address line 2 of the lead.
+                location_name:
+                  type: string
+                  description: Location name of the address
+                state:
+                  type: string
+                  description: State of the lead's address.
+                pincode:
+                  type: string
+                  description: Pincode code of the lead's address.
+
+
+
+      responses:
+        "200":
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Contact updated successfully."
