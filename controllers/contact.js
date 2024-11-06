@@ -1,11 +1,11 @@
 const { responseFormatter, statusCodes, uniqueString } = require("../utils");
 const { entityContact } = require("../services");
-
+const { lead } = require("../db");
 exports.addEntityContact = async (request, reply) => {
   try {
     // Extracting data from the request body
     const requestData = request.body;
-
+    const identity = await lead.getIdentity(request.body.leadId);
     // Generating a unique ID for the contact
     let uId = uniqueString();
 
@@ -19,11 +19,14 @@ exports.addEntityContact = async (request, reply) => {
       idmeta_contact_type: requestData.idmetaContactType,
       contact_value: requestData.contactValue,
       countrycode: requestData.countryCode,
-      dialingcode: "91",
+      dialingcode: requestData.dialingCode,
       location_name: requestData.locationName,
       state: requestData.state,
       pincode: requestData.pincode,
-      identity: request.isValid.identity,
+      identity: identity[0].identity_oppurtunity,
+      countryname: requestData.countryname,
+      district: requestData.district,
+      createdby: request.isValid.identity,
     };
     // Performing the action to save the contact
     const insertEntity = await entityContact.performAction(id, entity_json);
@@ -90,8 +93,8 @@ exports.updateEntityContact = async (request, reply) => {
       location_name: requestData.locationName,
       state: requestData.state,
       pincode: requestData.pincode,
-      identity_contact : requestData.idContact,
-      fieldToMatch : "identity_contact"
+      identity_contact: requestData.idContact,
+      fieldToMatch: "identity_contact",
     };
 
     // Performing the action to save the contact

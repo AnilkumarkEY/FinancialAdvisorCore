@@ -38,11 +38,11 @@ async function sendOTP(userData, identity) {
     });
     const response = await instance.get(url);
     const mailResponse = await sendMail(email, otp, identity);
-    console.log(response.data, mailResponse?.includes("Accepted"));
+    console.log(response.data, mailResponse?.includes("Ok"));
     if (
       response.data &&
       response.data.status === "OK" &&
-      mailResponse?.includes("Accepted")
+      mailResponse?.includes("Ok")
     ) {
       const logDataForSms = {
         idcommunication_log: uniqueString(),

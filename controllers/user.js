@@ -40,8 +40,6 @@ exports.getUsers = async (request, reply) => {
 exports.loginUser = async (request, reply) => {
   try {
     const { userName, password } = request.body;
-    console.log(request.body);
-    
     // Validate request body
     if (!userName || !password) {
       return reply
@@ -53,10 +51,8 @@ exports.loginUser = async (request, reply) => {
           )
         );
     }
-
     const validUser = await user.checkValidUser(userName);
-
-    if (validUser[0].user_exists) {
+    if (validUser.identity) {
       // Successful login
       const getUserAccessToken = await tokenService.getUserAccessToken({
         userName,
@@ -72,6 +68,7 @@ exports.loginUser = async (request, reply) => {
             )
           );
       } else {
+        getUserAccessToken["identity"] = validUser.identity;
         return reply
           .status(statusCodes.OK)
           .send(

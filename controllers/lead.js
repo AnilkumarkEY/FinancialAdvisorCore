@@ -272,12 +272,13 @@ exports.getLeadContactList = async (request, reply) => {
         identity[0].identity_oppurtunity
       );
       if (data) {
-        const filteredData = data.map((record) => {
-          // Filter out any null values
-          return Object.fromEntries(
+        const filteredData = data.reduce((result, record) => {
+          const filteredRecord = Object.fromEntries(
             Object.entries(record).filter(([_, value]) => value !== null)
           );
-        });
+          result[record.contact_type] = filteredRecord;
+          return result;
+        }, {});
         await event.insertEventTransaction(request.isValid);
         return reply
           .status(statusCodes.OK)
