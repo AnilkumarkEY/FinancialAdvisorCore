@@ -995,19 +995,19 @@ paths:
                 - sr_meta_value
                   - idmeta_contact_type
                   - oldValues
-                    - contact_value
-                    - address_line_1
-                    - address_line_2
-                    - location_name
-                    - state
-                    - pincode
+                  - contact_value
+                  - address_line_1
+                  - address_line_2
+                  - location_name
+                  - state
+                  - pincode
                   - newValues
-                    - contact_value
-                    - address_line_1
-                    - address_line_2
-                    - location_name
-                    - state
-                    - pincode
+                  - contact_value
+                  - address_line_1
+                  - address_line_2
+                  - location_name
+                  - state
+                  - pincode
               properties:
                 idsrcategory:
                   type: string
@@ -1045,9 +1045,6 @@ paths:
                 pincode:
                   type: string
                   description: Pincode code of the lead's address.
-
-
-
       responses:
         "200":
           description: Contact updated successfully
