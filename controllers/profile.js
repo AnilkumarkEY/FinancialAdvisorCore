@@ -93,6 +93,7 @@ exports.updateContact = async (request, reply) => {
     }
 
     if (updateContact.length > 0) {
+      await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
         .send(
@@ -153,6 +154,7 @@ exports.getMetaData = async (request, reply) => {
     }, []);
 
     if (metaData.length > 0) {
+      await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
         .send(
