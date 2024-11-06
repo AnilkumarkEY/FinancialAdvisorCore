@@ -123,3 +123,67 @@ exports.updateContact = async (request, reply) => {
       );
   }
 }
+
+exports.getMetaData = async (request, reply) => {
+  try {
+    const genderMetaMaster = '606882f143f44ca187f6793f09aa4417';
+    const contactMetaMaster = 'a2959212630e45c2ac7bc76be50c4768';
+    const metaData = await profile.getMetaData({genderMetaMaster, contactMetaMaster}); // Getting meta data from DB
+
+    // Filtering & reducing the result set on basis of type
+    const genderMeta = metaData.reduce((acc, item) => {
+      if (item.idmetamaster === genderMetaMaster) {
+        acc.push({
+          idmetadata: item.idmetadata,
+          meta_data_name: item.meta_data_name
+        });
+      }
+      return acc;
+    }, []);
+
+    // Filtering & reducing the result set on basis of type
+    const contactMeta = metaData.reduce((acc, item) => {
+      if (item.idmetamaster === contactMetaMaster) {
+        acc.push({
+          idmetadata: item.idmetadata,
+          meta_data_name: item.meta_data_name
+        });
+      }
+      return acc;
+    }, []);
+
+    if (metaData.length > 0) {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "Meta Data retrieved successfully",
+            {
+              genderMeta,
+              contactMeta
+            }
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "Data not found"
+          )
+        );
+    }
+  } catch (error) {
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+}

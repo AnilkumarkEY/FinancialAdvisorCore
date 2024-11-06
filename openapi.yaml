@@ -922,7 +922,7 @@ paths:
                           description: Pincode of the contact address
 
   /profile/get-nominee-details:
-    post:
+    get:
       summary: Get Nominee details
       description: Retrieves the nominee details for entity.
       operationId: getNomineeDetails
@@ -970,7 +970,7 @@ paths:
                           description: DOB of the Nominee
 
   /profile/update-contact:
-    post:
+    put:
       summary: Update the contact details
       description: Update the contact details with the provided details.
       operationId: updateContact
@@ -1045,9 +1045,6 @@ paths:
                 pincode:
                   type: string
                   description: Pincode code of the lead's address.
-
-
-
       responses:
         "200":
           description: Contact updated successfully
@@ -1059,3 +1056,42 @@ paths:
                   message:
                     type: string
                     example: "Contact updated successfully."
+
+  /profile/get-meta-data:
+    get:
+      summary: Get Meta Data
+      description: Retrieves the meta data for gender and contact
+      operationId: getMetaData
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Meta Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Meta Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the meta data
+                        meta_data_name:
+                          type: string
+                          description: Name of the meta data

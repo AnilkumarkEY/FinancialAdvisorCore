@@ -18,8 +18,8 @@ const getNomineeDetailsByIdentity = async (identity) => {
       const res = await client.query(query, [identity]);
       return res.rows;
     } catch (err) {
-      console.error("Error executing query", err.stack);
-      throw err;
+      console.error("Error: ", error)
+      throw error;
     }
   };
 
@@ -51,7 +51,8 @@ const insertSrTransaction = async (values) => {
     const res = await client.query(query, transactionValues);
     return res.rows;
   } catch(error){
-    return error;
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
@@ -74,7 +75,8 @@ const updateContact = async (values) => {
     const res = await client.query(query, updateValues);
     return res.rows;
   } catch(error){
-    return error;
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
@@ -100,7 +102,8 @@ const updateContactAddress = async (values) => {
     const res = await client.query(query, updateValues);
     return res.rows;
   } catch(error){
-    return error;
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
@@ -122,7 +125,23 @@ const updateContactInUserAuth = async (values) => {
     const res = await client.query(query, updateValues);
     return res.rows;
   } catch (error) {
-    return error;
+    console.error("Error: ", error)
+    throw error;
+  }
+}
+
+const getMetaData = async ({genderMetaMaster, contactMetaMaster}) => {
+  try {
+    const query = 
+    `SELECT md.idmetadata, md.meta_data_name, md.idmetamaster
+    FROM core.cr_metadata md
+    WHERE md.idmetamaster in ($1, $2)`;
+
+    const res = await client.query(query, [genderMetaMaster, contactMetaMaster]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
@@ -131,6 +150,7 @@ const updateContactInUserAuth = async (values) => {
     insertSrTransaction,
     updateContact,
     updateContactAddress,
-    updateContactInUserAuth
+    updateContactInUserAuth,
+    getMetaData
   };
   
