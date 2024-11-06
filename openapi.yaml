@@ -1006,3 +1006,140 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
+
+  /profile/update-contact:
+    post:
+      summary: Update the contact details
+      description: Update the contact details with the provided information.
+      operationId: updateContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - identity_sr_createdby
+                - sr_meta_value
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
+                identity_sr_createdby:
+                  type: string
+                  description: Identity of the requester.
+                  example: "5dceb723474645b1b5958eda0d97f6c2"
+                sr_meta_value:
+                  type: object
+                  description: Contains details of the contact to update.
+                  required:
+                    - idmeta_contact_type
+                    - oldValues
+                    - newValues
+                  properties:
+                    idmeta_contact_type:
+                      type: string
+                      description: The contact type ID (e.g., Primary phone, Email, Address).
+                      example: "eef8f47d787041b59afd37937deed705"
+                    oldValues:
+                      type: object
+                      description: Existing contact details that need to be updated.
+                      properties:
+                        contact_value:
+                          type: string
+                          description: Existing phone/Email value.
+                          example: "7827265851"
+                        address_line_1:
+                          type: string
+                          description: Existing Address line 1.
+                          example: "Gurgaon"
+                        address_line_2:
+                          type: string
+                          description: Existing Address line 2.
+                          example: "sector 47"
+                        location_name:
+                          type: string
+                          description: Existing location name.
+                          example: "Y hub"
+                        state:
+                          type: string
+                          description: Existing state.
+                          example: "Haryana"
+                        pincode:
+                          type: string
+                          description: Existing pincode.
+                          example: "140007"
+                    newValues:
+                      type: object
+                      description: New values to update the contact details.
+                      properties:
+                        contact_value:
+                          type: string
+                          description: New phone/Email value.
+                          example: "7827265859"
+                        address_line_1:
+                          type: string
+                          description: New Address line 1.
+                          example: "Gurgaon"
+                        address_line_2:
+                          type: string
+                          description: New Address line 2.
+                          example: "sector 47"
+                        location_name:
+                          type: string
+                          description: New location name.
+                          example: "Y hub"
+                        state:
+                          type: string
+                          description: New state.
+                          example: "Haryana"
+                        pincode:
+                          type: string
+                          description: New pincode.
+                          example: "140007"
+      responses:
+        "200":
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Contact updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
