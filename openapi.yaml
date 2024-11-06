@@ -855,76 +855,10 @@ paths:
                           type: integer
                           description: Pincode of the contact address
 
-  /profile/get-entity-contact-list:
-    post:
-      summary: Get entity contact list
-      description: Retrieves the contact details for entity.
-      operationId: getLeadContactList
-      parameters:
-        - name: authorization
-          in: header
-          required: true
-          description: Bearer token for authorization.
-          schema:
-            type: string
-            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
-      responses:
-        "200":
-          description: Contact records fetched successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                    example: "Contact records fetched successfully"
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        identity_contact:
-                          type: string
-                          description: Unique identifier for the contact
-                        contact_type:
-                          type: string
-                          description: Type of contact information
-                        contact_value:
-                          type: string
-                          description: Contact value (e.g., phone number)
-                        countrycode:
-                          type: string
-                          description: Country code associated with the contact
-                        countryname:
-                          type: string
-                          description: Name of the country associated with the contact
-                        dialingcode:
-                          type: string
-                          description: Dialing code for the country
-                        address_line_1:
-                          type: string
-                          description: First line of the address
-                        address_line_2:
-                          type: string
-                          description: Second line of the address
-                        location_name:
-                          type: string
-                          description: Location name for the contact
-                        state:
-                          type: string
-                          description: State of the contact address
-                        pincode:
-                          type: integer
-                          description: Pincode of the contact address
-
   /profile/get-nominee-details:
     get:
       summary: Get Nominee details
-      description: Retrieves the nominee details for entity.
+      description: Retrieves the nominee details for an entity.
       operationId: getNomineeDetails
       parameters:
         - name: authorization
@@ -961,19 +895,173 @@ paths:
                           description: Title of the Nominee
                         fullname:
                           type: string
-                          description: Name of the Nominee
+                          description: Full name of the Nominee
                         nominee_relationship:
                           type: string
                           description: Relationship of the Nominee with the entity
                         nominee_dob:
                           type: string
+                          description: Date of Birth of the Nominee
+
+  /profile/get-entity-contact-list:
+    post:
+      summary: Get entity contact list
+      description: Retrieves the contact details for an entity.
+      operationId: getEntityContactList
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idLead:
+                  type: string
+                  description: Unique identifier for the lead.
+                  example: "37e13811aceb1b601d7c2bd88ec79877"
+      responses:
+        "200":
+          description: Contact records fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Contact records fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        identity_contact:
+                          type: string
+                          description: Unique identifier for the contact
+                          example: "d754ea56a598141bac61f0317b5ef700"
+                        contact_type:
+                          type: string
+                          description: Type of contact information
+                          example: "Primary Mobile Number"
+                        contact_value:
+                          type: string
+                          description: Contact value (e.g., phone number)
+                          example: "9091342931"
+                        countrycode:
+                          type: string
+                          description: Country code associated with the contact
+                          example: "IN"
+                        countryname:
+                          type: string
+                          description: Name of the country associated with the contact
+                          example: "India"
+                        dialingcode:
+                          type: string
+                          description: Dialing code for the country
+                          example: "+91"
+                        address_line_1:
+                          type: string
+                          description: First line of the address
+                          example: "123 Main St"
+                        address_line_2:
+                          type: string
+                          description: Second line of the address
+                          example: "Apt 4B"
+                        location_name:
+                          type: string
+                          description: Location name for the contact
+                          example: "Gurugram"
+                        state:
+                          type: string
+                          description: State of the contact address
+                          example: "Haryana"
+                        pincode:
+                          type: integer
+                          description: Pincode of the contact address
+
+  /profile/get-nominee-details:
+    get:
+      summary: Get Nominee details
+      description: Retrieves the nominee details for entity.
+      operationId: getNomineeDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Nominee details fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Meta Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity_nominee:
+                          type: string
+                          description: Unique identifier for the Nominee
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        nominee_title:
+                          type: string
+                          description: Title of the Nominee
+                          example: "Mr"
+                        fullname:
+                          type: string
+                          description: Full name of the Nominee
+                          example: "Amit Kumar"
+                        nominee_relationship:
+                          type: string
+                          description: Relationship of the Nominee
+                          example: "Mother"
+                        nominee_dob:
+                          type: string
                           description: DOB of the Nominee
+                          example: "12/12/2000"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
 
   /profile/update-contact:
     put:
       summary: Update the contact details
-      description: Update the contact details with the provided details.
-      operationId: updateContact
+      description: Update the contact details with the provided information.
+      operationId: updateProfileContact
       parameters:
         - name: authorization
           in: header
@@ -993,58 +1081,87 @@ paths:
                 - idsr_subcategory
                 - identity_sr_createdby
                 - sr_meta_value
-                  - idmeta_contact_type
-                  - oldValues
-                    - contact_value
-                    - address_line_1
-                    - address_line_2
-                    - location_name
-                    - state
-                    - pincode
-                  - newValues
-                    - contact_value
-                    - address_line_1
-                    - address_line_2
-                    - location_name
-                    - state
-                    - pincode
               properties:
                 idsrcategory:
                   type: string
-                  description: SR Category of the SR Transaction
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
                 idsr_subcategory:
                   type: string
-                  description: SR Sub-Category of the SR Transaction
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
                 identity_sr_createdby:
                   type: string
-                  description: Identity of the requester
+                  description: Identity of the requester.
+                  example: "5dceb723474645b1b5958eda0d97f6c2"
                 sr_meta_value:
                   type: object
-                  description: Object containing details that needs to be updated
-                idmeta_contact_type:
-                  type: string
-                  description: Contact type id that needs to changed (e.g. Primary phone/Email, Address)
-                oldValues:
-                  type: object
-                  description: Existing values that needs to be updated
-                contact_value:
-                  type: string
-                  description: Phone/Email value
-                address_line_1:
-                  type: string
-                  description: Address line 1 of the lead.
-                address_line_2:
-                  type: string
-                  description: Address line 2 of the lead.
-                location_name:
-                  type: string
-                  description: Location name of the address
-                state:
-                  type: string
-                  description: State of the lead's address.
-                pincode:
-                  type: string
-                  description: Pincode code of the lead's address.
+                  description: Contains details of the contact to update.
+                  required:
+                    - idmeta_contact_type
+                    - oldValues
+                    - newValues
+                  properties:
+                    idmeta_contact_type:
+                      type: string
+                      description: The contact type ID (e.g., Primary phone, Email, Address).
+                      example: "eef8f47d787041b59afd37937deed705"
+                    oldValues:
+                      type: object
+                      description: Existing contact details that need to be updated.
+                      properties:
+                        contact_value:
+                          type: string
+                          description: Existing phone/Email value.
+                          example: "7827265851"
+                        address_line_1:
+                          type: string
+                          description: Existing Address line 1.
+                          example: "Gurgaon"
+                        address_line_2:
+                          type: string
+                          description: Existing Address line 2.
+                          example: "sector 47"
+                        location_name:
+                          type: string
+                          description: Existing location name.
+                          example: "Y hub"
+                        state:
+                          type: string
+                          description: Existing state.
+                          example: "Haryana"
+                        pincode:
+                          type: string
+                          description: Existing pincode.
+                          example: "140007"
+                    newValues:
+                      type: object
+                      description: New values to update the contact details.
+                      properties:
+                        contact_value:
+                          type: string
+                          description: New phone/Email value.
+                          example: "7827265859"
+                        address_line_1:
+                          type: string
+                          description: New Address line 1.
+                          example: "Gurgaon"
+                        address_line_2:
+                          type: string
+                          description: New Address line 2.
+                          example: "sector 47"
+                        location_name:
+                          type: string
+                          description: New location name.
+                          example: "Y hub"
+                        state:
+                          type: string
+                          description: New state.
+                          example: "Haryana"
+                        pincode:
+                          type: string
+                          description: New pincode.
+                          example: "140007"
       responses:
         "200":
           description: Contact updated successfully
@@ -1053,14 +1170,34 @@ paths:
               schema:
                 type: object
                 properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
                   message:
                     type: string
-                    example: "Contact updated successfully."
+                    description: Status message
+                    example: "Contact updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
 
-  /profile/get-meta-data:
+  /profile/get-nominee-details:
     get:
-      summary: Get Meta Data
-      description: Retrieves the meta data for gender and contact
+      summary: Get meta data
+      description: Retrieves the meta data for Gender and Contact.
       operationId: getMetaData
       parameters:
         - name: authorization
@@ -1080,9 +1217,11 @@ paths:
                 properties:
                   status:
                     type: integer
+                    description: HTTP status code
                     example: 200
                   message:
                     type: string
+                    description: Status message
                     example: "Meta Data retrieved successfully"
                   data:
                     type: array
@@ -1092,6 +1231,18 @@ paths:
                         idmetadata:
                           type: string
                           description: Unique identifier for the meta data
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
                         meta_data_name:
                           type: string
                           description: Name of the meta data
+                          example: "Primary Email"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
