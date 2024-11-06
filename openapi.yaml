@@ -907,7 +907,7 @@ paths:
     post:
       summary: Get entity contact list
       description: Retrieves the contact details for an entity.
-      operationId: getLeadContactList
+      operationId: getEntityContactList
       parameters:
         - name: authorization
           in: header
@@ -916,13 +916,6 @@ paths:
           schema:
             type: string
             example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
-        - name: idLead
-          in: query
-          required: true
-          description: The unique identifier for the lead.
-          schema:
-            type: string
-            example: "37e13811aceb1b601d7c2bd88ec79877"
       requestBody:
         required: true
         content:
@@ -944,13 +937,15 @@ paths:
                 properties:
                   status:
                     type: integer
+                    description: HTTP status code
                     example: 200
                   message:
                     type: string
+                    description: Status message
                     example: "Contact records fetched successfully"
                   data:
-                    type: object
-                    additionalProperties:
+                    type: array
+                    items:
                       type: object
                       properties:
                         identity_contact:
@@ -1000,4 +995,14 @@ paths:
                         district:
                           type: string
                           description: District of the contact address
-                          example: "Harayana"
+                          example: "Haryana"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
