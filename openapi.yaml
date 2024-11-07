@@ -1087,7 +1087,6 @@ paths:
               required:
                 - idsrcategory
                 - idsr_subcategory
-                - identity_sr_createdby
                 - sr_meta_value
               properties:
                 idsrcategory:
@@ -1098,10 +1097,6 @@ paths:
                   type: string
                   description: SR Sub-Category of the SR Transaction.
                   example: "8b1a35a3ac7a4a6f863c1fb34de40845"
-                identity_sr_createdby:
-                  type: string
-                  description: Identity of the requester.
-                  example: "5dceb723474645b1b5958eda0d97f6c2"
                 sr_meta_value:
                   type: object
                   description: Contains details of the contact to update.
@@ -1244,6 +1239,122 @@ paths:
                           type: string
                           description: Name of the meta data
                           example: "Primary Email"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/update-nominee-details:
+    put:
+      summary: Update the Nominee details
+      description: Update the Nominee details with the provided information.
+      operationId: updateNomineeDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - sr_meta_value
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
+                sr_meta_value:
+                  type: object
+                  description: Contains details of the contact to update.
+                  required:
+                    - identity_nominee
+                    - oldValues
+                    - newValues
+                  properties:
+                    identity_nominee:
+                      type: string
+                      description: Identity of the nominee.
+                      example: "eef8f47d787041b59afd37937deed705"
+                    oldValues:
+                      type: object
+                      description: Existing contact details that need to be updated.
+                      properties:
+                        title:
+                          type: string
+                          description: Existing title.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                        dob:
+                          type: string
+                          description: Existing dob.
+                          example: "1995/11/28 (in YYYY/MM/DD)"
+                        fullname:
+                          type: string
+                          description: Existing fullname.
+                          example: "Shivam Singh"
+                        relationship:
+                          type: string
+                          description: Existing relationship.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                    newValues:
+                      type: object
+                      description: New values to update the contact details.
+                      properties:
+                        title:
+                          type: string
+                          description: New title.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                        dob:
+                          type: string
+                          description: New dob.
+                          example: "1995/11/28 (in YYYY/MM/DD)"
+                        fullname:
+                          type: string
+                          description: New fullname.
+                          example: "Shivam Singh"
+                        relationship:
+                          type: string
+                          description: New relationship.
+                          example: "468de4cb17494c67a732da2810f9c905"
+      responses:
+        "200":
+          description: Data updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Data updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
         "401":
           description: Unauthorized - Invalid token
           content:
