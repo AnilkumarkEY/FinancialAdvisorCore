@@ -19,7 +19,7 @@ async function profileRoutes(fastify, options) {
         profile.updateContact
     );
     fastify.get(
-        "/get-meta-data",
+        "/get-core-meta-data",
         { preHandler: [authentication, validation] },
         profile.getMetaData
     );

@@ -127,31 +127,8 @@ exports.updateContact = async (request, reply) => {
 
 exports.getMetaData = async (request, reply) => {
   try {
-    const genderMetaMaster = '606882f143f44ca187f6793f09aa4417';
-    const contactMetaMaster = 'a2959212630e45c2ac7bc76be50c4768';
-    const metaData = await profile.getMetaData({genderMetaMaster, contactMetaMaster}); // Getting meta data from DB
-
-    // Filtering & reducing the result set on basis of type
-    const genderMeta = metaData.reduce((acc, item) => {
-      if (item.idmetamaster === genderMetaMaster) {
-        acc.push({
-          idmetadata: item.idmetadata,
-          meta_data_name: item.meta_data_name
-        });
-      }
-      return acc;
-    }, []);
-
-    // Filtering & reducing the result set on basis of type
-    const contactMeta = metaData.reduce((acc, item) => {
-      if (item.idmetamaster === contactMetaMaster) {
-        acc.push({
-          idmetadata: item.idmetadata,
-          meta_data_name: item.meta_data_name
-        });
-      }
-      return acc;
-    }, []);
+    const { metaMaster } = request.query;
+    const metaData = await profile.getMetaData(metaMaster); // Getting meta data from DB & maping keys    
 
     if (metaData.length > 0) {
       await event.insertEventTransaction(request.isValid);
@@ -161,10 +138,7 @@ exports.getMetaData = async (request, reply) => {
           responseFormatter(
             statusCodes.OK,
             "Meta Data retrieved successfully",
-            {
-              genderMeta,
-              contactMeta
-            }
+            metaData
           )
         );
     } else {

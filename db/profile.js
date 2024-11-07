@@ -130,14 +130,14 @@ const updateContactInUserAuth = async (values) => {
   }
 }
 
-const getMetaData = async ({genderMetaMaster, contactMetaMaster}) => {
+const getMetaData = async (metaMaster) => {
   try {
     const query = 
-    `SELECT md.idmetadata, md.meta_data_name, md.idmetamaster
+    `SELECT md.idmetadata, md.meta_data_name
     FROM core.cr_metadata md
-    WHERE md.idmetamaster in ($1, $2)`;
+    WHERE md.idmetamaster = $1`;
 
-    const res = await client.query(query, [genderMetaMaster, contactMetaMaster]);
+    const res = await client.query(query, [metaMaster]);
     return res.rows;
   } catch (error) {
     console.error("Error: ", error)

@@ -1202,10 +1202,10 @@ paths:
                     type: string
                     example: "Unauthorized access."
 
-  /profile/get-nominee-details:
+  /profile/get-core-meta-data:
     get:
       summary: Get meta data
-      description: Retrieves the meta data for Gender and Contact.
+      description: Retrieves the meta data.
       operationId: getMetaData
       parameters:
         - name: authorization
