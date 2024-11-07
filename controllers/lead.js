@@ -71,6 +71,7 @@ exports.createLead = async (request, reply) => {
           identity_assignee: leadData.identity,
           identity_assisgned_to: leadData.identity,
           identity_lead_createdby: leadData.identity,
+          idmeta_annual_income: leadData.annualIncome,
           idmeta_source_type: "8dba7a199d904c0699b0da6b5510d318",
         };
         const createdLead = await createLead(dataForLead);
@@ -440,6 +441,38 @@ exports.getLeadById = async (request, reply) => {
       return reply
         .status(statusCodes.OK)
         .send(responseFormatter(statusCodes.OK, "No data found", {}));
+    }
+  } catch (error) {
+    console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
+
+exports.getLeadIncomes = async (request, reply) => {
+  try {
+    const incomeList = await lead.getLeadIncomes();
+    if (incomeList.length) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "Incomes fetched successfully",
+            incomeList
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.OK)
+        .send(responseFormatter(statusCodes.OK, "No data found", []));
     }
   } catch (error) {
     console.error(error);
