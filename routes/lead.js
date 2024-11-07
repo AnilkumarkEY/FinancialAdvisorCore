@@ -48,6 +48,11 @@ async function leadRoutes(fastify, options) {
     { preHandler: [authentication, validation] },
     lead.getLeadContactList
   );
+  fastify.get(
+    "/get-lead-incomes",
+    { preHandler: [authentication, validation] },
+    lead.getLeadIncomes
+  );
 }
 
 module.exports = leadRoutes;

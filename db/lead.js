@@ -22,9 +22,10 @@ async function createLead(data) {
       createdby, 
       created_date, 
       modifiedby, 
-      modified_date
+      modified_date,
+      idmeta_annual_income
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20
     )  RETURNING *;
   `;
     const values = [
@@ -47,6 +48,7 @@ async function createLead(data) {
       data.created_date || null,
       data.modifiedby || null,
       data.modified_date || null,
+      data.idmeta_annual_income || null,
     ];
     const res = await client.query(query, values);
     return res.rows; // Return the result rows
@@ -233,6 +235,24 @@ async function getIdentity(idLead) {
   }
 }
 
+async function getLeadIncomes() {
+  try {
+    const query = `
+      SELECT 
+      idmetadata, 
+      meta_data_name
+      FROM 
+      oppurtunity.op_metadata
+      WHERE 
+      idmetamaster = '7632be5d30d8407c9803baf735541fec';
+    `;
+    const res = await client.query(query);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   createLead,
   getLead,
@@ -243,4 +263,5 @@ module.exports = {
   getOppTag,
   addOppTag,
   getIdentity,
+  getLeadIncomes,
 };

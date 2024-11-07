@@ -1,6 +1,6 @@
 const { responseFormatter, statusCodes, uniqueString } = require("../utils");
 const { entityContact } = require("../services");
-const { lead } = require("../db");
+const { lead, event } = require("../db");
 exports.addEntityContact = async (request, reply) => {
   try {
     // Extracting data from the request body
@@ -35,6 +35,7 @@ exports.addEntityContact = async (request, reply) => {
 
     // If the insertion is successful, return a success response
     if (insertEntity) {
+      await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.CREATED) // Using the CREATED status code
         .send(
@@ -84,6 +85,7 @@ exports.updateEntityContact = async (request, reply) => {
 
     // Creating the entity JSON object to be inserted
     const entity_json = {
+      identity_contact: requestData.idContact,
       address_line_1: requestData.addressLine1,
       address_line_2: requestData.addressLine2,
       idmeta_contact_type: requestData.idmetaContactType,
@@ -93,7 +95,8 @@ exports.updateEntityContact = async (request, reply) => {
       location_name: requestData.locationName,
       state: requestData.state,
       pincode: requestData.pincode,
-      identity_contact: requestData.idContact,
+      countryname: requestData.countryname,
+      district: requestData.district,
       fieldToMatch: "identity_contact",
     };
 
@@ -104,6 +107,7 @@ exports.updateEntityContact = async (request, reply) => {
 
     // If the insertion is successful, return a success response
     if (updateEntity) {
+      await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.CREATED) // Using the CREATED status code
         .send(

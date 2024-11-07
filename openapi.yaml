@@ -1197,6 +1197,77 @@ paths:
                     type: string
                     example: "Unauthorized access."
 
+  /lead/get-lead-incomes:
+    get:
+      summary: Get Lead Incomes
+      description: Retrieves the income details associated with leads.
+      operationId: getLeadIncomes
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      responses:
+        "200":
+          description: Incomes fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Incomes fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the income metadata.
+                          example: "7966dba9159843039cb6a75e857a0610"
+                        meta_data_name:
+                          type: string
+                          description: Name of the income category.
+                          example: "5-7 Lakhs"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized - Invalid token."
+        "400":
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad Request - Invalid input data."
+        "500":
+          description: Internal Server Error - Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+
   /profile/get-core-meta-data:
     get:
       summary: Get meta data

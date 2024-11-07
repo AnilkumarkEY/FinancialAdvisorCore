@@ -1,16 +1,17 @@
 exports.routeValues = {
   "/users/get-users": "c2a04e70f16541f5b52f1b0803ee46d3",
-  "/users/get-otp": "c2a04e70f16541f5b52f1b0803ee46d3",//done
-  "/users/verify-otp": "c2a04e70f16541f5b52f1b0803ee46d3",//done
+  "/users/get-otp": "c2a04e70f16541f5b52f1b0803ee46d3", //done
+  "/users/verify-otp": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/create-lead": "fdd194d4f7ae4a27be93c8332dee6fe3", //done
-  "/lead/get-all-products": "c2a04e70f16541f5b52f1b0803ee46d3",//done
+  "/lead/get-all-products": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/get-lead-list": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/product-intrested": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/get-lead-tags": "c2a04e70f16541f5b52f1b0803ee46d3",//done
   "/lead/get-locality": "c2a04e70f16541f5b52f1b0803ee46d3",//done
   "/lead/get-lead-tags-by-id": "c2a04e70f16541f5b52f1b0803ee46d3",//done
   "/lead/get-lead-by-id": "c2a04e70f16541f5b52f1b0803ee46d3", //done
-  "/lead/get-lead-contact-list":"c2a04e70f16541f5b52f1b0803ee46d3",
+  "/lead/get-lead-contact-list": "c2a04e70f16541f5b52f1b0803ee46d3", //done
+  "/lead/get-lead-incomes": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/contact/create-contact": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/contact/update-contact": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/profile/get-entity-contact-list": "c2a04e70f16541f5b52f1b0803ee46d3",
