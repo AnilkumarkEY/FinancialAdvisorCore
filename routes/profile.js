@@ -23,6 +23,11 @@ async function profileRoutes(fastify, options) {
         { preHandler: [authentication, validation] },
         profile.getMetaData
     );
+    fastify.put(
+        "/update-nominee-details",
+        { preHandler: [authentication, validation] },
+        profile.updateNomineeDetails
+    );
   }
   
   module.exports = profileRoutes;

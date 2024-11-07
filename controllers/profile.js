@@ -1,6 +1,7 @@
 const { responseFormatter, statusCodes, uniqueString } = require("../utils");
 const { event, entity, lead, profile} = require("../db");
 const { entityService, entityContact } = require("../services");
+const { insertSrTransaction } = require("../services/sr_transaction");
 
 exports.getNomineeDetails = async (request, reply) => {
     try {
@@ -49,45 +50,35 @@ exports.getNomineeDetails = async (request, reply) => {
 
 exports.updateContact = async (request, reply) => {
   try {
-    const { idsrcategory, idsr_subcategory, identity_sr_createdby, sr_meta_value } = request.body;
+    const { idmeta_contact_type, newValues } = request.body.sr_meta_value;
     const identity = request.isValid.identity;
     const primaryPhoneMeta = 'eef8f47d787041b59afd37937deed705';
     const primaryEmailMeta = '4678e1bb1f2d414393a85dfbe0c85fff';
-    const approvedSrStatus = 'd0cc0947a9f34d099e66048dc64c1740';
     const adressMeta = 'b8fbf7947f8b4505a91e662af6953a15';
 
-    const transaction = {
-      idsr_transaction: uniqueString(), //create unique id for transaction
-      idsrcategory,
-      idsr_subcategory, 
-      identity_sr_createdby, 
-      sr_meta_value,
-      idmeta_sr_status: approvedSrStatus //Phone and email updates auto-approves
-    }
-
-    await profile.insertSrTransaction(transaction); // Insert entry into sr transactions
+    await insertSrTransaction(request.body, identity); //updating sr transaction
 
     let updateContact;
-    if(sr_meta_value.idmeta_contact_type === adressMeta){
-      updateContact = await profile.updateContactAddress({sr_meta_value, identity}); //Updating Address into entity-contact table
+    if(idmeta_contact_type === adressMeta){
+      updateContact = await profile.updateContactAddress(newValues, idmeta_contact_type, identity); //Updating Address into entity-contact table
     } else {
-      updateContact = await profile.updateContact({sr_meta_value, identity}); //Updating Phone/Email into entity-contact table
+      updateContact = await profile.updateContact(newValues, idmeta_contact_type, identity); //Updating Phone/Email into entity-contact table
     }
     
 
     // Checking if updating entry is primary phone/email then updating into user_auth_data
-    if(sr_meta_value.idmeta_contact_type === primaryPhoneMeta){
+    if(idmeta_contact_type === primaryPhoneMeta){
       await profile.updateContactInUserAuth({
         contactType: primaryPhoneMeta, 
-        sr_meta_value, 
+        newValues, 
         identity
       })
     }
 
-    if(sr_meta_value.idmeta_contact_type === primaryEmailMeta){
+    if(idmeta_contact_type === primaryEmailMeta){
       await profile.updateContactInUserAuth({
         contactType: primaryEmailMeta, 
-        sr_meta_value, 
+        newValues, 
         identity
       })
     }
@@ -148,6 +139,58 @@ exports.getMetaData = async (request, reply) => {
           responseFormatter(
             statusCodes.NO_CONTENT,
             "Data not found"
+          )
+        );
+    }
+  } catch (error) {
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+}
+
+exports.updateNomineeDetails = async (request, reply) => {
+  try {
+    const { identity_nominee, newValues } = request.body.sr_meta_value;
+    const identity = request.isValid.identity;
+
+    await insertSrTransaction(request.body, identity); //updating sr transaction
+
+    const fullnameArray = newValues.fullname.split(' ');
+    const name = {
+      firstname: fullnameArray[0],
+      middlename: fullnameArray.length > 2 ? fullnameArray[1] : undefined,
+      lastname: fullnameArray.length > 1 ? fullnameArray[fullnameArray.length - 1] : undefined
+    };
+    newValues.name = name;
+
+    const updateEntity = await profile.updateEntity(newValues, identity_nominee); 
+
+    const updateNominee = await profile.updateNomineeDetails(newValues, identity_nominee, identity);
+
+    if (updateEntity.length > 0 && updateNominee.length > 0) {
+      // await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "Data updated successfully"
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "Unable to update data"
           )
         );
     }
