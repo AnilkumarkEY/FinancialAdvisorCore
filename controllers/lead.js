@@ -355,10 +355,10 @@ exports.getLeadTags = async (request, reply) => {
   }
 };
 
-exports.getLeadZipcode = async (request, reply) => {
+exports.getLocality = async (request, reply) => {
   try {
     const { zipcode } = request.body;
-    const zipcodes = await lead.getLeadZipcode(zipcode);
+    const zipcodes = await lead.getLocality(zipcode);
     if (zipcodes.length) {
       await event.insertEventTransaction(request.isValid);
       return reply
@@ -366,7 +366,7 @@ exports.getLeadZipcode = async (request, reply) => {
         .send(
           responseFormatter(
             statusCodes.OK,
-            "Lead ZipCodes fetched successfully",
+            "Locality data fetched successfully",
             zipcodes
           )
         );

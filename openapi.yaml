@@ -577,11 +577,11 @@ paths:
                     type: string
                     example: "Unauthorized access."
 
-  /lead/get-lead-zipcode:
+  /lead/get-locality:
     post:
-      summary: Get Lead ZipCodes
+      summary: Get Locality
       description: Fetches lead details based on the provided zipcode.
-      operationId: getLeadZipCodes
+      operationId: getLocality
       requestBody:
         required: true
         content:
@@ -591,11 +591,11 @@ paths:
               properties:
                 zipcode:
                   type: string
-                  description: The zipcode to fetch lead details for.
+                  description: The zipcode to fetch locality details for.
                   example: "110094"
       responses:
         "200":
-          description: Lead ZipCodes fetched successfully
+          description: Locality data fetched successfully
           content:
             application/json:
               schema:
@@ -608,7 +608,7 @@ paths:
                   message:
                     type: string
                     description: Status message
-                    example: "Lead ZipCodes fetched successfully"
+                    example: "Locality data fetched successfully"
                   data:
                     type: array
                     items:
@@ -642,6 +642,14 @@ paths:
                           type: string
                           description: Dialing code for the country
                           example: "+91"
+                        longitude:
+                          type: string
+                          description: Longitude of the locality
+                          example: "77.488839"
+                        latitude:
+                          type: string
+                          description: Latitude of the locality
+                          example: "13.765421"
         "401":
           description: Unauthorized - Invalid token
           content:

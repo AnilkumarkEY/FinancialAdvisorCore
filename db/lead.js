@@ -98,7 +98,7 @@ async function getLeadTags() {
   }
 }
 
-async function getLeadZipcode(zipcode) {
+async function getLocality(zipcode) {
   try {
     const query = `
     select 
@@ -108,12 +108,15 @@ async function getLeadZipcode(zipcode) {
       s.description as state,
       c.idcountry,
       c.countryname as countryname,
-      c.dialingcode
+      c.dialingcode,
+      l2.longitude,
+      l2.latitude 
       from core.locality l 
       inner join core.pincode_master p on p.id_pincode = l.id_pincode 
       inner join core.district d on d.id_district = l.id_district
       inner join core.state s on s.id_state = d.id_state 
       inner join core.country c on c.idcountry = c.idcountry
+      inner join core.locality l2 on l2.id_pincode =  p.id_pincode
       where p.pincode = $1
       group by d.id_district,
       d.description,
@@ -121,7 +124,9 @@ async function getLeadZipcode(zipcode) {
       s.description,
       c.idcountry,
       c.countryname,
-      c.dialingcode; 
+      c.dialingcode,
+      l2.longitude,
+      l2.latitude; 
     `;
     const res = await client.query(query, [zipcode]);
     return res.rows;
@@ -232,7 +237,7 @@ module.exports = {
   createLead,
   getLead,
   getLeadTags,
-  getLeadZipcode,
+  getLocality,
   getLeadTagsById,
   getLeadById,
   getOppTag,

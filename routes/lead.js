@@ -29,9 +29,9 @@ async function leadRoutes(fastify, options) {
     lead.getLeadTags
   );
   fastify.post(
-    "/get-lead-zipcode",
+    "/get-locality",
     { preHandler: [authentication, validation] },
-    lead.getLeadZipcode
+    lead.getLocality
   );
   fastify.post(
     "/get-lead-tags-by-id",
