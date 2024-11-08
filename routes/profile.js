@@ -28,6 +28,11 @@ async function profileRoutes(fastify, options) {
         { preHandler: [authentication, validation] },
         profile.updateNomineeDetails
     );
+    fastify.get(
+        "/get-sr-subcategory",
+        { preHandler: [authentication, validation] },
+        profile.getSrSubCategory
+    );
   }
   
   module.exports = profileRoutes;

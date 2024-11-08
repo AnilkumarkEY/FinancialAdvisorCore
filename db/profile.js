@@ -198,6 +198,23 @@ const updateNomineeDetails = async (values, identity_nominee, identity) => {
   }
 }
 
+const getSrSubCategory = async (metaMaster) => {
+  try {
+    const query = 
+    `SELECT 
+    idsr_subcategory, 
+    sub_category_name 
+    FROM agentservicing.sr_subcategory ss 
+    WHERE idsrcategory = $1`;
+
+    const res = await client.query(query, [metaMaster]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error)
+    throw error;
+  }
+}
+
   module.exports = {
     getNomineeDetailsByIdentity,
     insertSrTransaction,
@@ -206,6 +223,7 @@ const updateNomineeDetails = async (values, identity_nominee, identity) => {
     updateContactInUserAuth,
     getMetaData,
     updateEntity,
-    updateNomineeDetails
+    updateNomineeDetails,
+    getSrSubCategory
   };
   
