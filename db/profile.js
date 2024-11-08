@@ -5,24 +5,25 @@ const getNomineeDetailsByIdentity = async (identity) => {
       const query = `
         SELECT 
         p.identity_nominee as entity_nominee,
+        cmt.idmetadata as nominee_title_meta,
         cmt.meta_data_name as nominee_title,
         enm.fullname,
+        cmr.idmetadata as nominee_relationship_meta,
         cmr.meta_data_name as nominee_relationship,
         p.nominee_dob
         FROM core.partnernominee p 
         INNER JOIN core.entity enm on enm.identity = p.identity_nominee
-        INNER JOIN core.cr_metadata cmr on cmr.idmetadata = p.idmetadata_nominee_priority 
+        INNER JOIN core.cr_metadata cmr on cmr.idmetadata = p.idmetadata_nominee_relationship 
         INNER JOIN core.cr_metadata cmt on cmt.idmetadata = p.idmetadata_title
         WHERE identity_partner = $1;`;
   
       const res = await client.query(query, [identity]);
       return res.rows;
     } catch (err) {
-      console.error("Error executing query", err.stack);
-      throw err;
+      console.error("Error: ", error)
+      throw error;
     }
   };
-
 
 const insertSrTransaction = async (values) => {
   try{
@@ -44,19 +45,19 @@ const insertSrTransaction = async (values) => {
       values.idsr_transaction,
       values.idsrcategory,
       values.idsr_subcategory, 
-      values.identity_sr_createdby, 
+      values.identity, 
       values.sr_meta_value,
       values.idmeta_sr_status
     ]
     const res = await client.query(query, transactionValues);
     return res.rows;
   } catch(error){
-    return error;
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
-
-const updateContact = async (values) => {
+const updateContact = async (values, idmeta_contact_type, identity) => {
   try{
     const query = `
     UPDATE core.entity_contact
@@ -66,19 +67,20 @@ const updateContact = async (values) => {
     RETURNING *`;
 
     const updateValues = [
-      values.sr_meta_value.newValues.contact_value,
-      values.sr_meta_value.idmeta_contact_type,
-      values.identity
+      values.contact_value,
+      idmeta_contact_type,
+      identity
     ]
 
     const res = await client.query(query, updateValues);
     return res.rows;
   } catch(error){
-    return error;
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
-const updateContactAddress = async (values) => {
+const updateContactAddress = async (values, idmeta_contact_type, identity) => {
   try{
     const query = `
     UPDATE core.entity_contact
@@ -88,19 +90,20 @@ const updateContactAddress = async (values) => {
     RETURNING *`;
 
     const updateValues = [
-      values.sr_meta_value.newValues.address_line_1,
-      values.sr_meta_value.newValues.address_line_2,
-      values.sr_meta_value.newValues.location_name,
-      values.sr_meta_value.newValues.state,
-      values.sr_meta_value.newValues.pincode,
-      values.sr_meta_value.idmeta_contact_type,
-      values.identity
+      values.address_line_1,
+      values.address_line_2,
+      values.location_name,
+      values.state,
+      values.pincode,
+      idmeta_contact_type,
+      identity
     ]
 
     const res = await client.query(query, updateValues);
     return res.rows;
   } catch(error){
-    return error;
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
@@ -115,14 +118,102 @@ const updateContactInUserAuth = async (values) => {
     query += ` WHERE identity = $2`;
 
     const updateValues = [
-      values.sr_meta_value.newValues.contact_value,
+      values.newValues.contact_value,
       values.identity
     ];
 
     const res = await client.query(query, updateValues);
     return res.rows;
   } catch (error) {
-    return error;
+    console.error("Error: ", error)
+    throw error;
+  }
+}
+
+const getMetaData = async (metaMaster) => {
+  try {
+    const query = 
+    `SELECT md.idmetadata, md.meta_data_name
+    FROM core.cr_metadata md
+    WHERE md.idmetamaster = $1`;
+
+    const res = await client.query(query, [metaMaster]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error)
+    throw error;
+  }
+}
+
+const updateEntity = async (values, identity_nominee) => {
+  try {
+    let query = 
+    `UPDATE core.entity SET
+    firstname = $1,
+    lastname = $2,
+    fullname = $3,
+    idmeta_title = $4,
+    middlename = $5
+    WHERE identity = $6
+    RETURNING *`;
+
+    const updatedValues = [
+      values.name.firstname,
+      values.name.lastname,
+      values.fullname,
+      values.title,
+      values.name.middlename || null,
+      identity_nominee
+    ]
+
+    const res = await client.query(query, updatedValues);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error)
+    throw error;
+  }
+}
+
+const updateNomineeDetails = async (values, identity_nominee, identity) => {
+  try {
+    const query = 
+    `UPDATE core.partnernominee SET
+    nominee_dob = $1,
+    idmetadata_nominee_relationship = $2,
+    idmetadata_title = $3
+    WHERE identity_nominee = $4 AND identity_partner = $5
+    RETURNING *`;
+
+    const updatedValues = [
+      values.dob,
+      values.relationship,
+      values.title,
+      identity_nominee,
+      identity
+    ]
+
+    const res = await client.query(query, updatedValues);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error)
+    throw error;
+  }
+}
+
+const getSrSubCategory = async (metaMaster) => {
+  try {
+    const query = 
+    `SELECT 
+    idsr_subcategory, 
+    sub_category_name 
+    FROM agentservicing.sr_subcategory ss 
+    WHERE idsrcategory = $1`;
+
+    const res = await client.query(query, [metaMaster]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error)
+    throw error;
   }
 }
 
@@ -131,6 +222,10 @@ const updateContactInUserAuth = async (values) => {
     insertSrTransaction,
     updateContact,
     updateContactAddress,
-    updateContactInUserAuth
+    updateContactInUserAuth,
+    getMetaData,
+    updateEntity,
+    updateNomineeDetails,
+    getSrSubCategory
   };
   

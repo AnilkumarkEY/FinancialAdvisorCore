@@ -577,11 +577,11 @@ paths:
                     type: string
                     example: "Unauthorized access."
 
-  /lead/get-lead-zipcode:
+  /lead/get-locality:
     post:
-      summary: Get Lead ZipCodes
+      summary: Get Locality
       description: Fetches lead details based on the provided zipcode.
-      operationId: getLeadZipCodes
+      operationId: getLocality
       requestBody:
         required: true
         content:
@@ -591,11 +591,11 @@ paths:
               properties:
                 zipcode:
                   type: string
-                  description: The zipcode to fetch lead details for.
+                  description: The zipcode to fetch locality details for.
                   example: "110094"
       responses:
         "200":
-          description: Lead ZipCodes fetched successfully
+          description: Locality data fetched successfully
           content:
             application/json:
               schema:
@@ -608,7 +608,7 @@ paths:
                   message:
                     type: string
                     description: Status message
-                    example: "Lead ZipCodes fetched successfully"
+                    example: "Locality data fetched successfully"
                   data:
                     type: array
                     items:
@@ -642,6 +642,14 @@ paths:
                           type: string
                           description: Dialing code for the country
                           example: "+91"
+                        longitude:
+                          type: string
+                          description: Longitude of the locality
+                          example: "77.488839"
+                        latitude:
+                          type: string
+                          description: Latitude of the locality
+                          example: "13.765421"
         "401":
           description: Unauthorized - Invalid token
           content:
@@ -855,56 +863,8 @@ paths:
                           type: integer
                           description: Pincode of the contact address
 
-  /profile/get-nominee-details:
-    get:
-      summary: Get Nominee details
-      description: Retrieves the nominee details for an entity.
-      operationId: getNomineeDetails
-      parameters:
-        - name: authorization
-          in: header
-          required: true
-          description: Bearer token for authorization.
-          schema:
-            type: string
-            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
-      responses:
-        "200":
-          description: Nominee details fetched successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 200
-                  message:
-                    type: string
-                    example: "Nominee details fetched successfully"
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        entity_nominee:
-                          type: string
-                          description: Unique identifier for the Nominee
-                        nominee_title:
-                          type: string
-                          description: Title of the Nominee
-                        fullname:
-                          type: string
-                          description: Full name of the Nominee
-                        nominee_relationship:
-                          type: string
-                          description: Relationship of the Nominee with the entity
-                        nominee_dob:
-                          type: string
-                          description: Date of Birth of the Nominee
-
   /profile/get-entity-contact-list:
-    post:
+    get:
       summary: Get entity contact list
       description: Retrieves the contact details for an entity.
       operationId: getEntityContactList
@@ -916,17 +876,6 @@ paths:
           schema:
             type: string
             example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                idLead:
-                  type: string
-                  description: Unique identifier for the lead.
-                  example: "37e13811aceb1b601d7c2bd88ec79877"
       responses:
         "200":
           description: Contact records fetched successfully
@@ -991,11 +940,69 @@ paths:
                         pincode:
                           type: integer
                           description: Pincode of the contact address
-                          example: 122001
-                        district:
+
+  /profile/get-nominee-details:
+    get:
+      summary: Get Nominee details
+      description: Retrieves the nominee details for entity.
+      operationId: getNomineeDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Nominee details fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Meta Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity_nominee:
                           type: string
-                          description: District of the contact address
-                          example: "Haryana"
+                          description: Unique identifier for the Nominee
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        nominee_title_meta:
+                          type: string
+                          description: Title meta of the Nominee
+                          example: "3f5536eacbda4d21bf568b6c3eb34982"
+                        nominee_title:
+                          type: string
+                          description: Title of the Nominee
+                          example: "Mr"
+                        fullname:
+                          type: string
+                          description: Full name of the Nominee
+                          example: "Amit Kumar"
+                        nominee_relationship_meta:
+                          type: string
+                          description: Relationship meta of the Nominee
+                          example: "1b2d70de-6a1e-4b7a-98b5-7c61fd5e3f88"
+                        nominee_relationship:
+                          type: string
+                          description: Relationship of the Nominee
+                          example: "Mother"
+                        nominee_dob:
+                          type: string
+                          description: DOB of the Nominee
+                          example: "12/12/2000"
         "401":
           description: Unauthorized - Invalid token
           content:
@@ -1008,7 +1015,7 @@ paths:
                     example: "Unauthorized access."
 
   /profile/update-contact:
-    post:
+    put:
       summary: Update the contact details
       description: Update the contact details with the provided information.
       operationId: updateProfileContact
@@ -1029,7 +1036,6 @@ paths:
               required:
                 - idsrcategory
                 - idsr_subcategory
-                - identity_sr_createdby
                 - sr_meta_value
               properties:
                 idsrcategory:
@@ -1040,10 +1046,6 @@ paths:
                   type: string
                   description: SR Sub-Category of the SR Transaction.
                   example: "8b1a35a3ac7a4a6f863c1fb34de40845"
-                identity_sr_createdby:
-                  type: string
-                  description: Identity of the requester.
-                  example: "5dceb723474645b1b5958eda0d97f6c2"
                 sr_meta_value:
                   type: object
                   description: Contains details of the contact to update.
@@ -1363,3 +1365,225 @@ paths:
                   message:
                     type: string
                     example: "An unexpected error occurred."
+
+  /profile/get-core-meta-data:
+    get:
+      summary: Get meta data
+      description: Retrieves the meta data.
+      operationId: getMetaData
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Meta Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Meta Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the meta data
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        meta_data_name:
+                          type: string
+                          description: Name of the meta data
+                          example: "Primary Email"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/update-nominee-details:
+    put:
+      summary: Update the Nominee details
+      description: Update the Nominee details with the provided information.
+      operationId: updateNomineeDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - sr_meta_value
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
+                sr_meta_value:
+                  type: object
+                  description: Contains details of the contact to update.
+                  required:
+                    - identity_nominee
+                    - oldValues
+                    - newValues
+                  properties:
+                    identity_nominee:
+                      type: string
+                      description: Identity of the nominee.
+                      example: "eef8f47d787041b59afd37937deed705"
+                    oldValues:
+                      type: object
+                      description: Existing contact details that need to be updated.
+                      properties:
+                        title:
+                          type: string
+                          description: Existing title.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                        dob:
+                          type: string
+                          description: Existing dob.
+                          example: "1995/11/28 (in YYYY/MM/DD)"
+                        fullname:
+                          type: string
+                          description: Existing fullname.
+                          example: "Shivam Singh"
+                        relationship:
+                          type: string
+                          description: Existing relationship.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                    newValues:
+                      type: object
+                      description: New values to update the contact details.
+                      properties:
+                        title:
+                          type: string
+                          description: New title.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                        dob:
+                          type: string
+                          description: New dob.
+                          example: "1995/11/28 (in YYYY/MM/DD)"
+                        fullname:
+                          type: string
+                          description: New fullname.
+                          example: "Shivam Singh"
+                        relationship:
+                          type: string
+                          description: New relationship.
+                          example: "468de4cb17494c67a732da2810f9c905"
+      responses:
+        "200":
+          description: Data updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Data updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/get-sr-subcategory:
+    get:
+      summary: Get SR SubCategories
+      description: Retrieves the SR SubCategories.
+      operationId: getSrSubCategory
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: SubCategory Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "SubCategory Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the meta data
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        meta_data_name:
+                          type: string
+                          description: Name of the meta data
+                          example: "Primary Email"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
