@@ -5,13 +5,15 @@ const getNomineeDetailsByIdentity = async (identity) => {
       const query = `
         SELECT 
         p.identity_nominee as entity_nominee,
+        cmt.idmetadata as nominee_title_meta,
         cmt.meta_data_name as nominee_title,
         enm.fullname,
+        cmr.idmetadata as nominee_relationship_meta,
         cmr.meta_data_name as nominee_relationship,
         p.nominee_dob
         FROM core.partnernominee p 
         INNER JOIN core.entity enm on enm.identity = p.identity_nominee
-        INNER JOIN core.cr_metadata cmr on cmr.idmetadata = p.idmetadata_nominee_priority 
+        INNER JOIN core.cr_metadata cmr on cmr.idmetadata = p.idmetadata_nominee_relationship 
         INNER JOIN core.cr_metadata cmt on cmt.idmetadata = p.idmetadata_title
         WHERE identity_partner = $1;`;
   
