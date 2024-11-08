@@ -175,7 +175,7 @@ exports.updateNomineeDetails = async (request, reply) => {
     const updateNominee = await profile.updateNomineeDetails(newValues, identity_nominee, identity);
 
     if (updateEntity.length > 0 && updateNominee.length > 0) {
-      // await event.insertEventTransaction(request.isValid);
+      await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
         .send(
