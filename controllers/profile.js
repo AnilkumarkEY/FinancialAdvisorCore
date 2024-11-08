@@ -264,3 +264,42 @@ exports.updateNomineeDetails = async (request, reply) => {
       );
   }
 }
+
+exports.getSrSubCategory = async (request, reply) => {
+  try {
+    const { categoryMaster } = request.query;
+    const subcategoryData = await profile.getSrSubCategory(categoryMaster); // Getting meta data from DB & maping keys    
+
+    if (subcategoryData.length > 0) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "SubCategory Data retrieved successfully",
+            subcategoryData
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "Data not found"
+          )
+        );
+    }
+  } catch (error) {
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+}

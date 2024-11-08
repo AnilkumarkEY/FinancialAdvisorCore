@@ -1377,3 +1377,56 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
+
+  /profile/get-sr-subcategory:
+    get:
+      summary: Get SR SubCategories
+      description: Retrieves the SR SubCategories.
+      operationId: getSrSubCategory
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: SubCategory Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "SubCategory Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the meta data
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        meta_data_name:
+                          type: string
+                          description: Name of the meta data
+                          example: "Primary Email"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
