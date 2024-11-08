@@ -3,10 +3,10 @@ const { lead } = require("../controllers");
 const { authentication, validation } = require("../middleware");
 
 async function profileRoutes(fastify, options) {
-    fastify.post(
+    fastify.get(
         "/get-entity-contact-list",
         { preHandler: [authentication, validation] },
-        lead.getLeadContactList
+        profile.getContactList
     );
     fastify.get(
         "/get-nominee-details",
