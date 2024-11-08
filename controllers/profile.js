@@ -3,6 +3,64 @@ const { event, entity, lead, profile} = require("../db");
 const { entityService, entityContact } = require("../services");
 const { insertSrTransaction } = require("../services/sr_transaction");
 
+exports.getContactList = async (request, reply) => {
+  try {
+    const identity = request.isValid.identity;
+    if (identity.length) {
+      const data = await entity.getEntityContactByIdentity(identity);
+      if (data) {
+        const filteredData = data.reduce((result, record) => {
+          const filteredRecord = Object.fromEntries(
+            Object.entries(record).filter(([_, value]) => value !== null)
+          );
+          result[record.contact_type] = filteredRecord;
+          return result;
+        }, {});
+        await event.insertEventTransaction(request.isValid);
+        return reply
+          .status(statusCodes.OK)
+          .send(
+            responseFormatter(
+              statusCodes.OK,
+              "Contact records fetched successfully",
+              filteredData
+            )
+          );
+      } else {
+        return reply
+          .status(statusCodes.INTERNAL_SERVER_ERROR)
+          .send(
+            responseFormatter(
+              statusCodes.INTERNAL_SERVER_ERROR,
+              "An unexpected error occurred",
+              data
+            )
+          );
+      }
+    } else {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "No contact found",
+            data
+          )
+        );
+    }
+  } catch (error) {
+    console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
+
 exports.getNomineeDetails = async (request, reply) => {
     try {
       const identity = request.isValid.identity;
