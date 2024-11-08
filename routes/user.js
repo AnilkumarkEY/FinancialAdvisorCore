@@ -20,6 +20,16 @@ async function userRoutes(fastify, options) {
     user.verifyOtp
   );
   fastify.post("/change-password", user.changePassword);
+  fastify.post(
+    "/upload-file",
+    { preHandler: [authentication, validation] },
+    user.uploadFile // Controller function for file upload
+  );
+  fastify.get(
+    "/download-file",
+    { preHandler: [authentication, validation] },
+    user.downloadFile
+  );
 }
 
 module.exports = userRoutes;

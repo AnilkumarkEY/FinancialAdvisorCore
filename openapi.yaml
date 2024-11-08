@@ -1214,3 +1214,152 @@ paths:
                   message:
                     type: string
                     example: "An unexpected error occurred."
+
+  /users/download-file:
+    get:
+      summary: Download File
+      description: Downloads a specified file by filename.
+      operationId: downloadFile
+      parameters:
+        - name: fileName
+          in: query
+          required: true
+          description: Name of the file to be downloaded.
+          schema:
+            type: string
+            example: "Steps.docx"
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      responses:
+        "200":
+          description: File downloaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "File downloaded successfully"
+                  data:
+                    type: string
+                    description: URL to access the downloaded file.
+                    example: "https://financialstorage.blob.core.windows.net/advisor-storage/Steps.docx?sv=2024-11-04&se=2024-11-08T11%3A54%3A26Z&sr=b&sp=r&sig=0LaW%2FwMaDyjh4vFA4AqaCFEG5wUNJdJp4%2FukeOilZfE%3D"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized - Invalid token."
+        "400":
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad Request - Invalid input data."
+        "500":
+          description: Internal Server Error - Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+
+  /users/upload-file:
+    post:
+      summary: Upload File
+      description: Uploads a file to the server and stores it in Azure Blob Storage.
+      operationId: uploadFile
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: string
+                  format: binary
+                  description: The file to be uploaded.
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "File uploaded successfully"
+                  data:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                        description: Name of the uploaded file.
+                        example: "Steps.docx"
+                      isFileUploaded:
+                        type: string
+                        description: URL where the uploaded file is stored.
+                        example: "https://financialstorage.blob.core.windows.net/advisor-storage/Steps.docx"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized - Invalid token."
+        "400":
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad Request - Invalid input data."
+        "500":
+          description: Internal Server Error - Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."

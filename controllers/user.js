@@ -1,6 +1,6 @@
 const { responseFormatter, statusCodes } = require("../utils");
 const loginData = require("../dummyData/login");
-const { tokenService, otpService } = require("../services");
+const { tokenService, otpService, azureBlob } = require("../services");
 const { user, event, otp } = require("../db");
 
 exports.getUsers = async (request, reply) => {
@@ -240,6 +240,71 @@ exports.changePassword = async (request, reply) => {
     }
   } catch (error) {
     console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
+
+exports.uploadFile = async (request, reply) => {
+  try {
+    const parts = request.files();
+    for await (const part of parts) {
+      const fileName = part.filename;
+      const fileBuffer = await part.toBuffer();
+      const isFileUploaded = await azureBlob.uploadFileToBlob(
+        fileName,
+        fileBuffer
+      );
+      if (isFileUploaded) {
+        return reply.status(statusCodes.OK).send(
+          responseFormatter(statusCodes.OK, "File uploaded successfully", {
+            fileName,
+            isFileUploaded,
+          })
+        );
+      } else {
+        return reply
+          .status(statusCodes.NOT_FOUND)
+          .send(responseFormatter(statusCodes.NOT_FOUND, "File not uploaded"));
+      }
+    }
+  } catch (error) {
+    console.error("Error during file upload:", error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
+
+exports.downloadFile = async (request, reply) => {
+  try {
+    const { fileName } = request.query;
+    if (!fileName) {
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send(
+          responseFormatter(statusCodes.BAD_REQUEST, "filename is required")
+        );
+    }
+    const file = await azureBlob.downloadFileFromBlob(fileName);
+    return reply
+      .status(statusCodes.OK)
+      .send(
+        responseFormatter(statusCodes.OK, "File downloaded successfully", file)
+      );
+  } catch (error) {
+    console.error("Error during file download:", error);
     return reply
       .status(statusCodes.INTERNAL_SERVER_ERROR)
       .send(

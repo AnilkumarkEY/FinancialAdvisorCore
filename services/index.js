@@ -4,6 +4,7 @@ const entityUserAuth = require("./entityUserAuth");
 const tokenService = require("./tokenService");
 const otpService = require("./otp");
 const mailService = require("./mail");
+const azureBlob = require("./azureBlob");
 
 module.exports = {
   entityService,
@@ -11,5 +12,6 @@ module.exports = {
   entityUserAuth,
   tokenService,
   otpService,
-  mailService
+  mailService,
+  azureBlob,
 };
