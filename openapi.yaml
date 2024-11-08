@@ -979,6 +979,10 @@ paths:
                           type: string
                           description: Unique identifier for the Nominee
                           example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        nominee_title_meta:
+                          type: string
+                          description: Title meta of the Nominee
+                          example: "3f5536eacbda4d21bf568b6c3eb34982"
                         nominee_title:
                           type: string
                           description: Title of the Nominee
@@ -987,6 +991,10 @@ paths:
                           type: string
                           description: Full name of the Nominee
                           example: "Amit Kumar"
+                        nominee_relationship_meta:
+                          type: string
+                          description: Relationship meta of the Nominee
+                          example: "1b2d70de-6a1e-4b7a-98b5-7c61fd5e3f88"
                         nominee_relationship:
                           type: string
                           description: Relationship of the Nominee
