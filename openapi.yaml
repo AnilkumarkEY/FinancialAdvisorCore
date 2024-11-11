@@ -1587,3 +1587,84 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
+
+  /profile/get-profile-official-details:
+    get:
+      summary: Get Profile Official details
+      description: Retrieves Profile Official details.
+      operationId: getProfileOfficialDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Profile retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        agent_code:
+                          type: string
+                          description: Agent code of the profile
+                          example: "786"
+                        fullname:
+                          type: string
+                          description: Name of the profile holder
+                          example: "Abhishek M"
+                        designation:
+                          type: string
+                          description: designation of the profile holder
+                          example: "Senior Life Planner"
+                        irda_number:
+                          type: string
+                          description: irda_number of the profile holder
+                          example: "0005678678"
+                        joiningdate:
+                          type: string
+                          description: joiningdate of the profile holder
+                          example: "2005-02-07T18:30:00.000Z"
+                        license_expiry_date:
+                          type: string
+                          description: license_expiry_date of the profile holder
+                          example: "2005-02-07T18:30:00.000Z"
+                        agent_status:
+                          type: string
+                          description: agent_status of the profile holder
+                          example: "Active"
+                        leader_code:
+                          type: string
+                          description: leader_code of the profile holder
+                          example: "001748007"
+                        branch:
+                          type: string
+                          description: branch of the profile holder
+                          example: "Mumbai"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."

@@ -304,7 +304,6 @@ exports.getSrSubCategory = async (request, reply) => {
   }
 }
 
-
 exports.getProfileOfficialDetails = async (request, reply) => {
   try {
     const {identity} = request.isValid;
