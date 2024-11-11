@@ -68,10 +68,11 @@ exports.createLead = async (request, reply) => {
           identity_oppurtunity: leadData.identity,
           idmeta_lead_status: "721fe429ffcb4453ba09354ed4cef3fa",
           identity_subscriber: "86cc888b5e7a4ee49b5541242f8e228b",
-          identity_assignee: leadData.identity,
-          identity_assisgned_to: leadData.identity,
-          identity_lead_createdby: leadData.identity,
+          identity_assignee: contactData.createdby,
+          identity_assisgned_to: contactData.createdby,
+          identity_lead_createdby: contactData.createdby,
           idmeta_annual_income: leadData.annualIncome,
+          createdby: contactData.createdby,
           idmeta_source_type: "8dba7a199d904c0699b0da6b5510d318",
         };
         const createdLead = await createLead(dataForLead);
