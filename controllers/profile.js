@@ -303,3 +303,43 @@ exports.getSrSubCategory = async (request, reply) => {
       );
   }
 }
+
+
+exports.getProfileOfficialDetails = async (request, reply) => {
+  try {
+    const {identity} = request.isValid;
+    const res = await profile.getProfileOfficialDetails(identity);
+
+    if (res.length > 0) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "Profile retrieved successfully",
+            res
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "Data not found"
+          )
+        );
+    }
+  } catch (error) {
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+}
