@@ -8,9 +8,7 @@ const insertEntity = async (entityData) => {
               sortorder,
               idmeta_data_entitytype,
               inactivedate,
-              activeflag,
               createdby,
-              created_date,
               firstname,
               modifiedby,
               middlename,
@@ -19,7 +17,7 @@ const insertEntity = async (entityData) => {
               eff_to_date,
               identity,
               idmeta_data_gender
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING *;
           `;
   const values = [
@@ -28,7 +26,6 @@ const insertEntity = async (entityData) => {
     entityData.sortorder || null,
     entityData.metaEntityType || null,
     entityData.inactivedate || null,
-    entityData.activeflag !== undefined ? entityData.activeflag : null,
     entityData.isValid.identity || null,
     entityData.firstname || null,
     entityData.modifiedby || null,
@@ -93,9 +90,7 @@ const updateEntity = async (query, entityData) => {
 const insertEntityUrcAuth = async (entityUrcAuthData) => {
   const query = `
         INSERT INTO core.entity_urc_auth (
-          created_date,
           idcontract,
-          activeflag,
           issubsidary,
           description,
           identity_urc_auth,
@@ -109,15 +104,11 @@ const insertEntityUrcAuth = async (entityUrcAuthData) => {
           entity_urc_auth,
           createdby,
           idurc
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, $9, $10, $11, $12, $13, $14, $15)
+        ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, $8, $9, $10, $11, $12, $13)
       `;
 
   const values = [
-    entityUrcAuthData.created_date || null,
     entityUrcAuthData.idcontract || null,
-    entityUrcAuthData.activeflag !== undefined
-      ? entityUrcAuthData.activeflag
-      : null,
     entityUrcAuthData.issubsidary || null,
     entityUrcAuthData.description || null,
     entityUrcAuthData.identity_urc_auth || null,
@@ -144,7 +135,6 @@ const insertEntityContact = async (entityContactData) => {
   const query = `
   INSERT INTO core.entity_contact (
     eff_to_date,
-    activeflag,
     identity_contact,
     countrycode,
     dialingcode,
@@ -163,19 +153,17 @@ const insertEntityContact = async (entityContactData) => {
     idmeta_contact_type,
     eff_from_date,
     pincode,
-    created_date,
     identity,
     district,
     countryname
-  ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), 
-  $8, $9, $10, $11, $12, $13, $14, $15, $16,
-  $17, $18, $19, $20, $21, $22, $23)
+  ) VALUES ($1, $2, $3, $4, $5, $6, NOW(),
+  $7, $8, $9, $10, $11, $12, $13, $14, $15, 
+  $16, $17, $18, $19, $20, $21)
   RETURNING *;
 `;
 
   const values = [
     entityContactData.eff_to_date || null,
-    entityContactData.activeflag || null,
     entityContactData.identity_contact || null,
     entityContactData.countrycode || null,
     entityContactData.dialingcode || null,
@@ -193,7 +181,6 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.idmeta_contact_type || null,
     entityContactData.eff_from_date || null,
     entityContactData.pincode || null,
-    entityContactData.created_date || null,
     entityContactData.identity || null,
     entityContactData.district || null,
     entityContactData.countryname || null,
