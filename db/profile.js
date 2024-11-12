@@ -217,6 +217,32 @@ const getSrSubCategory = async (metaMaster) => {
   }
 }
 
+const getProfileOfficialDetails = async(identity) => {
+  try {
+    const query = 
+    `SELECT 
+    business_code AS agent_code,
+    profile_fullname AS fullname,
+    designation ,
+    irda_number ,
+    joiningdate ,
+    license_expiry_date ,
+    CASE 
+      WHEN activeflag = 1 THEN 'Active'
+      WHEN activeflag = 0 THEN 'Inactive'
+    END AS agent_status,
+    leader_code,
+    branch 
+    FROM core.profile
+    WHERE identity = $1`;
+
+    const res = await client.query(query, [identity]);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
   module.exports = {
     getNomineeDetailsByIdentity,
     insertSrTransaction,
@@ -226,6 +252,7 @@ const getSrSubCategory = async (metaMaster) => {
     getMetaData,
     updateEntity,
     updateNomineeDetails,
-    getSrSubCategory
+    getSrSubCategory,
+    getProfileOfficialDetails
   };
   

@@ -21,5 +21,6 @@ exports.routeValues = {
   "/profile/update-contact": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/profile/get-core-meta-data": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/profile/update-nominee-details": "c2a04e70f16541f5b52f1b0803ee46d3",
-  "/profile/get-sr-subcategory": "c2a04e70f16541f5b52f1b0803ee46d3"
+  "/profile/get-sr-subcategory": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/profile/get-profile-official-details": "c2a04e70f16541f5b52f1b0803ee46d3",
 };

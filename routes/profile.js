@@ -33,6 +33,11 @@ async function profileRoutes(fastify, options) {
         { preHandler: [authentication, validation] },
         profile.getSrSubCategory
     );
+    fastify.get(
+        "/get-profile-official-details",
+        { preHandler: [authentication, validation] },
+        profile.getProfileOfficialDetails
+    );
   }
   
   module.exports = profileRoutes;
