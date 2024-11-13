@@ -165,12 +165,12 @@ exports.prodcutIntrested = async (request, reply) => {
         );
     } else {
       return reply
-        .status(statusCodes.INTERNAL_SERVER_ERROR)
+        .status(statusCodes.OK)
         .send(
           responseFormatter(
-            statusCodes.INTERNAL_SERVER_ERROR,
-            "An unexpected error occurred",
-            data
+            statusCodes.OK,
+            "No data found",
+            []
           )
         );
     }
