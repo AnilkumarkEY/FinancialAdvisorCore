@@ -1,5 +1,4 @@
 const { client } = require("../config/db");
-const { uniqueString } = require("../utils");
 async function createLead(data) {
   try {
     const query = `
@@ -18,15 +17,13 @@ async function createLead(data) {
       sortorder, 
       eff_from_date, 
       eff_to_date, 
-      activeflag, 
       createdby, 
-      created_date, 
       modifiedby, 
       modified_date,
       idmeta_annual_income
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20
-    )  RETURNING *;
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
+    ) RETURNING *;
   `;
     const values = [
       data.idlead || null,
@@ -43,9 +40,7 @@ async function createLead(data) {
       data.sortorder || null,
       data.eff_from_date || null,
       data.eff_to_date || null,
-      data.activeflag !== undefined ? data.activeflag : null,
       data.createdby || null,
-      data.created_date || null,
       data.modifiedby || null,
       data.modified_date || null,
       data.idmeta_annual_income || null,

@@ -10,13 +10,11 @@ async function createProduct(prospectInterestData) {
         sortorder,
         eff_from_date,
         eff_to_date,
-        activeflag,
         createdby,
-        created_date,
         modifiedby,
         modified_date
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), $10, NOW()
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()
       )
       RETURNING *;
     `;
@@ -29,7 +27,6 @@ async function createProduct(prospectInterestData) {
     prospectInterestData.sortorder,
     prospectInterestData.eff_from_date,
     prospectInterestData.eff_to_date,
-    prospectInterestData.activeflag,
     prospectInterestData.createdby,
     prospectInterestData.modifiedby,
   ];
