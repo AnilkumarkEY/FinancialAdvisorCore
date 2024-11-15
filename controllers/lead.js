@@ -393,7 +393,8 @@ exports.getLocality = async (request, reply) => {
 exports.getLeadTagsById = async (request, reply) => {
   try {
     const { idlead } = request.body;
-    const leadTags = await lead.getLeadTagsById(idlead);
+    let leadTags = await lead.getLeadTagsById(idlead);
+    leadTags = leadTags.filter(item => item.activeflag);
     if (leadTags.length) {
       await event.insertEventTransaction(request.isValid);
       return reply
