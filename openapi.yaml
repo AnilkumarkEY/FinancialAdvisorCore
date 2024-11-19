@@ -1847,3 +1847,203 @@ paths:
                     description: Status message
                     example: "Password changed successfully"
                   data: null
+
+  /profile/update-bank-details:
+    put:
+      summary: Update the bank details
+      description: Update the bank details with the provided information.
+      operationId: updateBankDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - sr_meta_value
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
+                sr_meta_value:
+                  type: object
+                  description: Contains details of the contact to update.
+                  required:
+                    - oldValues
+                    - newValues
+                  properties:
+                    oldValues:
+                      type: object
+                      description: Existing bank details that need to be updated.
+                      properties:
+                        bank_name:
+                          type: string
+                          description:  Bank name
+                          example: "HDFC"
+                        ifsc_code:
+                          type: string
+                          description: IFSC code of the bank
+                          example: "HDFC000312"
+                        bank_branch:
+                          type: string
+                          description: Branch Name
+                          example: "Pune"
+                        idmeta_account_type:
+                          type: string
+                          description: Account type (Savings/Current)
+                          example: "66369d3536d44a7fa043249c0393a4e3"
+                        account_number:
+                          type: string
+                          description: Account number
+                          example: "98765432100"
+                        account_holder_name:
+                          type: string
+                          description:  Name of the account holder
+                          example: "Abhishek M"
+                    newValues:
+                      type: object
+                      description: New values to update the bank details.
+                      properties:
+                        bank_name:
+                          type: string
+                          description:  Bank name
+                          example: "HDFC"
+                        ifsc_code:
+                          type: string
+                          description: IFSC code of the bank
+                          example: "HDFC000312"
+                        bank_branch:
+                          type: string
+                          description: Branch Name
+                          example: "Pune"
+                        idmeta_account_type:
+                          type: string
+                          description: Account type (Savings/Current)
+                          example: "66369d3536d44a7fa043249c0393a4e3"
+                        account_number:
+                          type: string
+                          description: Account number
+                          example: "98765432100"
+                        account_holder_name:
+                          type: string
+                          description:  Name of the account holder
+                          example: "Abhishek M"
+      responses:
+        "200":
+          description: Bank details updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Bank details updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/get-profile-bank-details:
+    get:
+      summary: Get bank details
+      description: Retrieves the bank details.
+      operationId: getProfileBankDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Bank data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Bank data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        account_holder_name:
+                          type: string
+                          description: Account holder name
+                          example: "Abhishek M"
+                        accountnumber:
+                          type: string
+                          description: Account number
+                          example: "98765432100"
+                        idmeta_account_type:
+                          type: string
+                          description: account type meta of the bank
+                          example: "66369d3536d44a7fa043249c0393a4e3"
+                        accounttype:
+                          type: string
+                          description: Account type 
+                          example: ""
+                        bankname:
+                          type: string
+                          description: Bank Name
+                          example: "HDFC"
+                        ifsccode:
+                          type: string
+                          description: IFSC code of the bank
+                          example: "HDFC000312"
+                        bank_branch:
+                          type: string
+                          description: Branch name of the bank
+                          example: "Pune"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."

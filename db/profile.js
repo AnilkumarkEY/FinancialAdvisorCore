@@ -1,8 +1,8 @@
 const { client } = require("../config/db");
 
 const getNomineeDetailsByIdentity = async (identity) => {
-    try {
-      const query = `
+  try {
+    const query = `
         SELECT 
         p.identity_nominee as entity_nominee,
         cmt.idmetadata as nominee_title_meta,
@@ -16,17 +16,17 @@ const getNomineeDetailsByIdentity = async (identity) => {
         INNER JOIN core.cr_metadata cmr on cmr.idmetadata = p.idmetadata_nominee_relationship 
         INNER JOIN core.cr_metadata cmt on cmt.idmetadata = p.idmetadata_title
         WHERE identity_partner = $1;`;
-  
-      const res = await client.query(query, [identity]);
-      return res.rows;
-    } catch (err) {
-      console.error("Error: ", error)
-      throw error;
-    }
-  };
+
+    const res = await client.query(query, [identity]);
+    return res.rows;
+  } catch (err) {
+    console.error("Error: ", error)
+    throw error;
+  }
+};
 
 const insertSrTransaction = async (values) => {
-  try{
+  try {
     const query = `
     INSERT INTO agentservicing.sr_transaction 
     (
@@ -44,21 +44,21 @@ const insertSrTransaction = async (values) => {
     const transactionValues = [
       values.idsr_transaction,
       values.idsrcategory,
-      values.idsr_subcategory, 
-      values.identity, 
+      values.idsr_subcategory,
+      values.identity,
       values.sr_meta_value,
       values.idmeta_sr_status
     ]
     const res = await client.query(query, transactionValues);
     return res.rows;
-  } catch(error){
+  } catch (error) {
     console.error("Error: ", error)
     throw error;
   }
 }
 
 const updateContact = async (values, idmeta_contact_type, identity) => {
-  try{
+  try {
     const query = `
     UPDATE core.entity_contact
     SET contact_value = $1 
@@ -74,14 +74,14 @@ const updateContact = async (values, idmeta_contact_type, identity) => {
 
     const res = await client.query(query, updateValues);
     return res.rows;
-  } catch(error){
+  } catch (error) {
     console.error("Error: ", error)
     throw error;
   }
 }
 
 const updateContactAddress = async (values, idmeta_contact_type, identity) => {
-  try{
+  try {
     const query = `
     UPDATE core.entity_contact
     SET address_line_1 = $1, address_line_2 = $2, location_name = $3, state = $4, pincode = $5
@@ -101,7 +101,7 @@ const updateContactAddress = async (values, idmeta_contact_type, identity) => {
 
     const res = await client.query(query, updateValues);
     return res.rows;
-  } catch(error){
+  } catch (error) {
     console.error("Error: ", error)
     throw error;
   }
@@ -110,9 +110,9 @@ const updateContactAddress = async (values, idmeta_contact_type, identity) => {
 const updateContactInUserAuth = async (values) => {
   try {
     let query = `UPDATE core.user_auth_data SET `;
-    if(values.contactType === 'eef8f47d787041b59afd37937deed705'){
+    if (values.contactType === 'eef8f47d787041b59afd37937deed705') {
       query += 'reg_mobile_number = $1';
-    } else if(values.contactType === '4678e1bb1f2d414393a85dfbe0c85fff'){
+    } else if (values.contactType === '4678e1bb1f2d414393a85dfbe0c85fff') {
       query += 'reg_email = $1';
     }
     query += ` WHERE identity = $2`;
@@ -132,8 +132,8 @@ const updateContactInUserAuth = async (values) => {
 
 const getMetaData = async (metaMaster) => {
   try {
-    const query = 
-    `SELECT md.idmetadata, md.meta_data_name
+    const query =
+      `SELECT md.idmetadata, md.meta_data_name
     FROM core.cr_metadata md
     WHERE md.idmetamaster = $1`;
 
@@ -147,8 +147,8 @@ const getMetaData = async (metaMaster) => {
 
 const updateEntity = async (values, identity_nominee) => {
   try {
-    let query = 
-    `UPDATE core.entity SET
+    let query =
+      `UPDATE core.entity SET
     firstname = $1,
     lastname = $2,
     fullname = $3,
@@ -176,8 +176,8 @@ const updateEntity = async (values, identity_nominee) => {
 
 const updateNomineeDetails = async (values, identity_nominee, identity) => {
   try {
-    const query = 
-    `UPDATE core.partnernominee SET
+    const query =
+      `UPDATE core.partnernominee SET
     nominee_dob = $1,
     idmetadata_nominee_relationship = $2,
     idmetadata_title = $3
@@ -202,8 +202,8 @@ const updateNomineeDetails = async (values, identity_nominee, identity) => {
 
 const getSrSubCategory = async (metaMaster) => {
   try {
-    const query = 
-    `SELECT 
+    const query =
+      `SELECT 
     idsr_subcategory, 
     sub_category_name 
     FROM agentservicing.sr_subcategory ss 
@@ -217,10 +217,10 @@ const getSrSubCategory = async (metaMaster) => {
   }
 }
 
-const getProfileOfficialDetails = async(identity) => {
+const getProfileOfficialDetails = async (identity) => {
   try {
-    const query = 
-    `SELECT 
+    const query =
+      `SELECT 
     business_code AS agent_code,
     profile_fullname AS fullname,
     designation ,
@@ -243,16 +243,73 @@ const getProfileOfficialDetails = async(identity) => {
   }
 }
 
-  module.exports = {
-    getNomineeDetailsByIdentity,
-    insertSrTransaction,
-    updateContact,
-    updateContactAddress,
-    updateContactInUserAuth,
-    getMetaData,
-    updateEntity,
-    updateNomineeDetails,
-    getSrSubCategory,
-    getProfileOfficialDetails
-  };
-  
+const getProfileBankDetails = async (identity) => {
+  try {
+    const query =
+      `SELECT 
+      b.account_holder_name ,
+      convert_from(b.accountnumber, 'UTF8') AS accountnumber,
+      b.idmeta_account_type,
+      cm.meta_data_name as accounttype,
+      convert_from(b.bankname , 'UTF8') AS bankname,
+      convert_from(b.ifsc_code , 'UTF8') AS ifsccode,
+      b.bank_branch 
+      FROM 
+      core.bankaccount b 
+      INNER JOIN core.cr_metadata cm 
+      ON b.idmeta_account_type = cm.idmetadata
+      WHERE identity_account_holder = $1`;
+
+    const res = await client.query(query, [identity]);
+    return res.rows;
+  } catch (error) {
+    throw error;
+  }
+}
+
+const updateBankDetails = async (values, identity) => {
+  try {
+    const query = `
+    UPDATE 
+    core.bankaccount set 
+    bankname = $1,
+    ifsc_code = $2,
+    bank_branch = $3,
+    idmeta_account_type = $4,
+    accountnumber = $5,
+    account_holder_name = $6
+    WHERE identity_account_holder = $7
+    RETURNING *`;
+
+    const updateValues = [
+      Buffer.from(values.bank_name, 'utf8'),
+      Buffer.from(values.ifsc_code, 'utf8'),
+      values.bank_branch,
+      values.idmeta_account_type,
+      Buffer.from(values.account_number, 'utf8'),
+      values.account_holder_name,
+      identity
+    ]
+
+    const res = await client.query(query, updateValues);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error)
+    throw error;
+  }
+}
+
+module.exports = {
+  getNomineeDetailsByIdentity,
+  insertSrTransaction,
+  updateContact,
+  updateContactAddress,
+  updateContactInUserAuth,
+  getMetaData,
+  updateEntity,
+  updateNomineeDetails,
+  getSrSubCategory,
+  getProfileOfficialDetails,
+  getProfileBankDetails,
+  updateBankDetails
+};

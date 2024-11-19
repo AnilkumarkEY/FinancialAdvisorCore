@@ -460,3 +460,84 @@ exports.resetPassword = async (request, reply) => {
       );
   }
 };
+
+exports.getProfileBankDetails = async (request, reply) => {
+  try {
+    const {identity} = request.isValid;
+    const res = await profile.getProfileBankDetails(identity);
+
+    if (res.length > 0) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "Bank data retrieved successfully",
+            res
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "Data not found"
+          )
+        );
+    }
+  } catch (error) {
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+}
+
+exports.updateBankDetails = async (request, reply) => {
+  try {
+    const { newValues } = request.body.sr_meta_value;
+    const identity = request.isValid.identity;
+
+    await insertSrTransaction(request.body, identity); //updating sr transaction
+
+    let updateDetails = await profile.updateBankDetails(newValues, identity); //Updating Phone/Email into entity-contact table
+    
+    if (updateDetails.length > 0) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "Bank details updated successfully"
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "Bank details not updated"
+          )
+        );
+    }
+  } catch (error) {
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+}

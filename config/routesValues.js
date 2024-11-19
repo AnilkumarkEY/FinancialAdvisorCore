@@ -25,5 +25,7 @@ exports.routeValues = {
   "/profile/get-profile-official-details": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/profile/azure-check-user": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/profile/verify-otp-forgot-password": "c2a04e70f16541f5b52f1b0803ee46d3",
-  "/profile/change-password": "c2a04e70f16541f5b52f1b0803ee46d3"
+  "/profile/change-password": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/profile/get-profile-bank-details": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/profile/update-bank-details": "c2a04e70f16541f5b52f1b0803ee46d3"
 };
