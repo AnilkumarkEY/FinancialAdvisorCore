@@ -166,13 +166,7 @@ exports.prodcutIntrested = async (request, reply) => {
     } else {
       return reply
         .status(statusCodes.OK)
-        .send(
-          responseFormatter(
-            statusCodes.OK,
-            "No data found",
-            []
-          )
-        );
+        .send(responseFormatter(statusCodes.OK, "No data found", []));
     }
   } catch (error) {
     console.error(error);
@@ -281,6 +275,12 @@ exports.getLeadContactList = async (request, reply) => {
           result[record.contact_type] = filteredRecord;
           return result;
         }, {});
+        if ("Primary Mobile Number" in filteredData) {
+          let urlFields = filteredData["Primary Mobile Number"];
+          urlFields["phoneUrl"] = `tel:+${urlFields.contact_value}`;
+          urlFields["smsUrl"] = `sms:${urlFields.contact_value}?body=Hello`;
+          urlFields["whatsappUrl"] = `https://wa.me/${urlFields.contact_value}`;
+        }
         await event.insertEventTransaction(request.isValid);
         return reply
           .status(statusCodes.OK)
