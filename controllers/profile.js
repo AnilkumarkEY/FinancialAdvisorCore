@@ -1,7 +1,8 @@
-const { responseFormatter, statusCodes, uniqueString } = require("../utils");
-const { event, entity, lead, profile} = require("../db");
-const { entityService, entityContact } = require("../services");
+const { responseFormatter, statusCodes } = require("../utils");
+const { event, entity, profile, otp, user} = require("../db");
 const { insertSrTransaction } = require("../services/sr_transaction");
+const { resetchangeUserPassword, getUserByEmail } = require("../services/azureOps");
+const { otpService } = require("../services");
 
 exports.getContactList = async (request, reply) => {
   try {
@@ -342,3 +343,124 @@ exports.getProfileOfficialDetails = async (request, reply) => {
       );
   }
 }
+
+exports.azureCheckUser = async (request, reply) => {
+  try {
+    const { userEmail, identity, agent_code } = request.body;
+    const res = await getUserByEmail(userEmail);
+    if (res.status === 'ok') {
+      // Find user based on agent code
+      const userData = await user.getUserDataForOtp(
+        identity,
+        agent_code
+      );
+
+      if(userData.length){
+        const sentOtp = await otpService.sendOTPForgotPassword(userData[0]);
+        if (sentOtp) {
+          const addOtpToVerify = await otp.insertOtp(
+            identity,
+            sentOtp
+          );
+          if (addOtpToVerify) {
+            return reply
+              .status(statusCodes.OK)
+              .send(responseFormatter(statusCodes.OK, "OTP sent successfully", res.res.value));
+          } else {
+            return reply
+              .status(statusCodes.OK)
+              .send(responseFormatter(statusCodes.OK, "OTP not sent", res.res.value));
+          }
+        } else {
+          return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.NOT_FOUND, "OTP not sent"));
+        }
+      }
+    } else {
+      return reply
+        .status(statusCodes.NOT_FOUND)
+        .send(responseFormatter(statusCodes.NOT_FOUND, "User not found"));
+    }
+  } catch (error) {
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+}
+
+exports.verifyOtpForgotPassword = async (request, reply) => {
+  try {
+    const { otpToVerify, identity } = request.body;
+    const isValidOtp = await otp.verifyOtp(
+      otpToVerify,
+      identity
+    );
+    if (isValidOtp) {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(statusCodes.OK, "Provided OTP is correct", true)
+        );
+    } else {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.BAD_REQUEST,
+            "Provided OTP is incorrect"
+          )
+        );
+    }
+  } catch (error) {
+    console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
+
+exports.resetPassword = async (request, reply) => {
+  try {
+    const { userId, newPassword } = request.body;
+
+    const changePassword = await resetchangeUserPassword(userId, newPassword);
+    if (changePassword.status === 'ok') {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(statusCodes.OK, "Password changed successfully")
+        );
+    } else {
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send(
+          responseFormatter(
+            statusCodes.BAD_REQUEST,
+            changePassword.error
+          )
+        );
+    }
+  } catch (error) {
+    console.error(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};

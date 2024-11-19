@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const axios = require("axios");
 const dotenv = require("dotenv");
-const { sendMail } = require("./mail");
+const { sendMail, sendMailForgotPassword } = require("./mail");
 const { communication } = require("../db");
 const { uniqueString } = require("../utils");
 dotenv.config();
@@ -72,6 +72,49 @@ async function sendOTP(userData, identity) {
   }
 }
 
+
+async function sendOTPForgotPassword(userData) {
+  const templateForOtp = await communication.getTemplate(
+    process.env.OTPTEMPLATEIDSMS
+  );
+  const otp = generateOTP();
+  const phoneNumber = userData.reg_mobile_number;
+  const email = userData.reg_email;
+  const apiKey = process.env.API_KEY_FOR_OTP; // Your API key
+  const message = templateForOtp[0].message.replace("<<OTP>>", otp);
+  const sender = templateForOtp[0].smsg_sendid;
+  const templateId = templateForOtp[0].smsg_tempid;
+
+  const url = `https://alerts.solutionsinfini.com/api/v4/?api_key=${apiKey}&method=sms&message=${encodeURIComponent(
+    message
+  )}&to=${phoneNumber}&sender=${sender}&templateid_text=${templateId}`;
+
+  try {
+    const instance = axios.create({
+      httpsAgent: new require("https").Agent({
+        rejectUnauthorized: false, // Disable SSL certificate verification
+      }),
+    });
+    const response = await instance.get(url);
+    const mailResponse = await sendMailForgotPassword(email, otp);
+    console.log(response.data, mailResponse?.includes("Ok"));
+    if (
+      response.data &&
+      response.data.status === "OK" &&
+      mailResponse?.includes("Ok")
+    ) {
+      return otp; // OTP sent successfully
+    } else {
+      console.error("Error sending OTP:", response.data);
+      return false; // OTP sending failed
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    return false; // Handle errors gracefully
+  }
+}
+
 module.exports = {
   sendOTP,
+  sendOTPForgotPassword
 };
