@@ -50,6 +50,16 @@ async function profileRoutes(fastify, options) {
         "/reset-password",
         profile.resetPassword
     );
+    fastify.get(
+        "/get-profile-bank-details",
+        { preHandler: [authentication, validation] },
+        profile.getProfileBankDetails
+    );
+    fastify.put(
+        "/update-bank-details",
+        { preHandler: [authentication, validation] },
+        profile.updateBankDetails
+    );
   }
   
   module.exports = profileRoutes;
