@@ -1722,7 +1722,7 @@ paths:
 
   /profile/azure-check-user:
     patch:
-      summary: Check user if it is present in Azure AD 
+      summary: Check user if it is present in Azure AD
       description: Check user if it is present in Azure AD and send OTP to registered mail and phone
       operationId: getLeadById
       requestBody:
@@ -1888,7 +1888,7 @@ paths:
                       properties:
                         bank_name:
                           type: string
-                          description:  Bank name
+                          description: Bank name
                           example: "HDFC"
                         ifsc_code:
                           type: string
@@ -1908,7 +1908,7 @@ paths:
                           example: "98765432100"
                         account_holder_name:
                           type: string
-                          description:  Name of the account holder
+                          description: Name of the account holder
                           example: "Abhishek M"
                     newValues:
                       type: object
@@ -1916,7 +1916,7 @@ paths:
                       properties:
                         bank_name:
                           type: string
-                          description:  Bank name
+                          description: Bank name
                           example: "HDFC"
                         ifsc_code:
                           type: string
@@ -1936,7 +1936,7 @@ paths:
                           example: "98765432100"
                         account_holder_name:
                           type: string
-                          description:  Name of the account holder
+                          description: Name of the account holder
                           example: "Abhishek M"
       responses:
         "200":
@@ -2018,7 +2018,7 @@ paths:
                           example: "66369d3536d44a7fa043249c0393a4e3"
                         accounttype:
                           type: string
-                          description: Account type 
+                          description: Account type
                           example: ""
                         bankname:
                           type: string
