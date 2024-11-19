@@ -38,6 +38,18 @@ async function profileRoutes(fastify, options) {
         { preHandler: [authentication, validation] },
         profile.getProfileOfficialDetails
     );
+    fastify.post(
+        "/azure-check-user",
+        profile.azureCheckUser
+    );
+    fastify.post(
+        "/verify-otp-forgot-password",
+        profile.verifyOtpForgotPassword
+    );
+    fastify.patch(
+        "/reset-password",
+        profile.resetPassword
+    );
   }
   
   module.exports = profileRoutes;
