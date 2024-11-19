@@ -1687,7 +1687,7 @@ paths:
                   example: "771089"
                 identity:
                   type: string
-                  description: The identity to of the user.
+                  description: The identity of the user.
                   example: "5dceb723474645b1b5958eda0d97f6c2"
       responses:
         "200":
@@ -1722,9 +1722,9 @@ paths:
 
   /profile/azure-check-user:
     patch:
-      summary: Check user if it is present in Azure AD
-      description: Check user if it is present in Azure AD and send OTP to registered mail and phone
-      operationId: getLeadById
+      summary: Check if the user is present in Azure AD
+      description: Check if the user is present in Azure AD and send OTP to the registered mail and phone.
+      operationId: checkUserInAzure
       requestBody:
         required: true
         content:
@@ -1734,7 +1734,7 @@ paths:
               properties:
                 userEmail:
                   type: string
-                  description: Email of the user
+                  description: Email of the user.
                   example: "4721571@impigerpocguests.onmicrosoft.com"
                 identity:
                   type: string
@@ -1772,7 +1772,7 @@ paths:
                         givenName:
                           type: string
                           description: Given name of the User
-                          example: "Rajesh Gupta"
+                          example: "Rajesh"
                         jobTitle:
                           type: string
                           description: Job title of the user
@@ -1791,7 +1791,7 @@ paths:
                           example: "Gurugram"
                         preferredLanguage:
                           type: string
-                          description: Language if the user
+                          description: Language preference of the user
                           example: "Hindi"
                         surname:
                           type: string
@@ -1809,7 +1809,7 @@ paths:
   /profile/reset-password:
     post:
       summary: Reset password of the user
-      description: Reset password of the user
+      description: Reset password of the user.
       operationId: resetPassword
       requestBody:
         required: true
@@ -1820,11 +1820,11 @@ paths:
               properties:
                 userId:
                   type: string
-                  description: Id of the user
+                  description: Id of the user.
                   example: "78b491cf-dc61-4899-b3f1-e7dbb37d1695"
                 newPassword:
                   type: string
-                  description: New Password of the user
+                  description: New Password for the user.
                   example: "newPassword@123"
       responses:
         "200":
@@ -1884,31 +1884,31 @@ paths:
                   properties:
                     oldValues:
                       type: object
-                      description: Existing bank details that need to be updated.
+                      description: Existing bank details to update.
                       properties:
                         bank_name:
                           type: string
-                          description: Bank name
+                          description: Bank name.
                           example: "HDFC"
                         ifsc_code:
                           type: string
-                          description: IFSC code of the bank
+                          description: IFSC code of the bank.
                           example: "HDFC000312"
                         bank_branch:
                           type: string
-                          description: Branch Name
+                          description: Branch Name.
                           example: "Pune"
                         idmeta_account_type:
                           type: string
-                          description: Account type (Savings/Current)
+                          description: Account type (Savings/Current).
                           example: "66369d3536d44a7fa043249c0393a4e3"
                         account_number:
                           type: string
-                          description: Account number
+                          description: Account number.
                           example: "98765432100"
                         account_holder_name:
                           type: string
-                          description: Name of the account holder
+                          description: Account holder name.
                           example: "Abhishek M"
                     newValues:
                       type: object
@@ -1916,31 +1916,31 @@ paths:
                       properties:
                         bank_name:
                           type: string
-                          description: Bank name
+                          description: Bank name.
                           example: "HDFC"
                         ifsc_code:
                           type: string
-                          description: IFSC code of the bank
+                          description: IFSC code of the bank.
                           example: "HDFC000312"
                         bank_branch:
                           type: string
-                          description: Branch Name
+                          description: Branch Name.
                           example: "Pune"
                         idmeta_account_type:
                           type: string
-                          description: Account type (Savings/Current)
+                          description: Account type (Savings/Current).
                           example: "66369d3536d44a7fa043249c0393a4e3"
                         account_number:
                           type: string
-                          description: Account number
+                          description: Account number.
                           example: "98765432100"
                         account_holder_name:
                           type: string
-                          description: Name of the account holder
+                          description: Account holder name.
                           example: "Abhishek M"
       responses:
         "200":
-          description: Bank details updated successfully
+          description: Bank details updated successfully.
           content:
             application/json:
               schema:
@@ -1973,7 +1973,7 @@ paths:
   /profile/get-profile-bank-details:
     get:
       summary: Get bank details
-      description: Retrieves the bank details.
+      description: Retrieves the bank details of the user.
       operationId: getProfileBankDetails
       parameters:
         - name: authorization
@@ -2006,31 +2006,31 @@ paths:
                       properties:
                         account_holder_name:
                           type: string
-                          description: Account holder name
+                          description: Account holder name.
                           example: "Abhishek M"
                         accountnumber:
                           type: string
-                          description: Account number
+                          description: Account number.
                           example: "98765432100"
                         idmeta_account_type:
                           type: string
-                          description: account type meta of the bank
+                          description: Account type meta of the bank.
                           example: "66369d3536d44a7fa043249c0393a4e3"
                         accounttype:
                           type: string
-                          description: Account type
-                          example: ""
+                          description: Account type.
+                          example: "Savings"
                         bankname:
                           type: string
-                          description: Bank Name
+                          description: Bank name.
                           example: "HDFC"
                         ifsccode:
                           type: string
-                          description: IFSC code of the bank
+                          description: IFSC code of the bank.
                           example: "HDFC000312"
                         bank_branch:
                           type: string
-                          description: Branch name of the bank
+                          description: Branch name of the bank.
                           example: "Pune"
         "401":
           description: Unauthorized - Invalid token
