@@ -68,7 +68,7 @@ exports.getNomineeDetails = async (request, reply) => {
       const identity = request.isValid.identity;
       let data = await profile.getNomineeDetailsByIdentity(identity);
       if (data.length) {
-        data[0].nominee_dob = moment(data[0].nominee_dob).format("DD/MM/YYYY");
+        data.map(item => item.nominee_dob = moment(item.nominee_dob).format("DD/MM/YYYY"));
         await event.insertEventTransaction(request.isValid);
         return reply
           .status(statusCodes.OK)
