@@ -1668,3 +1668,182 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
+
+  /profile/verify-otp-forgot-password:
+    post:
+      summary: Verify OTP for forgot password
+      description: Verifies the provided OTP against the stored value.
+      operationId: verifyOtpForgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otpToVerify:
+                  type: string
+                  description: The OTP to verify.
+                  example: "771089"
+                identity:
+                  type: string
+                  description: The identity to of the user.
+                  example: "5dceb723474645b1b5958eda0d97f6c2"
+      responses:
+        "200":
+          description: Provided OTP is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Provided OTP is correct"
+                  data:
+                    type: boolean
+                    description: Indicates if the OTP verification was successful
+                    example: true
+        "400":
+          description: Bad Request - Missing or invalid OTP
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid or missing OTP."
+
+  /profile/azure-check-user:
+    patch:
+      summary: Check user if it is present in Azure AD 
+      description: Check user if it is present in Azure AD and send OTP to registered mail and phone
+      operationId: getLeadById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userEmail:
+                  type: string
+                  description: Email of the user
+                  example: "4721571@impigerpocguests.onmicrosoft.com"
+                identity:
+                  type: string
+                  description: The unique identifier for the lead.
+                  example: "974fc64c97b34dd6a9ec547a8532fcff"
+                agent_code:
+                  type: string
+                  description: Agent code of the user.
+                  example: "786"
+      responses:
+        "200":
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "OTP sent successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        businessPhones:
+                          type: Array
+                          description: Phone numbers 
+                          example: ["9876543210"]
+                        displayName:
+                          type: string
+                          description: Display name of the User
+                          example: "Rajesh Gupta"
+                        givenName:
+                          type: string
+                          description: Given name of the User
+                          example: "Rajesh Gupta"
+                        jobTitle:
+                          type: string
+                          description: Job title of the user
+                          example: "Senior Planner"
+                        mail:
+                          type: string
+                          description: Email of the user
+                          example: "4721571@impigerpocguests.onmicrosoft.com"
+                        mobilePhone:
+                          type: string
+                          description: Phone of the user
+                          example: "9876543210"
+                        officeLocation:
+                          type: string
+                          description: Office location of the user
+                          example: "Gurugram"
+                        preferredLanguage:
+                          type: string
+                          description: Language if the user
+                          example: "Hindi"
+                        surname:
+                          type: string
+                          description: Surname of the user
+                          example: "Gupta"
+                        userPrincipalName:
+                          type: string
+                          description: UPN of the user
+                          example: "4721571_impigerpocguests.onmicrosoft.com#EXT#@impigerssopocoutlook.onmicrosoft.com"
+                        id:
+                          type: string
+                          description: Id of the user
+                          example: "78b491cf-dc61-4899-b3f1-e7dbb37d1695"
+
+  /profile/reset-password:
+    post:
+      summary: Reset password of the user
+      description: Reset password of the user
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: Id of the user
+                  example: "78b491cf-dc61-4899-b3f1-e7dbb37d1695"
+                newPassword:
+                  type: string
+                  description: New Password of the user
+                  example: "newPassword@123"
+      responses:
+        "200":
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Password changed successfully"
+                  data: null
