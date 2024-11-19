@@ -1765,10 +1765,6 @@ paths:
                     items:
                       type: object
                       properties:
-                        businessPhones:
-                          type: Array
-                          description: Phone numbers 
-                          example: ["9876543210"]
                         displayName:
                           type: string
                           description: Display name of the User
@@ -1846,7 +1842,6 @@ paths:
                     type: string
                     description: Status message
                     example: "Password changed successfully"
-                  data: null
 
   /profile/update-bank-details:
     put:
