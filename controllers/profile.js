@@ -3,6 +3,7 @@ const { event, entity, profile, otp, user} = require("../db");
 const { insertSrTransaction } = require("../services/sr_transaction");
 const { resetchangeUserPassword, getUserByEmail } = require("../services/azureOps");
 const { otpService } = require("../services");
+const moment = require("moment/moment");
 
 exports.getContactList = async (request, reply) => {
   try {
@@ -65,14 +66,9 @@ exports.getContactList = async (request, reply) => {
 exports.getNomineeDetails = async (request, reply) => {
     try {
       const identity = request.isValid.identity;
-      const data = await profile.getNomineeDetailsByIdentity(identity);
-      if (data) {
-        const filteredData = data.map((record) => {
-          // Filter out any null values
-          return Object.fromEntries(
-            Object.entries(record).filter(([_, value]) => value !== null)
-          );
-        });
+      let data = await profile.getNomineeDetailsByIdentity(identity);
+      if (data.length) {
+        data[0].nominee_dob = moment(data[0].nominee_dob).format("DD/MM/YYYY");
         await event.insertEventTransaction(request.isValid);
         return reply
           .status(statusCodes.OK)
@@ -80,7 +76,7 @@ exports.getNomineeDetails = async (request, reply) => {
             responseFormatter(
               statusCodes.OK,
               "Nominee details fetched successfully",
-              filteredData
+              data
             )
           );
       } else {
