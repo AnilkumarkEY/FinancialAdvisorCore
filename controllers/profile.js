@@ -474,7 +474,7 @@ exports.getProfileBankDetails = async (request, reply) => {
           responseFormatter(
             statusCodes.OK,
             "Bank data retrieved successfully",
-            res
+            res[0]
           )
         );
     } else {
