@@ -7,6 +7,7 @@ exports.insertSrTransaction = async (requestBody, identity) => {
     const approvedSrStatus = 'd0cc0947a9f34d099e66048dc64c1740';
     const transaction = {
         idsr_transaction: uniqueString(), //create unique id for transaction
+        sr_number: Math.floor(1000 + Math.random() * 9000),
         idsrcategory,
         idsr_subcategory, 
         identity, 

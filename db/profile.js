@@ -31,6 +31,7 @@ const insertSrTransaction = async (values) => {
     INSERT INTO agentservicing.sr_transaction 
     (
     idsr_transaction,
+    sr_number,
     idsrcategory,
     idsr_subcategory, 
     identity_sr_createdby, 
@@ -39,10 +40,11 @@ const insertSrTransaction = async (values) => {
     sr_initiated_time,
     sr_closed_time
     ) VALUES 
-    ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+    ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
     RETURNING *`;
     const transactionValues = [
       values.idsr_transaction,
+      values.sr_number,
       values.idsrcategory,
       values.idsr_subcategory,
       values.identity,
@@ -277,7 +279,6 @@ const updateBankDetails = async (values, identity) => {
       values.account_holder_name,
       identity,
     ];
-
     const res = await client.query(query, updateValues);
     return res.rows;
   } catch (error) {
