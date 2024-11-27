@@ -169,6 +169,7 @@ const updateEntity = async (values, identity_nominee) => {
 
 const updateNomineeDetails = async (values, identity_nominee, identity) => {
   try {
+    const dob = values.dob.split('/').reverse().join('-');
     const query = `UPDATE core.partnernominee SET
     nominee_dob = $1,
     idmetadata_nominee_relationship = $2,
@@ -177,7 +178,7 @@ const updateNomineeDetails = async (values, identity_nominee, identity) => {
     RETURNING *`;
 
     const updatedValues = [
-      values.dob,
+      dob,
       values.relationship,
       values.title,
       identity_nominee,
