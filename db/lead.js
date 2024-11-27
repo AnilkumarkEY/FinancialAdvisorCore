@@ -153,6 +153,9 @@ async function getLeadById(idlead) {
       select
       l.idlead,
       e.fullname,
+      e.firstname,
+      e.middlename,
+      e.lastname,
       l.idmeta_lead_status,
       om1.meta_data_name as leadstatus,
       l.idmeta_lead_type,
