@@ -506,6 +506,9 @@ exports.updateBankDetails = async (request, reply) => {
     const identity = request.isValid.identity;
     const oldValues = await profile.getOldBankValues(identity);
     if(oldValues.length){
+      oldValues[0].accountnumber = oldValues[0].accountnumber.toString('utf8');
+      oldValues[0].bankname = oldValues[0].bankname.toString('utf8');
+      oldValues[0].ifsc_code = oldValues[0].ifsc_code.toString('utf8');
       request.body.sr_meta_value['oldValues'] = oldValues[0];
     }
     await insertSrTransaction(request.body, identity); //updating sr transaction
