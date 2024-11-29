@@ -152,13 +152,16 @@ async function getLeadById(idlead) {
     const query = `
       select
       l.idlead,
-      e.fullname,
+      COALESCE(e.fullname, '') as fullname,
+      COALESCE(e.firstname, '') as firstname,
+      COALESCE(e.middlename, '') as middlename,
+      COALESCE(e.lastname, '') as lastname,
       l.idmeta_lead_status,
-      om1.meta_data_name as leadstatus,
+      COALESCE(om1.meta_data_name, '') as leadstatus,
       l.idmeta_lead_type,
-      om2.meta_data_name as leadtype,
+      COALESCE(om2.meta_data_name, '') as leadtype,
       l.idmeta_source_type,
-      om.meta_data_name as source
+      COALESCE(om.meta_data_name, '') as source
       from oppurtunity."lead" l
       inner join core.entity e on e."identity" = l.identity_oppurtunity 
       inner join oppurtunity.op_metadata om on om.idmetadata = l.idmeta_source_type 

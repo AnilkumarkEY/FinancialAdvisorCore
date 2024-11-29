@@ -169,6 +169,7 @@ const updateEntity = async (values, identity_nominee) => {
 
 const updateNomineeDetails = async (values, identity_nominee, identity) => {
   try {
+    const dob = values.dob.split('/').reverse().join('-');
     const query = `UPDATE core.partnernominee SET
     nominee_dob = $1,
     idmetadata_nominee_relationship = $2,
@@ -177,7 +178,7 @@ const updateNomineeDetails = async (values, identity_nominee, identity) => {
     RETURNING *`;
 
     const updatedValues = [
-      values.dob,
+      dob,
       values.relationship,
       values.title,
       identity_nominee,
@@ -210,21 +211,24 @@ const getSrSubCategory = async (metaMaster) => {
 
 const getProfileOfficialDetails = async (identity) => {
   try {
-    const query = `SELECT 
-    business_code AS agent_code,
-    profile_fullname AS fullname,
-    designation ,
-    irda_number ,
-    joiningdate ,
-    license_expiry_date ,
-    CASE 
-      WHEN activeflag = 1 THEN 'Active'
-      WHEN activeflag = 0 THEN 'Inactive'
-    END AS agent_status,
-    leader_code,
-    branch 
-    FROM core.profile
-    WHERE identity = $1`;
+    const query = `
+      SELECT 
+        COALESCE(business_code, '') AS agent_code,
+        COALESCE(profile_fullname, '') AS fullname,
+        COALESCE(designation, '') AS designation,
+        COALESCE(irda_number, '') AS irda_number,
+        COALESCE(joiningdate::text, '') AS joiningdate,
+        COALESCE(license_expiry_date::text, '') AS license_expiry_date,
+        CASE 
+          WHEN activeflag = 1 THEN 'Active'
+          WHEN activeflag = 0 THEN 'Inactive'
+          ELSE '' 
+        END AS agent_status,
+        COALESCE(leader_code, '') AS leader_code,
+        COALESCE(branch, '') AS branch
+      FROM core.profile
+      WHERE identity = $1
+    `;
 
     const res = await client.query(query, [identity]);
     return res.rows;

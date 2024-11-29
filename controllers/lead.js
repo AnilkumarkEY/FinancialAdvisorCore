@@ -15,8 +15,9 @@ exports.createLead = async (request, reply) => {
     const id = "2c6348cacf9a404b89667136562d3ee6";
     leadData.identity = uniqueString();
     leadData.isValid = request.isValid;
-    leadData.firstname = leadData.fullName.split(" ")[0];
-    leadData.lastname = leadData.fullName.split(" ")[1];
+    leadData.firstname = leadData.firstname; //fullName.split(" ")[0];
+    leadData.lastname = leadData.lastname; //fullName.split(" ")[1];
+    leadData.middlename = leadData.middlename
     const entity = await entityService.performAction(id, leadData);
     if (entity.length) {
       const contactData = {
@@ -394,7 +395,7 @@ exports.getLeadTagsById = async (request, reply) => {
   try {
     const { idlead } = request.body;
     let leadTags = await lead.getLeadTagsById(idlead);
-    leadTags = leadTags.filter(item => item.activeflag);
+    leadTags = leadTags.filter((item) => item.activeflag);
     if (leadTags.length) {
       await event.insertEventTransaction(request.isValid);
       return reply
