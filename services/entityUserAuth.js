@@ -1,5 +1,6 @@
 const entityValues = require("../config/entityValues");
-const { entity } = require("../db");
+const { entity, admin } = require("../db");
+const { uniqueString } = require("../utils");
 
 // Example usage
 const performAction = (id, data) => {
@@ -22,7 +23,6 @@ const performAction = (id, data) => {
 const createEntityUserAuth = async (data) => {
   try {
     let insertEntity = await entity.insertEntityUrcAuth(data);
-    console.log("inserted entity with data:", insertEntity);
     return insertEntity;
   } catch (error) {
     throw new Error(error);
@@ -40,6 +40,24 @@ const updateEntityUserAuth = async (data) => {
   }
 };
 
+const processEntityAuthUrcData = async(entityRes, entityData) => {
+  try {
+    const id = '2c6348cacf9a404b89667136562d3ee6';
+    const idurc = await admin.getIdUrcFromUserType(entityData.user_type);
+    const insertData = {
+      identity_urc_auth: uniqueString(),
+      identity: entityRes.identity,
+      idurc,
+      idcontract: '2d2bba2213ad4e18ba76995396a6d910' //hardcoding for time-being
+    }
+    const authUrcRes = await performAction(id ,insertData);
+    return authUrcRes;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 module.exports = {
   performAction,
+  processEntityAuthUrcData
 };
