@@ -1,5 +1,6 @@
 const entityValues = require("../config/entityValues");
 const { entity } = require("../db");
+const { uniqueString } = require("../utils");
 
 // Example usage
 const performAction = (id, data) => {
@@ -22,7 +23,6 @@ const performAction = (id, data) => {
 const createEntity = async (data) => {
   try {
     let insertEntity = await entity.insertEntity(data);
-    console.log("inserted entity with data:", insertEntity);
     return insertEntity;
   } catch (error) {
     throw new Error(error);
@@ -40,6 +40,27 @@ const updateEntity = async (data) => {
   }
 };
 
+
+const processEntityData = async (data, identity) => {
+  try {
+    const id = "2c6348cacf9a404b89667136562d3ee6";
+    data.identity = uniqueString();
+    data.isValid = {
+      identity
+    };
+    if(data.middlename){
+      data.fullName = `${data.firstname} ${data.middlename} ${data.lastname}`;
+    } else {
+      data.fullName = `${data.firstname} ${data.lastname}`;
+    }
+    const entity = await performAction(id, data);
+    return entity;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 module.exports = {
   performAction,
+  processEntityData
 };

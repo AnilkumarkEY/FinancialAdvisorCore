@@ -16,8 +16,9 @@ const insertEntity = async (entityData) => {
               dob,
               eff_to_date,
               identity,
-              idmeta_data_gender
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+              idmeta_data_gender,
+              idmeta_title
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
             RETURNING *;
           `;
   const values = [
@@ -35,10 +36,10 @@ const insertEntity = async (entityData) => {
     entityData.eff_to_date || null,
     entityData.identity || null,
     entityData.gender || null,
+    entityData.idmeta_title || null,
   ];
   try {
     const res = await client.query(query, values);
-    console.log("Insert successful:", res);
     return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);
@@ -88,7 +89,8 @@ const updateEntity = async (query, entityData) => {
 };
 
 const insertEntityUrcAuth = async (entityUrcAuthData) => {
-  const query = `
+  try {
+    const query = `
         INSERT INTO core.entity_urc_auth (
           idcontract,
           issubsidary,
@@ -101,31 +103,28 @@ const insertEntityUrcAuth = async (entityUrcAuthData) => {
           inactivedate,
           eff_from_date,
           eff_to_date,
-          entity_urc_auth,
           createdby,
           idurc
-        ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, $8, $9, $10, $11, $12, $13)
+        ) VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, $8, $9, $10, $11, $12)
+         RETURNING *;
       `;
 
-  const values = [
-    entityUrcAuthData.idcontract || null,
-    entityUrcAuthData.issubsidary || null,
-    entityUrcAuthData.description || null,
-    entityUrcAuthData.identity_urc_auth || null,
-    entityUrcAuthData.sortorder || null,
-    entityUrcAuthData.identity || null,
-    entityUrcAuthData.modifiedby || null,
-    entityUrcAuthData.inactivedate || null,
-    entityUrcAuthData.eff_from_date || null,
-    entityUrcAuthData.eff_to_date || null,
-    entityUrcAuthData.entity_urc_auth || null,
-    entityUrcAuthData.createdby || null,
-    entityUrcAuthData.idurc || null,
-  ];
-
-  try {
+    const values = [
+      entityUrcAuthData.idcontract || null,
+      entityUrcAuthData.issubsidary || null,
+      entityUrcAuthData.description || null,
+      entityUrcAuthData.identity_urc_auth || null,
+      entityUrcAuthData.sortorder || null,
+      entityUrcAuthData.identity || null,
+      entityUrcAuthData.modifiedby || null,
+      entityUrcAuthData.inactivedate || null,
+      entityUrcAuthData.eff_from_date || null,
+      entityUrcAuthData.eff_to_date || null,
+      entityUrcAuthData.createdby || null,
+      entityUrcAuthData.idurc || null
+    ];
     const res = await client.query(query, values);
-    console.log("Insert successful:", res);
+    return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);
   }
@@ -185,10 +184,8 @@ const insertEntityContact = async (entityContactData) => {
     entityContactData.district || null,
     entityContactData.countryname || null,
   ];
-  console.log("Values:", values);
   try {
     const res = await client.query(query, values);
-    console.log("Insert successful:", res.rows);
     return res.rows;
   } catch (error) {
     console.error("Error inserting data:", error);

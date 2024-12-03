@@ -1,17 +1,16 @@
 const { responseFormatter, statusCodes, uniqueString } = require("../utils");
 const { entityContact } = require("../services");
 const { lead, event } = require("../db");
+
+
 exports.addEntityContact = async (request, reply) => {
   try {
-    // Extracting data from the request body
     const requestData = request.body;
     const identity = await lead.getIdentity(request.body.leadId);
-    // Generating a unique ID for the contact
     let uId = uniqueString();
 
-    // Pre-defined ID for the action (as per your example)
+    // Pre-defined ID for the action
     const id = "2c6348cacf9a404b89667136562d3ee6";
-    // Creating the entity JSON object to be inserted
     const entity_json = {
       identity_contact: uId,
       address_line_1: requestData.addressLine1,
@@ -30,8 +29,6 @@ exports.addEntityContact = async (request, reply) => {
     };
     // Performing the action to save the contact
     const insertEntity = await entityContact.performAction(id, entity_json);
-
-    console.log("Inserted entity with Data:", insertEntity);
 
     // If the insertion is successful, return a success response
     if (insertEntity) {

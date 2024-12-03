@@ -2042,3 +2042,568 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
+
+  /admin/create-agent:
+    post:
+      summary: Create agent Data
+      description: Adds new agent data along with contact and agent details.
+      operationId: createAgent
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - entityData
+                - contactData
+                - agentData
+              properties:
+                entityData:
+                  type: object
+                  required:
+                    - idmeta_title
+                    - firstname
+                    - lastname
+                    - gender
+                    - metaEntityType
+                    - user_type
+                    - dob
+                  properties:
+                    idmeta_title:
+                      type: string
+                      description: Metadata title ID.
+                      example: "468de4cb17494c67a732da2810f9c905"
+                    firstname:
+                      type: string
+                      description: First name of the entity.
+                      example: "Sahil"
+                    middlename:
+                      type: string
+                      description: Middle name of the entity.
+                      example: ""
+                    lastname:
+                      type: string
+                      description: Last name of the entity.
+                      example: "Gujral"
+                    gender:
+                      type: string
+                      description: Gender ID.
+                      example: "986bd1568afb42cca258cf17a68d60f4"
+                    metaEntityType:
+                      type: string
+                      description: Metadata entity type.
+                      example: "6e913026df2b4c29aeff33212dd3ffa5"
+                    user_type:
+                      type: string
+                      description: User type ID.
+                      example: "2f4eab3a82584d5183a003dd82fc50dd"
+                    dob:
+                      type: string
+                      format: date
+                      description: Date of birth.
+                      example: "1998/10/01"
+                contactData:
+                  type: object
+                  required:
+                    - primary_phone
+                    - primary_email
+                    - address_line_1
+                    - city
+                    - state
+                    - country
+                    - pincode
+                  properties:
+                    primary_phone:
+                      type: string
+                      description: Primary phone number.
+                      example: "9876543210"
+                    primary_email:
+                      type: string
+                      description: Primary email address.
+                      example: "example.com"
+                    address_line_1:
+                      type: string
+                      description: First line of the address.
+                      example: "H.No. 343"
+                    address_line_2:
+                      type: string
+                      description: Second line of the address.
+                      example: "Modern Street"
+                    location_name:
+                      type: string
+                      description: Location name.
+                      example: "Adarsh Nagar"
+                    city:
+                      type: string
+                      description: City name.
+                      example: "Hyderabad"
+                    district:
+                      type: string
+                      description: District name.
+                      example: "Hyderabad"
+                    state:
+                      type: string
+                      description: State name.
+                      example: "Telangana"
+                    country:
+                      type: string
+                      description: Country name.
+                      example: "India"
+                    pincode:
+                      type: string
+                      description: Postal code.
+                      example: "203932"
+                agentData:
+                  type: object
+                  required:
+                      - desgn_code
+                      - desgn_desc
+                      - branch_code
+                      - branch_name
+                      - dateOf_joining
+                      - license_expiry
+                      - dt_leader_code
+                      - dt_leader_name
+                      - dt_leader_desg_desc
+                      - dt_leader_designation
+                      - dt_leader_branch
+                      - dt_leader_branch_name
+                      - l1_leader_code
+                      - l1_leader_name
+                      - l1_leader_desg_desc
+                      - l1_leader_designation
+                      - l1_leader_branch
+                      - l1_leader_branch_name
+                      - l2_leader_code
+                      - l2_leader_name
+                      - l2_leader_desg_desc
+                      - l2_leader_designation
+                      - l2_leader_branch
+                      - l2_leader_branch_name
+                      - bam_ntid
+                      - bam_code
+                      - bam_emp_cd
+                      - bam_name
+                      - bam_designation
+                      - bam_desg_desc
+                      - bam_branch
+                      - bam_branch_name
+                      - bm_ntid
+                      - bm_code
+                      - bm_emp_cd
+                      - bm_name
+                      - bm_designation
+                      - bm_desg_desc
+                      - bm_branch
+                      - bm_branch_name
+                      - ch_ntid
+                      - ch_code
+                      - ch_emp_cd
+                      - ch_name
+                      - ch_designation
+                      - ch_desg_desc
+                      - ch_branch
+                      - ch_branch_name
+                      - adoa_nonsourcing_ntid
+                      - adoa_nonsourcing_code
+                      - adoa_nonsourcing_emp_cd
+                      - adoa_nonsourcing_name
+                      - adoa_nonsourcing_designation
+                      - adoa_nonsourcing_desg_desc
+                      - adoa_nonsourcing_branch
+                      - adoa_nonsourcing_branch_name
+                      - adoa_ntid
+                      - adoa_code
+                      - adoa_emp_cd
+                      - adoa_name
+                      - adoa_designation
+                      - adoa_desg_desc
+                      - adoa_branch_code
+                      - adoa_branch_name
+                      - doa_ntid
+                      - doa_code
+                      - doa_emp_cd
+                      - doa_name
+                      - doa_designation
+                      - doa_desg_desc
+                      - doa_branch
+                      - doa_branch_name
+                      - cao_ntid
+                      - cao_code
+                      - cao_emp_cd
+                      - cao_name
+                      - cao_designation
+                      - cao_desg_desc
+                      - cao_branch_code
+                      - cao_branch_name
+                  properties:
+                    desgn_code:
+                      type: string
+                      description: Designation code.
+                      example: "SB"
+                    desgn_desc:
+                      type: string
+                      description: Designation description.
+                      example: "ADVISOR - BA"
+                    branch_code:
+                      type: string
+                      description: Branch code.
+                      example: "JM01"
+                    branch_name:
+                      type: string
+                      description: Branch name.
+                      example: "Jamshedpur"
+                    dateOf_joining:
+                      type: string
+                      format: date
+                      description: Date of joining.
+                      example: "2024/12/03"
+                    license_expiry:
+                      type: string
+                      format: date
+                      description: License expiry date.
+                      example: "2025/12/02"
+                    dt_leader_code:
+                      type: string
+                      description: Direct leader code.
+                      example: "5798147"
+                    dt_leader_name:
+                      type: string
+                      description: Direct leader name.
+                      example: "AARAMBH FINANCIAL SERVICES"
+                    dt_leader_desg_desc:
+                      type: string
+                      description: Direct leader designation description.
+                      example: "III-PROVISIONAL BUSINESS ASSOCIATE"
+                    dt_leader_designation:
+                      type: string
+                      description: Direct leader designation.
+                      example: "BT"
+                    dt_leader_branch:
+                      type: string
+                      description: Direct leader branch code.
+                      example: "JM01"
+                    dt_leader_branch_name:
+                      type: string
+                      description: Direct leader branch name.
+                      example: "Jamshedpur"
+                    l1_leader_code:
+                      type: string
+                      description: Level 1 leader code.
+                      example: "908050"
+                    l1_leader_name:
+                      type: string
+                      description: Level 1 leader name.
+                      example: "BSC CONSULTANCY SERVICES"
+                    l1_leader_desg_desc:
+                      type: string
+                      description: Level 1 leader designation description.
+                      example: "SENIOR BUSINESS ASSOCIATE LEADER"
+                    l1_leader_designation:
+                      type: string
+                      description: Level 1 leader designation.
+                      example: "LU"
+                    l1_leader_branch:
+                      type: string
+                      description: Level 1 leader branch code.
+                      example: "JM01"
+                    l1_leader_branch_name:
+                      type: string
+                      description: Level 1 leader branch name.
+                      example: "Jamshedpur"
+                    l2_leader_code:
+                      type: string
+                      description: Level 1 leader code.
+                      example: "908050"
+                    l2_leader_name:
+                      type: string
+                      description: Level 1 leader name.
+                      example: "BSC CONSULTANCY SERVICES"
+                    l2_leader_desg_desc:
+                      type: string
+                      description: Level 1 leader designation description.
+                      example: "SENIOR BUSINESS ASSOCIATE LEADER"
+                    l2_leader_designation:
+                      type: string
+                      description: Level 1 leader designation.
+                      example: "LU"
+                    l2_leader_branch:
+                      type: string
+                      description: Level 1 leader branch code.
+                      example: "JM01"
+                    l2_leader_branch_name:
+                      type: string
+                      description: Level 1 leader branch name.
+                      example: "Jamshedpur"
+                    bam_ntid:
+                      type: string
+                      description: BAM NTID.
+                      example: "OEACV29"
+                    bam_code:
+                      type: string
+                      description: BAM code.
+                      example: "4807212"
+                    bam_emp_cd:
+                      type: string
+                      description: BAM employee code.
+                      example: "3975701"
+                    bam_name:
+                      type: string
+                      description: BAM name.
+                      example: "SanketKumar Sinha"
+                    bam_designation:
+                      type: string
+                      description: BAM designation.
+                      example: "S3"
+                    bam_desg_desc:
+                      type: string
+                      description: BAM designation description.
+                      example: "MANAGER AGENCY BA"
+                    bam_branch:
+                      type: string
+                      description: BAM branch code.
+                      example: "JM01"
+                    bam_branch_name:
+                      type: string
+                      description: BAM branch name.
+                      example: "Jamshedpur"
+                    bm_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    bm_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    bm_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    bm_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    bm_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    bm_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    bm_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    bm_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    ch_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    ch_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    ch_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    ch_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    ch_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    ch_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    ch_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    ch_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    adoa_nonsourcing_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    adoa_nonsourcing_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    adoa_nonsourcing_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    adoa_nonsourcing_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    adoa_nonsourcing_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    adoa_nonsourcing_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    adoa_nonsourcing_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    adoa_nonsourcing_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    adoa_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    adoa_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    adoa_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    adoa_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    adoa_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    adoa_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    adoa_branch_code:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    adoa_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    doa_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    doa_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    doa_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    doa_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    doa_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    doa_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    doa_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    doa_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    cao_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    cao_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    cao_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    cao_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    cao_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    cao_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    cao_branch_code:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    cao_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+      responses:
+        "200":
+          description: Agent saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code.
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message.
+                    example: "Agent saved successfully"
+                  data:
+                    type: object
+                    description: Returned data
+        "400":
+          description: Bad Request - Missing or invalid parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid request body."
+        "401":
+          description: Unauthorized - Invalid token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
