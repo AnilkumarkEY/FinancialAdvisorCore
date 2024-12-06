@@ -11,7 +11,7 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(
 
 const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME; // Your storage account name
 const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY; // Your storage account key
-const containerName = "advisor-storage";
+const containerName = process.env.AZURE_CONTAINERNAME;
 
 async function uploadFileToBlob(fileName, fileBuffer) {
   try {
