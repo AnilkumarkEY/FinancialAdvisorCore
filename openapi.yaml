@@ -2165,86 +2165,86 @@ paths:
                 agentData:
                   type: object
                   required:
-                      - desgn_code
-                      - desgn_desc
-                      - branch_code
-                      - branch_name
-                      - dateOf_joining
-                      - license_expiry
-                      - dt_leader_code
-                      - dt_leader_name
-                      - dt_leader_desg_desc
-                      - dt_leader_designation
-                      - dt_leader_branch
-                      - dt_leader_branch_name
-                      - l1_leader_code
-                      - l1_leader_name
-                      - l1_leader_desg_desc
-                      - l1_leader_designation
-                      - l1_leader_branch
-                      - l1_leader_branch_name
-                      - l2_leader_code
-                      - l2_leader_name
-                      - l2_leader_desg_desc
-                      - l2_leader_designation
-                      - l2_leader_branch
-                      - l2_leader_branch_name
-                      - bam_ntid
-                      - bam_code
-                      - bam_emp_cd
-                      - bam_name
-                      - bam_designation
-                      - bam_desg_desc
-                      - bam_branch
-                      - bam_branch_name
-                      - bm_ntid
-                      - bm_code
-                      - bm_emp_cd
-                      - bm_name
-                      - bm_designation
-                      - bm_desg_desc
-                      - bm_branch
-                      - bm_branch_name
-                      - ch_ntid
-                      - ch_code
-                      - ch_emp_cd
-                      - ch_name
-                      - ch_designation
-                      - ch_desg_desc
-                      - ch_branch
-                      - ch_branch_name
-                      - adoa_nonsourcing_ntid
-                      - adoa_nonsourcing_code
-                      - adoa_nonsourcing_emp_cd
-                      - adoa_nonsourcing_name
-                      - adoa_nonsourcing_designation
-                      - adoa_nonsourcing_desg_desc
-                      - adoa_nonsourcing_branch
-                      - adoa_nonsourcing_branch_name
-                      - adoa_ntid
-                      - adoa_code
-                      - adoa_emp_cd
-                      - adoa_name
-                      - adoa_designation
-                      - adoa_desg_desc
-                      - adoa_branch_code
-                      - adoa_branch_name
-                      - doa_ntid
-                      - doa_code
-                      - doa_emp_cd
-                      - doa_name
-                      - doa_designation
-                      - doa_desg_desc
-                      - doa_branch
-                      - doa_branch_name
-                      - cao_ntid
-                      - cao_code
-                      - cao_emp_cd
-                      - cao_name
-                      - cao_designation
-                      - cao_desg_desc
-                      - cao_branch_code
-                      - cao_branch_name
+                    - desgn_code
+                    - desgn_desc
+                    - branch_code
+                    - branch_name
+                    - dateOf_joining
+                    - license_expiry
+                    - dt_leader_code
+                    - dt_leader_name
+                    - dt_leader_desg_desc
+                    - dt_leader_designation
+                    - dt_leader_branch
+                    - dt_leader_branch_name
+                    - l1_leader_code
+                    - l1_leader_name
+                    - l1_leader_desg_desc
+                    - l1_leader_designation
+                    - l1_leader_branch
+                    - l1_leader_branch_name
+                    - l2_leader_code
+                    - l2_leader_name
+                    - l2_leader_desg_desc
+                    - l2_leader_designation
+                    - l2_leader_branch
+                    - l2_leader_branch_name
+                    - bam_ntid
+                    - bam_code
+                    - bam_emp_cd
+                    - bam_name
+                    - bam_designation
+                    - bam_desg_desc
+                    - bam_branch
+                    - bam_branch_name
+                    - bm_ntid
+                    - bm_code
+                    - bm_emp_cd
+                    - bm_name
+                    - bm_designation
+                    - bm_desg_desc
+                    - bm_branch
+                    - bm_branch_name
+                    - ch_ntid
+                    - ch_code
+                    - ch_emp_cd
+                    - ch_name
+                    - ch_designation
+                    - ch_desg_desc
+                    - ch_branch
+                    - ch_branch_name
+                    - adoa_nonsourcing_ntid
+                    - adoa_nonsourcing_code
+                    - adoa_nonsourcing_emp_cd
+                    - adoa_nonsourcing_name
+                    - adoa_nonsourcing_designation
+                    - adoa_nonsourcing_desg_desc
+                    - adoa_nonsourcing_branch
+                    - adoa_nonsourcing_branch_name
+                    - adoa_ntid
+                    - adoa_code
+                    - adoa_emp_cd
+                    - adoa_name
+                    - adoa_designation
+                    - adoa_desg_desc
+                    - adoa_branch_code
+                    - adoa_branch_name
+                    - doa_ntid
+                    - doa_code
+                    - doa_emp_cd
+                    - doa_name
+                    - doa_designation
+                    - doa_desg_desc
+                    - doa_branch
+                    - doa_branch_name
+                    - cao_ntid
+                    - cao_code
+                    - cao_emp_cd
+                    - cao_name
+                    - cao_designation
+                    - cao_desg_desc
+                    - cao_branch_code
+                    - cao_branch_name
                   properties:
                     desgn_code:
                       type: string
@@ -2607,3 +2607,109 @@ paths:
                   message:
                     type: string
                     example: "Unauthorized access."
+
+  /search/global-search:
+    post:
+      summary: Perform a global search based on the given search text.
+      description: This endpoint allows users to search globally for functionalities using a search term.
+      operationId: globalSearch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ntid:
+                  type: string
+                  description: NTID of the user (optional).
+                  example: ""
+                userType:
+                  type: string
+                  description: Type of user initiating the search.
+                  example: "Leader"
+                searchText:
+                  type: string
+                  description: Text to search for.
+                  example: "app"
+      responses:
+        "200":
+          description: Global search successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code.
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message.
+                    example: "Global Search successful"
+                  data:
+                    type: array
+                    description: List of functionalities that match the search query.
+                    items:
+                      type: object
+                      properties:
+                        idfunctionality:
+                          type: string
+                          description: Unique identifier for the functionality.
+                          example: "C68BBBDE6B62411F91634C36EE61C0ED"
+                        created_by:
+                          type: string
+                          nullable: true
+                          description: User who created the functionality.
+                          example: null
+                        last_modified_by:
+                          type: string
+                          nullable: true
+                          description: User who last modified the functionality.
+                          example: null
+                        active:
+                          type: boolean
+                          description: Whether the functionality is active.
+                          example: true
+                        functionality_class_path:
+                          type: string
+                          nullable: true
+                          description: Path for the functionality class.
+                          example: null
+                        functionality_class_type:
+                          type: string
+                          nullable: true
+                          description: Type of the functionality class.
+                          example: null
+                        functionality_code:
+                          type: string
+                          description: Code identifying the functionality.
+                          example: "GLOBAL_SEARCH_APP_TRACKER"
+                        icon_url:
+                          type: string
+                          description: URL to the icon associated with the functionality.
+                          example: "global-search-icon/App_Tracker.png"
+                        name:
+                          type: string
+                          description: Name of the functionality.
+                          example: "App Tracker"
+                        functionality_type_id:
+                          type: string
+                          nullable: true
+                          description: ID of the functionality type.
+                          example: null
+                        functionality_type_master:
+                          type: string
+                          description: Master type of the functionality.
+                          example: "FUNCTIONALITY_GLOBAL_SEARCH"
+                        created_date:
+                          type: string
+                          nullable: true
+                          description: Date the functionality was created.
+                          example: null
+                        last_modified_date:
+                          type: string
+                          nullable: true
+                          description: Date the functionality was last modified.
+                          example: null

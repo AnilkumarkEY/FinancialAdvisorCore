@@ -19,13 +19,7 @@ async function functionalityMasterSearchGlobalSearch(userType, searchKeyword) {
       JOIN core.usertype utm ON utm.idusertype = erm.user_type_master_id
       WHERE utm.description =  $1::text AND em.functionality_type_master = 'FUNCTIONALITY_GLOBAL_SEARCH'
       AND srk.keyword LIKE CONCAT('%', $2::text, '%')`;
-
-    console.log("Executing query:", query);
-    console.log("Parameters:", [userType, searchKeyword]);
-
     const res = await client.query(query, [userType, searchKeyword]);
-    console.log("query: " + query)
-    console.log("res.rows: " + res.rows)
     return res.rows; // Return the result rows
   } catch (error) {
     console.error("Error executing query", error.stack);
@@ -35,5 +29,5 @@ async function functionalityMasterSearchGlobalSearch(userType, searchKeyword) {
 
 module.exports = {
   functionalitySearchKey,
-  functionalityMasterSearchGlobalSearch
+  functionalityMasterSearchGlobalSearch,
 };
