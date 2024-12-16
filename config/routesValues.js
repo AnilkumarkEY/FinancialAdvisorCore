@@ -28,5 +28,6 @@ exports.routeValues = {
   "/profile/change-password": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/profile/get-profile-bank-details": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/profile/update-bank-details": "c2a04e70f16541f5b52f1b0803ee46d3",
-  "/admin/create-agent": "c2a04e70f16541f5b52f1b0803ee46d3"
+  "/admin/create-agent": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/search/global-search": "c2a04e70f16541f5b52f1b0803ee46d3"
 };

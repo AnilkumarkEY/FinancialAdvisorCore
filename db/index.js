@@ -8,6 +8,7 @@ const validation = require("./validation");
 const otp = require("./otp");
 const communication = require("./communication");
 const admin = require("./admin");
+const search = require("./search");
 
 module.exports = {
   entity,
@@ -19,5 +20,6 @@ module.exports = {
   validation,
   otp,
   communication,
-  admin
+  admin,
+  search
 };
