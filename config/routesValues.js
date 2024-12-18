@@ -29,5 +29,6 @@ exports.routeValues = {
   "/profile/get-profile-bank-details": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/profile/update-bank-details": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/admin/create-agent": "362cbcaa6bf64fae9a77c729e209e2a0",
-  "/search/global-search": "c2a04e70f16541f5b52f1b0803ee46d3"
+  "/search/global-search": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/nudge/get-dashboard-events": "c2a04e70f16541f5b52f1b0803ee46d3"
 };
