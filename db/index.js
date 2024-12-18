@@ -9,6 +9,7 @@ const otp = require("./otp");
 const communication = require("./communication");
 const admin = require("./admin");
 const search = require("./search");
+const nudge = require("./nudge");
 
 module.exports = {
   entity,
@@ -21,5 +22,6 @@ module.exports = {
   otp,
   communication,
   admin,
-  search
+  search,
+  nudge
 };

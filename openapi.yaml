@@ -2713,3 +2713,52 @@ paths:
                           nullable: true
                           description: Date the functionality was last modified.
                           example: null
+  /nudge/get-events:
+    post:
+      summary: Get nudge event details
+      description: Get nudge event details
+      operationId: getNudgeEventDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - agentCode
+                - status
+                - limit
+                - pageNo
+              properties:
+                agentCode:
+                  type: string
+                  description: Logged In agent code.
+                status:
+                  type: string
+                  description: Current status of nudge (Ongoing -> 5e1910281d564c4580f4ab8b6c1686af, Done -> 5e02ce427847479bae422a102b1ab9ed, Cancelled -> 47d7154f1373479590729c7cd9742534, Over Due -> 36451293c90c4c8b81aa27840515456b).
+                limit:
+                  type: string
+                  description: No of records want in list.
+                pageNo:
+                  type: string
+                  description: Current page no (start from 0 to n).
+      responses:
+        "201":
+          description: Nudge Events Fetched successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
