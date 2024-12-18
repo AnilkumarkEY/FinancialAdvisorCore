@@ -8,9 +8,9 @@ exports.routeValues = {
   "/lead/get-all-products": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/get-lead-list": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/product-intrested": "c2a04e70f16541f5b52f1b0803ee46d3", //done
-  "/lead/get-lead-tags": "c2a04e70f16541f5b52f1b0803ee46d3",//done
-  "/lead/get-locality": "c2a04e70f16541f5b52f1b0803ee46d3",//done
-  "/lead/get-lead-tags-by-id": "c2a04e70f16541f5b52f1b0803ee46d3",//done
+  "/lead/get-lead-tags": "c2a04e70f16541f5b52f1b0803ee46d3", //done
+  "/lead/get-locality": "c2a04e70f16541f5b52f1b0803ee46d3", //done
+  "/lead/get-lead-tags-by-id": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/get-lead-by-id": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/get-lead-contact-list": "c2a04e70f16541f5b52f1b0803ee46d3", //done
   "/lead/get-lead-incomes": "c2a04e70f16541f5b52f1b0803ee46d3",
@@ -30,5 +30,5 @@ exports.routeValues = {
   "/profile/update-bank-details": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/admin/create-agent": "362cbcaa6bf64fae9a77c729e209e2a0",
   "/search/global-search": "c2a04e70f16541f5b52f1b0803ee46d3",
-  "/nudge/get-dashboard-events": "c2a04e70f16541f5b52f1b0803ee46d3"
+  "/nudge/get-events": "c2a04e70f16541f5b52f1b0803ee46d3"
 };

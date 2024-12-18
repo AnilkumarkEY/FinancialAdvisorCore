@@ -1,12 +1,41 @@
-const { getDashboardNudgeDetails } = require("../db/nudge");
+const {
+    getNudgeEventDetails
+} = require("../db/nudge");
 const {
     responseFormatter,
     statusCodes
 } = require("../utils");
 
-exports.getDashboardEvents = async (request, reply) => {
+exports.getEvents = async (request, reply) => {
     try {
-        const response = await getDashboardNudgeDetails(0); 
+        const {
+            agentCode,
+            status,
+            limit = 20,
+            pageNo = 0
+        } = request.body;
+
+        if (!agentCode || !status) {
+            return reply
+                .status(statusCodes.BAD_REQUEST)
+                .send(
+                    responseFormatter(
+                        statusCodes.BAD_REQUEST,
+                        "Agent code and status are required!",
+                        []
+                    )
+                );
+        }
+
+        const pageLimit = Number(limit);
+        const offset = pageLimit * Number(pageNo);
+        const response = await getNudgeEventDetails(
+            agentCode,
+            status,
+            pageLimit,
+            offset
+        );
+
         return reply
             .status(statusCodes.OK)
             .send(

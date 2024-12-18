@@ -8,10 +8,10 @@ const {
 
 async function nudgeRoutes(fastify, options) {
     fastify.post(
-        "/get-dashboard-events", {
+        "/get-events", {
             preHandler: [authentication, validation]
         },
-        nudge.getDashboardEvents
+        nudge.getEvents
     );
 }
 
