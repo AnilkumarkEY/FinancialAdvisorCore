@@ -2762,3 +2762,212 @@ paths:
                     type: array
                     items:
                       type: object
+
+  /search/top-categories-global-search:
+    post:
+      summary: Fetch top categories for global search
+      description: API to fetch top categories based on the user type for global search functionality.
+      operationId: fetchTopCategoriesGlobalSearch
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userType
+              properties:
+                userType:
+                  type: string
+                  description: Type of the user making the request.
+                  example: "Leader"
+      responses:
+        "200":
+          description: Global Search successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 200
+                  message:
+                    type: string
+                    description: Description of the response.
+                    example: "Global Search successful"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idfunctionality:
+                          type: string
+                          description: Unique identifier for the functionality.
+                          example: "06D553D1426E8E4981AE65CB6F1D34DF"
+                        created_by:
+                          type: string
+                          description: Creator of the functionality.
+                          nullable: true
+                        last_modified_by:
+                          type: string
+                          description: Last modifier of the functionality.
+                          nullable: true
+                        active:
+                          type: boolean
+                          description: Status indicating if the functionality is active.
+                          example: true
+                        functionality_class_path:
+                          type: string
+                          description: Path of the functionality class.
+                          nullable: true
+                        functionality_class_type:
+                          type: string
+                          description: Type of the functionality class.
+                          nullable: true
+                        functionality_code:
+                          type: string
+                          description: Code of the functionality.
+                          example: "GLOBAL_SEARCH_LEADER_ONE_VIEW"
+                        icon_url:
+                          type: string
+                          description: URL to the functionality icon.
+                          example: "global-search-icon/leader_one_view.png"
+                        name:
+                          type: string
+                          description: Name of the functionality.
+                          example: "Leader one view"
+                        functionality_type_id:
+                          type: string
+                          description: ID of the functionality type.
+                          nullable: true
+                        functionality_type_master:
+                          type: string
+                          description: Master type of the functionality.
+                          example: "FUNCTIONALITY_GLOBAL_SEARCH"
+                        created_date:
+                          type: string
+                          description: Creation date of the functionality.
+                          nullable: true
+                        last_modified_date:
+                          type: string
+                          description: Last modified date of the functionality.
+                          nullable: true
+
+  /search/get-favourite:
+    post:
+      summary: Fetch favourite functionalities
+      description: API to retrieve the list of favourite functionalities for a user based on their NT ID and user type.
+      operationId: fetchFavouriteFunctionalities
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ntId
+                - userType
+              properties:
+                ntId:
+                  type: string
+                  description: Unique NT ID of the user.
+                  example: "90764"
+                userType:
+                  type: string
+                  description: Type of the user (e.g., Leader, Agent).
+                  example: "Leader"
+      responses:
+        "200":
+          description: Favourite list fetched successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 200
+                  message:
+                    type: string
+                    description: Message describing the response.
+                    example: "Favourite list fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idfunctionality:
+                          type: string
+                          description: Unique identifier for the functionality.
+                          example: "0030F25067DE4511B8C4BAE138D1FF71"
+                        name:
+                          type: string
+                          description: Name of the functionality.
+                          example: "Agency Virtual Assistant"
+                        functionality_code:
+                          type: string
+                          description: Code of the functionality.
+                          example: "FUNCTIONALITY_BOT"
+                        icon_url:
+                          type: string
+                          description: URL of the functionality icon.
+                          example: "https://salesasset.blob.core.windows.net/salesassetblob/fav-icon/RnR%20icon.png"
+                        functionality_class_type:
+                          type: string
+                          description: Type of the functionality class.
+                          nullable: true
+                          example: "EVENT_CLASS"
+                        default_functionality:
+                          type: boolean
+                          description: Indicates if this is the default functionality.
+                          example: true
+                        display_order:
+                          type: integer
+                          description: Order in which the functionality is displayed.
+                          example: 4
+                        eventMasterId:
+                          type: string
+                          description: Master ID of the event associated with the functionality.
+                          example: "A6F8DC9A822DE649AA9989414DB459ED"
+                        enabled:
+                          type: boolean
+                          description: Indicates if the functionality is enabled.
+                          example: true
+                        nt_id:
+                          type: string
+                          description: NT ID of the user.
+                          example: "90764"
+        "500":
+          description: Error fetching favourite functionalities.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 500
+                  message:
+                    type: string
+                    description: Error message.
+                    example: "Favourite list fetch failed"
