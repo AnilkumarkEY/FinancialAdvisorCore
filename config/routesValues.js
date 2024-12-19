@@ -31,7 +31,7 @@ exports.routeValues = {
   "/admin/create-agent": "362cbcaa6bf64fae9a77c729e209e2a0",
   "/nudge/get-events": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/search/global-search": "c2a04e70f16541f5b52f1b0803ee46d3",
-  "/search/get-Favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
-  "/search/add-Favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/search/get-favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/search/add-favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/search/top-categories-global-search": "c2a04e70f16541f5b52f1b0803ee46d3"
 };
