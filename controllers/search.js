@@ -1,10 +1,14 @@
 const { responseFormatter, statusCodes } = require("../utils");
 const { tokenService, otpService, azureBlob } = require("../services");
 const { event, search } = require("../db");
+require("dotenv").config();
 
 exports.globalsearch = async (request, reply) => {
   try {
     const { userType, searchText } = request.body;
+    if (!searchText || !userType) {
+      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter: searchText, userType");
+    }
     const searchKey = searchText.trim();
     const searchWords = searchText.split(" ");
     let globalSearch = [];
@@ -68,18 +72,21 @@ exports.globalsearch = async (request, reply) => {
 exports.topcategories = async (request, reply) => {
   try {
     const { userType } = request.body;
+    if (!userType) {
+      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter: userType");
+    }
 
     const topcategoriesList = await search.getTopCategoriesList(userType);
 
     return reply
-    .status(statusCodes.OK)
-    .send(
-      responseFormatter(
-        statusCodes.OK,
-        "Global Search successfull",
-        topcategoriesList
-      )
-    );
+      .status(statusCodes.OK)
+      .send(
+        responseFormatter(
+          statusCodes.OK,
+          "Global Search successfull",
+          topcategoriesList
+        )
+      );
   } catch (error) {
     // Handle unexpected errors
     console.error(error);
@@ -98,7 +105,7 @@ exports.getfavourite = async (request, reply) => {
   try {
     const { ntId, userType } = request.body;
     if (!ntId || !userType) {
-      return reply.status(statusCodes.BAD_REQUEST).send("Missing required headers: ntId, userType");
+      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter: ntId, userType");
     }
 
     const favList = await search.getFavouriteEventByUser(userType);
@@ -135,24 +142,23 @@ exports.getfavourite = async (request, reply) => {
     });
 
     const favManageMasterList = favList.filter(fav => fav.displayOrder !== null);
-    const sasToken = azureBlob.
+    const sasToken = await azureBlob.getSasToken();
+    // const sasToken = "/sasToken"
 
-      favList.forEach(fav => {
-        const iconUrl = "endpoinUrl" + "containerName" + fav.iconUrl + sasToken;
-        // const iconUrl = "https://tcnpsidhsa01.blob.core.windows.net"+"siddhi-prod"+fav.iconUrl +sasToken;
+    favList.forEach(fav => {
+      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + fav.icon_url + sasToken;
+      fav.icon_url = iconUrl;
 
-        fav.icon_url = iconUrl;
-
-        if (!favManageMasterList || favManageMasterList.length === 0) {
-          fav.enabled = fav.default_functionality;
-          if (fav.default_functionality === true) {
-            fav.display_order = fav.display_order;
-          }
+      if (!favManageMasterList || favManageMasterList.length === 0) {
+        fav.enabled = fav.default_functionality;
+        if (fav.default_functionality === true) {
+          fav.display_order = fav.display_order;
         }
-        if (fav.display_order !== null) {
-          fav.enabled = true;
-        }
-      });
+      }
+      if (fav.display_order !== null) {
+        fav.enabled = true;
+      }
+    });
 
     const returnFavList = [];
 
@@ -194,19 +200,36 @@ exports.addfavourite = async (request, reply) => {
   try {
     const { favouriteManageDto } = request.body; // The array of objects you received
 
-    // Use Promise.all to handle multiple promises concurrently
-    const promises = favouriteManageDto.map(async (favourite) => {
-      // Create the object for insertion (map properties as necessary)
+    if (!favouriteManageDto.length) {
+      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter");
+    }
 
+
+    const promises = favouriteManageDto.map(async (favourite) => {
+      // Validate that all required parameters are present and valid
+      if (!favourite.idfunctionality || !favourite.display_order || !favourite.eventMasterId || !favourite.nt_id) {
+        const missingFields = [];
+        if (!favourite.idfunctionality) missingFields.push('idfunctionality');
+        if (!favourite.display_order) missingFields.push('display_order');
+        if (!favourite.eventMasterId) missingFields.push('eventMasterId');
+        if (!favourite.nt_id) missingFields.push('nt_id');
+        
+        // Throw error if any parameter is missing
+        const errorMessage = `Missing required parameter(s): ${missingFields.join(', ')}`;
+        console.error(errorMessage);
+        throw new Error(errorMessage); // Immediately reject the promise
+      }
+    
+      // Create the object for insertion (map properties as necessary)
       const target = {
         idfavoritefunc: favourite.idfunctionality,
         display_order: favourite.display_order,
         functionality_master_id: favourite.eventMasterId,
         nt_id: favourite.nt_id,
       };
-
+    
       console.log(target);
-      // Insert into the database, assuming 'FavouriteEventMasterManage' is your Sequelize model
+    
       if (favourite.enabled == true) {
         try {
           await search.addfav(target);

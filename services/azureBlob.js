@@ -82,7 +82,47 @@ async function downloadFileFromBlob(fileName) {
   }
 }
 
+
+async function getSasToken() {
+  try {
+    const sharedKeyCredential = new StorageSharedKeyCredential(
+      accountName,
+      accountKey
+    );
+
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    await containerClient.createIfNotExists();
+
+    // Set the expiration date for the SAS token (100 years from now)
+    const expiryDate = new Date();
+    expiryDate.setFullYear(expiryDate.getFullYear() + 100); // Set expiry date to 100 years in the future
+
+
+    // const sasToken = containerClient.generateSasUrl({
+    //   permissions: 'r', // Read permission
+    //   expiresOn: expiryDate,
+    // });
+
+    // Generate the SAS token with read permissions
+    const sasToken = generateBlobSASQueryParameters(
+      {
+        // containerName,
+        permissions: "r", // read permission
+        expiresOn: expiryDate,
+      },
+      sharedKeyCredential
+    ).toString();
+
+    // Return the SAS token
+    return "?" + sasToken;
+  } catch (error) {
+    console.error('Error generating SAS token:', error);
+    throw new Error('Failed to generate SAS token.');
+  }
+}
+
 module.exports = {
   uploadFileToBlob,
   downloadFileFromBlob,
+  getSasToken
 };
