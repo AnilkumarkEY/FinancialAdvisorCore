@@ -15,13 +15,13 @@ async function searchRoutes(fastify, options) {
   );
 
   fastify.post(
-    "/get-Favourite",
+    "/get-favourite",
     { preHandler: [authentication, validation] },
     search.getfavourite
   );
 
   fastify.post(
-    "/add-Favourite",
+    "/add-favourite",
     { preHandler: [authentication, validation] },
     search.addfavourite
   );
