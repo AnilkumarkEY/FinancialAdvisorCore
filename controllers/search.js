@@ -7,9 +7,7 @@ exports.globalsearch = async (request, reply) => {
   try {
     const { userType, searchText } = request.body;
     if (!searchText) {
-      return reply
-        .status(statusCodes.OK)
-        .send("No Data Found");
+      return reply.status(statusCodes.OK).send("No Data Found");
     }
     if (!userType) {
       return reply
@@ -37,12 +35,6 @@ exports.globalsearch = async (request, reply) => {
             userType,
             searchWord
           );
-          const sasToken = await azureBlob.getSasToken();
-
-          globalSearch.forEach(search => {
-            const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
-            search.icon_url = iconUrl;
-          });
           break;
         }
       }
@@ -51,12 +43,6 @@ exports.globalsearch = async (request, reply) => {
         userType,
         searchKey
       );
-      const sasToken = await azureBlob.getSasToken();
-
-      globalSearch.forEach(search => {
-        const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
-        search.icon_url = iconUrl;
-      });
     }
     if (globalSearch.length) {
       await event.insertEventTransaction(request.isValid);
@@ -97,13 +83,6 @@ exports.topcategories = async (request, reply) => {
         .send("Missing required parameter: userType");
     }
     const topcategoriesList = await search.getTopCategoriesList(userType);
-
-    const sasToken = await azureBlob.getSasToken();
-
-    topcategoriesList.forEach(search => {
-      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
-      search.icon_url = iconUrl;
-    });
 
     return reply
       .status(statusCodes.OK)
@@ -178,19 +157,8 @@ exports.getfavourite = async (request, reply) => {
     const favManageMasterList = favList.filter(
       (fav) => fav.displayOrder !== null
     );
-    const sasToken = await azureBlob.getSasToken();
-    // const sasToken = "/sasToken"
 
     favList.forEach((fav) => {
-      const iconUrl =
-        process.env.AZURE_ENDPOINT +
-        "/" +
-        process.env.AZURE_CONTAINERNAME +
-        "/" +
-        fav.icon_url +
-        sasToken;
-      fav.icon_url = iconUrl;
-
       if (!favManageMasterList || favManageMasterList.length === 0) {
         fav.enabled = fav.default_functionality;
         if (fav.default_functionality === true) {
@@ -247,9 +215,7 @@ exports.addfavourite = async (request, reply) => {
     const { favouriteManageDto } = request.body; // The array of objects you received
 
     if (!favouriteManageDto.length) {
-      return reply
-        .status(statusCodes.OK)
-        .send("Missing required parameter");
+      return reply.status(statusCodes.OK).send("Missing required parameter");
     }
 
     const promises = favouriteManageDto.map(async (favourite) => {
@@ -261,11 +227,11 @@ exports.addfavourite = async (request, reply) => {
         !favourite.nt_id
       ) {
         const missingFields = [];
-        if (!favourite.idfunctionality) missingFields.push('idfunctionality');
-        if (!favourite.display_order) missingFields.push('display_order');
-        if (!favourite.eventMasterId) missingFields.push('eventMasterId');
-        if (!favourite.nt_id) missingFields.push('nt_id');
-        
+        if (!favourite.idfunctionality) missingFields.push("idfunctionality");
+        if (!favourite.display_order) missingFields.push("display_order");
+        if (!favourite.eventMasterId) missingFields.push("eventMasterId");
+        if (!favourite.nt_id) missingFields.push("nt_id");
+
         // Throw error if any parameter is missing
         const errorMessage = `Missing required parameter(s): ${missingFields.join(
           ", "

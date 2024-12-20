@@ -1721,7 +1721,7 @@ paths:
                     example: "Invalid or missing OTP."
 
   /profile/azure-check-user:
-    patch:
+    post:
       summary: Check if the user is present in Azure AD
       description: Check if the user is present in Azure AD and send OTP to the registered mail and phone.
       operationId: checkUserInAzure
@@ -2713,6 +2713,7 @@ paths:
                           nullable: true
                           description: Date the functionality was last modified.
                           example: null
+
   /nudge/get-events:
     post:
       summary: Get nudge event details
