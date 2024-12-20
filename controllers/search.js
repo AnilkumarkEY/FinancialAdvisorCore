@@ -6,10 +6,15 @@ require("dotenv").config();
 exports.globalsearch = async (request, reply) => {
   try {
     const { userType, searchText } = request.body;
-    if (!searchText || !userType) {
+    if (!searchText) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
-        .send("Missing required parameter: searchText, userType");
+        .status(statusCodes.OK)
+        .send("No Data Found");
+    }
+    if (!userType) {
+      return reply
+        .status(statusCodes.OK)
+        .send("Missing required parameter:userType");
     }
     const searchKey = searchText.trim();
     const searchWords = searchText.split(" ");
@@ -32,6 +37,12 @@ exports.globalsearch = async (request, reply) => {
             userType,
             searchWord
           );
+          const sasToken = await azureBlob.getSasToken();
+
+          globalSearch.forEach(search => {
+            const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
+            search.icon_url = iconUrl;
+          });
           break;
         }
       }
@@ -40,6 +51,12 @@ exports.globalsearch = async (request, reply) => {
         userType,
         searchKey
       );
+      const sasToken = await azureBlob.getSasToken();
+
+      globalSearch.forEach(search => {
+        const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
+        search.icon_url = iconUrl;
+      });
     }
     if (globalSearch.length) {
       await event.insertEventTransaction(request.isValid);
@@ -76,10 +93,18 @@ exports.topcategories = async (request, reply) => {
     const { userType } = request.body;
     if (!userType) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
+        .status(statusCodes.OK)
         .send("Missing required parameter: userType");
     }
     const topcategoriesList = await search.getTopCategoriesList(userType);
+
+    const sasToken = await azureBlob.getSasToken();
+
+    globalSearch.forEach(search => {
+      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
+      search.icon_url = iconUrl;
+    });
+
     return reply
       .status(statusCodes.OK)
       .send(
@@ -108,7 +133,7 @@ exports.getfavourite = async (request, reply) => {
     const { ntId, userType } = request.body;
     if (!ntId || !userType) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
+        .status(statusCodes.OK)
         .send("Missing required parameter: ntId, userType");
     }
 
@@ -223,7 +248,7 @@ exports.addfavourite = async (request, reply) => {
 
     if (!favouriteManageDto.length) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
+        .status(statusCodes.OK)
         .send("Missing required parameter");
     }
 
@@ -236,11 +261,11 @@ exports.addfavourite = async (request, reply) => {
         !favourite.nt_id
       ) {
         const missingFields = [];
-        if (!favourite.idfunctionality) missingFields.push("idfunctionality");
-        if (!favourite.display_order) missingFields.push("display_order");
-        if (!favourite.eventMasterId) missingFields.push("eventMasterId");
-        if (!favourite.nt_id) missingFields.push("nt_id");
-
+        if (!favourite.idfunctionality) missingFields.push('idfunctionality');
+        if (!favourite.display_order) missingFields.push('display_order');
+        if (!favourite.eventMasterId) missingFields.push('eventMasterId');
+        if (!favourite.nt_id) missingFields.push('nt_id');
+        
         // Throw error if any parameter is missing
         const errorMessage = `Missing required parameter(s): ${missingFields.join(
           ", "
