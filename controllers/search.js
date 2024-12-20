@@ -100,7 +100,7 @@ exports.topcategories = async (request, reply) => {
 
     const sasToken = await azureBlob.getSasToken();
 
-    globalSearch.forEach(search => {
+    topcategoriesList.forEach(search => {
       const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
       search.icon_url = iconUrl;
     });
