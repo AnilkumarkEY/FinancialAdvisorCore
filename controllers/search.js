@@ -30,6 +30,12 @@ exports.globalsearch = async (request, reply) => {
             userType,
             searchWord
           );
+          const sasToken = await azureBlob.getSasToken();
+
+          globalSearch.forEach(search => {
+            const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
+            search.icon_url = iconUrl;
+          });
           break;
         }
       }
@@ -38,6 +44,12 @@ exports.globalsearch = async (request, reply) => {
         userType,
         searchKey
       );
+      const sasToken = await azureBlob.getSasToken();
+
+      globalSearch.forEach(search => {
+        const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
+        search.icon_url = iconUrl;
+      });
     }
     if (globalSearch.length) {
       await event.insertEventTransaction(request.isValid);
@@ -77,6 +89,13 @@ exports.topcategories = async (request, reply) => {
     }
 
     const topcategoriesList = await search.getTopCategoriesList(userType);
+
+    const sasToken = await azureBlob.getSasToken();
+
+    topcategoriesList.forEach(search => {
+      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
+      search.icon_url = iconUrl;
+    });
 
     return reply
       .status(statusCodes.OK)
@@ -213,13 +232,13 @@ exports.addfavourite = async (request, reply) => {
         if (!favourite.display_order) missingFields.push('display_order');
         if (!favourite.eventMasterId) missingFields.push('eventMasterId');
         if (!favourite.nt_id) missingFields.push('nt_id');
-        
+
         // Throw error if any parameter is missing
         const errorMessage = `Missing required parameter(s): ${missingFields.join(', ')}`;
         console.error(errorMessage);
         throw new Error(errorMessage); // Immediately reject the promise
       }
-    
+
       // Create the object for insertion (map properties as necessary)
       const target = {
         idfavoritefunc: favourite.idfunctionality,
@@ -227,9 +246,9 @@ exports.addfavourite = async (request, reply) => {
         functionality_master_id: favourite.eventMasterId,
         nt_id: favourite.nt_id,
       };
-    
+
       console.log(target);
-    
+
       if (favourite.enabled == true) {
         try {
           await search.addfav(target);
