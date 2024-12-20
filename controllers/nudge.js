@@ -12,16 +12,17 @@ exports.getEvents = async (request, reply) => {
             agentCode,
             status,
             limit = 20,
-            pageNo = 0
+            pageNo = 0,
+            catergory
         } = request.body;
 
-        if (!agentCode || !status) {
+        if (!agentCode || !status || !catergory) {
             return reply
                 .status(statusCodes.BAD_REQUEST)
                 .send(
                     responseFormatter(
                         statusCodes.BAD_REQUEST,
-                        "Agent code and status are required!",
+                        "Agent code and status and category are required!",
                         []
                     )
                 );
@@ -33,7 +34,8 @@ exports.getEvents = async (request, reply) => {
             agentCode,
             status,
             pageLimit,
-            offset
+            offset,
+            catergory
         );
 
         return reply
