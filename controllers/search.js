@@ -7,7 +7,9 @@ exports.globalsearch = async (request, reply) => {
   try {
     const { userType, searchText } = request.body;
     if (!searchText || !userType) {
-      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter: searchText, userType");
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send("Missing required parameter: searchText, userType");
     }
     const searchKey = searchText.trim();
     const searchWords = searchText.split(" ");
@@ -85,17 +87,11 @@ exports.topcategories = async (request, reply) => {
   try {
     const { userType } = request.body;
     if (!userType) {
-      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter: userType");
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send("Missing required parameter: userType");
     }
-
     const topcategoriesList = await search.getTopCategoriesList(userType);
-
-    const sasToken = await azureBlob.getSasToken();
-
-    topcategoriesList.forEach(search => {
-      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
-      search.icon_url = iconUrl;
-    });
 
     return reply
       .status(statusCodes.OK)
@@ -124,48 +120,63 @@ exports.getfavourite = async (request, reply) => {
   try {
     const { ntId, userType } = request.body;
     if (!ntId || !userType) {
-      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter: ntId, userType");
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send("Missing required parameter: ntId, userType");
     }
 
     const favList = await search.getFavouriteEventByUser(userType);
     const listByNtId = await search.getAllFavouriteByntId(ntId);
 
-
     // Iterate through favList to match and adjust as per NTID
-    favList.forEach(userFavouriteEventMasterDto => {
+    favList.forEach((userFavouriteEventMasterDto) => {
       let isMatch = false;
 
       // Set the eventMasterId from the id
-      userFavouriteEventMasterDto['eventMasterId'] = userFavouriteEventMasterDto.idfunctionality;
+      userFavouriteEventMasterDto["eventMasterId"] =
+        userFavouriteEventMasterDto.idfunctionality;
 
       // Loop through listByNtId to find the match
-      listByNtId.forEach(favouriteEventMasterManage => {
-        if (String(userFavouriteEventMasterDto.idfunctionality) === String(favouriteEventMasterManage.functionality_master_id)) {
+      listByNtId.forEach((favouriteEventMasterManage) => {
+        if (
+          String(userFavouriteEventMasterDto.idfunctionality) ===
+          String(favouriteEventMasterManage.functionality_master_id)
+        ) {
           // Match found
-          console.log(favouriteEventMasterManage)
+          console.log(favouriteEventMasterManage);
           isMatch = true;
-          userFavouriteEventMasterDto.display_order = favouriteEventMasterManage.display_order;
-          userFavouriteEventMasterDto['enabled'] = true;
-          userFavouriteEventMasterDto['nt_id'] = favouriteEventMasterManage.nt_id;
-          userFavouriteEventMasterDto.idfunctionality = favouriteEventMasterManage.idfavoritefunc;
+          userFavouriteEventMasterDto.display_order =
+            favouriteEventMasterManage.display_order;
+          userFavouriteEventMasterDto["enabled"] = true;
+          userFavouriteEventMasterDto["nt_id"] =
+            favouriteEventMasterManage.nt_id;
+          userFavouriteEventMasterDto.idfunctionality =
+            favouriteEventMasterManage.idfavoritefunc;
           return; // exit the loop after a match is found
         }
       });
 
       // If no match was found, set enabled to false and id to null
       if (!isMatch) {
-        userFavouriteEventMasterDto['enabled'] = false;
-        userFavouriteEventMasterDto['id'] = null;
-
+        userFavouriteEventMasterDto["enabled"] = false;
+        userFavouriteEventMasterDto["id"] = null;
       }
     });
 
-    const favManageMasterList = favList.filter(fav => fav.displayOrder !== null);
+    const favManageMasterList = favList.filter(
+      (fav) => fav.displayOrder !== null
+    );
     const sasToken = await azureBlob.getSasToken();
     // const sasToken = "/sasToken"
 
-    favList.forEach(fav => {
-      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + fav.icon_url + sasToken;
+    favList.forEach((fav) => {
+      const iconUrl =
+        process.env.AZURE_ENDPOINT +
+        "/" +
+        process.env.AZURE_CONTAINERNAME +
+        "/" +
+        fav.icon_url +
+        sasToken;
       fav.icon_url = iconUrl;
 
       if (!favManageMasterList || favManageMasterList.length === 0) {
@@ -183,24 +194,28 @@ exports.getfavourite = async (request, reply) => {
 
     // Sort favList by displayOrder where displayOrder is not null
     const favListDisplayOrderSorted = favList
-      .filter(fav => fav.display_order !== null)
-      .sort((a, b) => a.display_order - b.display_order);  // Sorting by displayOrder
-
+      .filter((fav) => fav.display_order !== null)
+      .sort((a, b) => a.display_order - b.display_order); // Sorting by displayOrder
 
     console.log(favListDisplayOrderSorted);
 
     // Filter favList where displayOrder is null
-    const favListDisplayOrderNull = favList.filter(fav => fav.display_order === null);
+    const favListDisplayOrderNull = favList.filter(
+      (fav) => fav.display_order === null
+    );
 
     // Combine both lists
     returnFavList.push(...favListDisplayOrderSorted);
     returnFavList.push(...favListDisplayOrderNull);
-
-    return returnFavList;
-
-
-
-    return reply.status(200).send(returnFavList);
+    return reply
+      .status(statusCodes.OK)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Favourite list fetched successfully",
+          returnFavList
+        )
+      );
   } catch (error) {
     // Handle unexpected errors
     console.error(error);
@@ -220,21 +235,29 @@ exports.addfavourite = async (request, reply) => {
     const { favouriteManageDto } = request.body; // The array of objects you received
 
     if (!favouriteManageDto.length) {
-      return reply.status(statusCodes.BAD_REQUEST).send("Missing required parameter");
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send("Missing required parameter");
     }
-
 
     const promises = favouriteManageDto.map(async (favourite) => {
       // Validate that all required parameters are present and valid
-      if (!favourite.idfunctionality || !favourite.display_order || !favourite.eventMasterId || !favourite.nt_id) {
+      if (
+        !favourite.idfunctionality ||
+        !favourite.display_order ||
+        !favourite.eventMasterId ||
+        !favourite.nt_id
+      ) {
         const missingFields = [];
         if (!favourite.idfunctionality) missingFields.push('idfunctionality');
         if (!favourite.display_order) missingFields.push('display_order');
         if (!favourite.eventMasterId) missingFields.push('eventMasterId');
         if (!favourite.nt_id) missingFields.push('nt_id');
-
+        
         // Throw error if any parameter is missing
-        const errorMessage = `Missing required parameter(s): ${missingFields.join(', ')}`;
+        const errorMessage = `Missing required parameter(s): ${missingFields.join(
+          ", "
+        )}`;
         console.error(errorMessage);
         throw new Error(errorMessage); // Immediately reject the promise
       }
@@ -253,15 +276,27 @@ exports.addfavourite = async (request, reply) => {
         try {
           await search.addfav(target);
         } catch (error) {
-          console.error(`Error inserting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`, error);
-          throw new Error(`Error inserting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`, error);
+          console.error(
+            `Error inserting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`,
+            error
+          );
+          throw new Error(
+            `Error inserting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`,
+            error
+          );
         }
       } else if (favourite.enabled == false) {
         try {
           await search.deletefav(target);
         } catch (error) {
-          console.error(`Error deleting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`, error);
-          throw new Error(`Error deleting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`, error);
+          console.error(
+            `Error deleting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`,
+            error
+          );
+          throw new Error(
+            `Error deleting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`,
+            error
+          );
         }
       }
     });
@@ -273,7 +308,10 @@ exports.addfavourite = async (request, reply) => {
     return reply
       .status(200)
       .send(
-        responseFormatter(statusCodes.OK, "Favourites added/deleted successfully")
+        responseFormatter(
+          statusCodes.OK,
+          "Favourites added/deleted successfully"
+        )
       );
   } catch (error) {
     // Handle unexpected errors
