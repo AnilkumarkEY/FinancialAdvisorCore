@@ -93,6 +93,13 @@ exports.topcategories = async (request, reply) => {
     }
     const topcategoriesList = await search.getTopCategoriesList(userType);
 
+    const sasToken = await azureBlob.getSasToken();
+
+    globalSearch.forEach(search => {
+      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
+      search.icon_url = iconUrl;
+    });
+
     return reply
       .status(statusCodes.OK)
       .send(
