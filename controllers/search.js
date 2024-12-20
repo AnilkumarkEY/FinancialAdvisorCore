@@ -6,10 +6,15 @@ require("dotenv").config();
 exports.globalsearch = async (request, reply) => {
   try {
     const { userType, searchText } = request.body;
-    if (!searchText || !userType) {
+    if (!searchText) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
-        .send("Missing required parameter: searchText, userType");
+        .status(statusCodes.OK)
+        .send("No Data Found");
+    }
+    if (!userType) {
+      return reply
+        .status(statusCodes.OK)
+        .send("Missing required parameter:userType");
     }
     const searchKey = searchText.trim();
     const searchWords = searchText.split(" ");
@@ -88,7 +93,7 @@ exports.topcategories = async (request, reply) => {
     const { userType } = request.body;
     if (!userType) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
+        .status(statusCodes.OK)
         .send("Missing required parameter: userType");
     }
     const topcategoriesList = await search.getTopCategoriesList(userType);
@@ -128,7 +133,7 @@ exports.getfavourite = async (request, reply) => {
     const { ntId, userType } = request.body;
     if (!ntId || !userType) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
+        .status(statusCodes.OK)
         .send("Missing required parameter: ntId, userType");
     }
 
@@ -243,7 +248,7 @@ exports.addfavourite = async (request, reply) => {
 
     if (!favouriteManageDto.length) {
       return reply
-        .status(statusCodes.BAD_REQUEST)
+        .status(statusCodes.OK)
         .send("Missing required parameter");
     }
 
