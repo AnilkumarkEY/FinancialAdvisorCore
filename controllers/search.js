@@ -37,12 +37,6 @@ exports.globalsearch = async (request, reply) => {
             userType,
             searchWord
           );
-          const sasToken = await azureBlob.getSasToken();
-
-          globalSearch.forEach(search => {
-            const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
-            search.icon_url = iconUrl;
-          });
           break;
         }
       }
@@ -51,12 +45,6 @@ exports.globalsearch = async (request, reply) => {
         userType,
         searchKey
       );
-      const sasToken = await azureBlob.getSasToken();
-
-      globalSearch.forEach(search => {
-        const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
-        search.icon_url = iconUrl;
-      });
     }
     if (globalSearch.length) {
       await event.insertEventTransaction(request.isValid);
@@ -97,13 +85,6 @@ exports.topcategories = async (request, reply) => {
         .send("Missing required parameter: userType");
     }
     const topcategoriesList = await search.getTopCategoriesList(userType);
-
-    const sasToken = await azureBlob.getSasToken();
-
-    topcategoriesList.forEach(search => {
-      const iconUrl = process.env.AZURE_ENDPOINT + "/" + process.env.AZURE_CONTAINERNAME + "/" + search.icon_url + sasToken;
-      search.icon_url = iconUrl;
-    });
 
     return reply
       .status(statusCodes.OK)
@@ -178,18 +159,8 @@ exports.getfavourite = async (request, reply) => {
     const favManageMasterList = favList.filter(
       (fav) => fav.displayOrder !== null
     );
-    const sasToken = await azureBlob.getSasToken();
-    // const sasToken = "/sasToken"
 
     favList.forEach((fav) => {
-      const iconUrl =
-        process.env.AZURE_ENDPOINT +
-        "/" +
-        process.env.AZURE_CONTAINERNAME +
-        "/" +
-        fav.icon_url +
-        sasToken;
-      fav.icon_url = iconUrl;
 
       if (!favManageMasterList || favManageMasterList.length === 0) {
         fav.enabled = fav.default_functionality;
