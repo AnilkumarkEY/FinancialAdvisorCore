@@ -150,6 +150,7 @@ exports.getfavourite = async (request, reply) => {
       if (!isMatch) {
         userFavouriteEventMasterDto["enabled"] = false;
         userFavouriteEventMasterDto["nt_id"] = ntId;
+        userFavouriteEventMasterDto.idfunctionality =null;
       }
     });
 
@@ -190,7 +191,7 @@ exports.getfavourite = async (request, reply) => {
       .status(statusCodes.OK)
       .send(
         responseFormatter(
-          statusCodes.INTERNAL_SERVER_ERROR,
+          statusCodes.OK,
           "Favourite list fetched successfully",
           returnFavList
         )
