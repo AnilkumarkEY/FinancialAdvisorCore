@@ -7,9 +7,7 @@ exports.globalsearch = async (request, reply) => {
   try {
     const { userType, searchText } = request.body;
     if (!searchText) {
-      return reply
-        .status(statusCodes.OK)
-        .send("No Data Found");
+      return reply.status(statusCodes.OK).send("No Data Found");
     }
     if (!userType) {
       return reply
@@ -160,7 +158,6 @@ exports.getfavourite = async (request, reply) => {
     );
 
     favList.forEach((fav) => {
-
       if (!favManageMasterList || favManageMasterList.length === 0) {
         fav.enabled = fav.default_functionality;
         if (fav.default_functionality === true) {
@@ -217,9 +214,7 @@ exports.addfavourite = async (request, reply) => {
     const { favouriteManageDto } = request.body; // The array of objects you received
 
     if (!favouriteManageDto.length) {
-      return reply
-        .status(statusCodes.OK)
-        .send("Missing required parameter");
+      return reply.status(statusCodes.OK).send("Missing required parameter");
     }
 
     const promises = favouriteManageDto.map(async (favourite) => {
@@ -231,10 +226,10 @@ exports.addfavourite = async (request, reply) => {
         !favourite.nt_id
       ) {
         const missingFields = [];
-        if (!favourite.idfunctionality) missingFields.push('idfunctionality');
-        if (!favourite.display_order) missingFields.push('display_order');
-        if (!favourite.eventMasterId) missingFields.push('eventMasterId');
-        if (!favourite.nt_id) missingFields.push('nt_id');
+        if (!favourite.idfunctionality) missingFields.push("idfunctionality");
+        if (!favourite.display_order) missingFields.push("display_order");
+        if (!favourite.eventMasterId) missingFields.push("eventMasterId");
+        if (!favourite.nt_id) missingFields.push("nt_id");
 
         // Throw error if any parameter is missing
         const errorMessage = `Missing required parameter(s): ${missingFields.join(
@@ -257,7 +252,6 @@ exports.addfavourite = async (request, reply) => {
       if (favourite.enabled == true) {
         try {
           const favlength = await search.findfav(target);
-          console.log("fav length" + favlength);
           if (favlength.length) {
             return reply
               .status(statusCodes.OK)
@@ -281,7 +275,6 @@ exports.addfavourite = async (request, reply) => {
         try {
 
           const favlength = await search.findfav(target);
-          console.log("fav length" + favlength);
           if (!favlength.length) {
             return reply
               .status(statusCodes.OK)
