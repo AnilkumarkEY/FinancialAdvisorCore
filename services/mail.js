@@ -100,7 +100,47 @@ async function sendMailForgotPassword(recieverEmail, otp) {
   }
 }
 
+async function sendMailTemporaryPassword(recieverEmail, tempPassword) {
+  try {
+    const templateForOtp = await communication.getTemplate(
+      process.env.TEMPPASSTEMPLATEIDMAIL
+    );
+    const transporter = nodemailer.createTransport({
+      host: process.env.MAIL_HOST,
+      port: 587,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+    // Email options
+    const mailOptions = {
+      from: templateForOtp[0].emailg_sender_email_id, // Sender address (must be verified in SES)
+      to: recieverEmail, // List of recipients
+      subject: templateForOtp[0].message_subject, // Subject line
+      // text: templateForOtp[0].message, // Plain text body
+      html: templateForOtp[0].message
+        .replace("&lt;&lt;User&gt;&gt;", recieverEmail)
+        .replace("&nbsp;&lt;&lt;123456&gt;&gt;", tempPassword), // HTML body (optional)
+    };
+
+    // Return a promise
+    return new Promise((resolve, reject) => {
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return reject("Error sending email: " + error);
+        }
+        resolve(info.response); // Resolve with the info object
+      });
+    });
+  } catch (error) {
+    console.log(error);
+    throw new Error(error);
+  }
+}
+
 module.exports = {
   sendMail,
-  sendMailForgotPassword
+  sendMailForgotPassword,
+  sendMailTemporaryPassword
 };
