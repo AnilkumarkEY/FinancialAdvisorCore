@@ -429,10 +429,13 @@ exports.verifyOtpForgotPassword = async (request, reply) => {
 
 exports.resetPassword = async (request, reply) => {
   try {
-    const { userId, newPassword } = request.body;
+    const { userId, newPassword, isFirstTimeLogin } = request.body;
 
     const changePassword = await resetchangeUserPassword(userId, newPassword);
     if (changePassword.status === 'ok') {
+      if(isFirstTimeLogin){
+        await profile.updateFirstTimeLogin(userId);
+      }
       return reply
         .status(statusCodes.OK)
         .send(

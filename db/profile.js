@@ -314,6 +314,23 @@ const getOldBankValues = async (identity) => {
   }
 };
 
+const updateFirstTimeLogin = async (oid) => {
+  try {
+    const query = `
+    UPDATE 
+    core.user_auth_data set 
+    isfirsttimelogin = false
+    WHERE oid = $1
+    RETURNING *`;
+
+    const res = await client.query(query, [oid]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error: ", error);
+    throw error;
+  }
+};
+
 module.exports = {
   getNomineeDetailsByIdentity,
   insertSrTransaction,
@@ -327,5 +344,6 @@ module.exports = {
   getProfileOfficialDetails,
   getProfileBankDetails,
   updateBankDetails,
-  getOldBankValues
+  getOldBankValues,
+  updateFirstTimeLogin
 };

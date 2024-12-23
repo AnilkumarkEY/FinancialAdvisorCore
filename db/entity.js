@@ -236,6 +236,66 @@ const getEntityContactByIdentity = async (identity) => {
   }
 };
 
+const insertUserAuth = async (authData) => {
+  try {
+    const query = `
+        INSERT INTO core.user_auth_data (
+          iduser_auth_data,
+          identity,
+          reg_mobile_number,
+          upn_iam,
+          otp,
+          otp_expiry,
+          fcm_android_id,
+          fcm_ios_id,
+          activeflag,
+          sortorder,
+          created_date,
+          modified_date,
+          modifiedby,
+          inactivedate,
+          eff_from_date,
+          eff_to_date,
+          createdby,
+          oid,
+          idsession,
+          sessionexpirytime,
+          reg_email,
+          isfirsttimelogin
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW(), $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
+         RETURNING *;
+      `;
+
+    const values = [
+      authData.iduser_auth_data || null,
+      authData.identity || null,
+      authData.reg_mobile_number || null,
+      authData.upn_iam || null,
+      authData.otp || null,
+      authData.otp_expiry || null,
+      authData.fcm_android_id || null,
+      authData.fcm_ios_id || null,
+      authData.activeflag || null,
+      authData.sortorder || null,
+      authData.modifiedby || null,
+      authData.inactivedate || null,
+      authData.eff_from_date || null,
+      authData.eff_to_date || null,
+      authData.createdby || null,
+      authData.oid || null,
+      authData.idsession || null,
+      authData.sessionexpirytime || null,
+      authData.reg_email || null,
+      true 
+    ];
+    const res = await client.query(query, values);
+    return res.rows;
+  } catch (error) {
+    console.error("Error inserting data:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   insertEntity,
   updateEntity,
@@ -243,4 +303,5 @@ module.exports = {
   insertEntityContact,
   getEntityContact,
   getEntityContactByIdentity,
+  insertUserAuth
 };

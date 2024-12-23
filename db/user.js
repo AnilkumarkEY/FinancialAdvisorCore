@@ -49,7 +49,7 @@ async function checkValidUser(userName) {
     //     ) AS user_exists
     //     `;
     const query = `
-      SELECT uad.identity FROM core.user_auth_data uad WHERE upn_iam = $1
+      SELECT uad.identity, uad.isfirsttimelogin FROM core.user_auth_data uad WHERE upn_iam = $1
     `;
     const res = await client.query(query, [userName]);
     return res.rows[0];

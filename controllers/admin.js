@@ -1,5 +1,5 @@
-const { responseFormatter, statusCodes } = require("../utils");
-const { admin, event } = require("../db");
+const { responseFormatter, statusCodes, uniqueString } = require("../utils");
+const { admin, event, entity } = require("../db");
 const {
   entityService,
   entityContact,
@@ -7,6 +7,9 @@ const {
   entityUserAuth,
   mailService,
 } = require("../services");
+const { createUser } = require("../services/azureOps");
+const dotenv = require("dotenv");
+dotenv.config();
 
 exports.createAgent = async (request, reply) => {
   try {
@@ -27,18 +30,37 @@ exports.createAgent = async (request, reply) => {
       entityUserAuth.processEntityAuthUrcData(entityRes[0], entityData),
     ]);
 
-    // const mail = await mailService.sendMailForgotPassword(
-    //   "aditya007547@gmail.com",
-    //   "newPassword1"
-    // );
-    console.log(
-      entityRes.length,
-      agentRes.length,
-      profileRes.length,
-      entityAuthUrcRes.length,
-      "ashgdakshgdaks"
-      //   mail
-    );
+    const azureUserData = {
+      givenName: entityData.firstname,
+      surname: entityData.lastname,
+      mobilePhone: contactData.primary_phone,
+      jobTitle: agentData.desgn_desc,
+      displayName: contactData.primary_email.split('@')[0],
+      mailNickname: contactData.primary_email.split('@')[0],
+      mail: contactData.primary_email,
+      userPrincipalName: contactData.primary_email.split('@')[0] + '@malhotraabhishek114gmail.onmicrosoft.com',
+      password: process.env.TEMPPASSWORD,
+      officeLocation: contactData.address_line_1 + ' ' + contactData.address_line_2,
+      streetAddress: contactData.location_name,
+      city: contactData.city,
+      state: contactData.state,
+      postalCode: contactData.pincode,
+      country: contactData.country
+    }
+    
+    const createUserInAzure = await createUser(azureUserData);
+    if(createUserInAzure){
+      const userData = {
+        iduser_auth_data:  uniqueString(),
+        identity: entityRes[0].identity,
+        reg_mobile_number: contactData.primary_phone,
+        upn_iam: contactData.primary_email.split('@')[0] + '@malhotraabhishek114gmail.onmicrosoft.com',
+        oid: createUserInAzure.id,
+        reg_email: contactData.primary_email,
+        createdby: identity
+      }
+      await entity.insertUserAuth(userData);
+    }
 
     if (
       entityRes.length > 0 &&
@@ -46,6 +68,7 @@ exports.createAgent = async (request, reply) => {
       profileRes.length > 0 &&
       entityAuthUrcRes.length > 0
     ) {
+      await mailService.sendMailTemporaryPassword(contactData.primary_email, process.env.TEMPPASSWORD)
       await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
