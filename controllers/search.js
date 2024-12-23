@@ -141,8 +141,7 @@ exports.getfavourite = async (request, reply) => {
           userFavouriteEventMasterDto.display_order =
             favouriteEventMasterManage.display_order;
           userFavouriteEventMasterDto["enabled"] = true;
-          userFavouriteEventMasterDto["nt_id"] =
-            favouriteEventMasterManage.nt_id;
+          userFavouriteEventMasterDto["nt_id"] = ntId;
           userFavouriteEventMasterDto.idfunctionality =
             favouriteEventMasterManage.idfavoritefunc;
           return; // exit the loop after a match is found
@@ -152,7 +151,7 @@ exports.getfavourite = async (request, reply) => {
       // If no match was found, set enabled to false and id to null
       if (!isMatch) {
         userFavouriteEventMasterDto["enabled"] = false;
-        userFavouriteEventMasterDto["id"] = null;
+        userFavouriteEventMasterDto["nt_id"] = ntId;
       }
     });
 
@@ -236,7 +235,7 @@ exports.addfavourite = async (request, reply) => {
         if (!favourite.display_order) missingFields.push('display_order');
         if (!favourite.eventMasterId) missingFields.push('eventMasterId');
         if (!favourite.nt_id) missingFields.push('nt_id');
-        
+
         // Throw error if any parameter is missing
         const errorMessage = `Missing required parameter(s): ${missingFields.join(
           ", "
@@ -257,6 +256,16 @@ exports.addfavourite = async (request, reply) => {
 
       if (favourite.enabled == true) {
         try {
+          const favlength = await search.findfav(target);
+          console.log("fav length" + favlength);
+          if (favlength.length) {
+            return reply
+              .status(statusCodes.OK)
+              .send(responseFormatter(
+                statusCodes.OK,
+                "Already Present In Favouite"
+              ));
+          }
           await search.addfav(target);
         } catch (error) {
           console.error(
@@ -270,6 +279,18 @@ exports.addfavourite = async (request, reply) => {
         }
       } else if (favourite.enabled == false) {
         try {
+
+          const favlength = await search.findfav(target);
+          console.log("fav length" + favlength);
+          if (!favlength.length) {
+            return reply
+              .status(statusCodes.OK)
+              .send(
+                responseFormatter(
+                  statusCodes.OK,
+                  "Already Deleted From Favouite"
+                ));
+          }
           await search.deletefav(target);
         } catch (error) {
           console.error(
