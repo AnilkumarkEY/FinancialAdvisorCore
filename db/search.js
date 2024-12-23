@@ -47,8 +47,7 @@ async function getFavouriteEventByUser(userType) {
       em.functionality_class_type,em.functionality_class_type,erm.default_functionality,erm.display_order from core.functionality_master em 
       JOIN core.functionality_role_mapping_tb erm on em.idfunctionality = erm.functionality_master_id
       JOIN core.usertype utm on utm.idusertype = erm.user_type_master_id
-      where utm.description =  $1::text`;
-    // AND em.functionality_type_master is null`;
+      where utm.description =  $1::text AND em.functionality_type_master is null and em.functionality_type_master is NULL`;
 
     const res = await client.query(query, [userType]);
 
