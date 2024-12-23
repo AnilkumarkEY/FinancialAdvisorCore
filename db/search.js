@@ -105,6 +105,24 @@ async function deletefav(target) {
     throw error;
   }
 }
+
+async function findfav(target) {
+  try {
+    const query = `select * from core.favourite_functionality_master_manage ffmm where ffmm.idfavoritefunc =  $1`;
+
+    const values = [
+      target.idfavoritefunc
+    ];
+    const res = await client.query(query, values);
+
+    return res.rows; // Return the result rows
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error; // Rethrow the error for handling in the controller
+  }
+}
+
+
 module.exports = {
   functionalitySearchKey,
   functionalityMasterSearchGlobalSearch,
@@ -112,5 +130,6 @@ module.exports = {
   getAllFavouriteByntId,
   addfav,
   deletefav,
-  getTopCategoriesList
+  getTopCategoriesList,
+  findfav
 };
