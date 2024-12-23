@@ -73,7 +73,7 @@ const createUser = async (userData) => {
             postalCode: userData.postalCode,
             country: userData.country,
             passwordProfile: {
-                forceChangePasswordNextSignIn: true,
+                forceChangePasswordNextSignIn: false,
                 password: userData.password
             }
         };

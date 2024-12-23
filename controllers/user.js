@@ -69,6 +69,7 @@ exports.loginUser = async (request, reply) => {
           );
       } else {
         getUserAccessToken["identity"] = validUser.identity;
+        getUserAccessToken["isFirstTimeLogin"] = validUser.isfirsttimelogin;
         return reply
           .status(statusCodes.OK)
           .send(

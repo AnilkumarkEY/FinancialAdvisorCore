@@ -46,7 +46,7 @@ async function profileRoutes(fastify, options) {
         "/verify-otp-forgot-password",
         profile.verifyOtpForgotPassword
     );
-    fastify.patch(
+    fastify.post(
         "/reset-password",
         profile.resetPassword
     );
