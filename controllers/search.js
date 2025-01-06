@@ -150,12 +150,12 @@ exports.getfavourite = async (request, reply) => {
       if (!isMatch) {
         userFavouriteEventMasterDto["enabled"] = false;
         userFavouriteEventMasterDto["nt_id"] = ntId;
-        userFavouriteEventMasterDto.idfunctionality =null;
+        userFavouriteEventMasterDto.idfunctionality = null;
       }
     });
 
     const favManageMasterList = favList.filter(
-      (fav) => fav.displayOrder !== null
+      (fav) => fav.display_order !== null
     );
 
     favList.forEach((fav) => {
@@ -186,7 +186,7 @@ exports.getfavourite = async (request, reply) => {
 
     // Combine both lists
     returnFavList.push(...favListDisplayOrderSorted);
-    returnFavList.push(...favListDisplayOrderNull);
+    // returnFavList.push(...favListDisplayOrderNull);
     return reply
       .status(statusCodes.OK)
       .send(
@@ -218,17 +218,21 @@ exports.addfavourite = async (request, reply) => {
       return reply.status(statusCodes.OK).send("Missing required parameter");
     }
 
+    const responseData = {
+      alreadyPresent: [],
+      newlyAdded: [],
+      alreadyDeleted: [],
+      newlyDeleted: [],
+    };
     const promises = favouriteManageDto.map(async (favourite) => {
       // Validate that all required parameters are present and valid
       if (
         !favourite.idfunctionality ||
-        !favourite.display_order ||
         !favourite.eventMasterId ||
         !favourite.nt_id
       ) {
         const missingFields = [];
         if (!favourite.idfunctionality) missingFields.push("idfunctionality");
-        if (!favourite.display_order) missingFields.push("display_order");
         if (!favourite.eventMasterId) missingFields.push("eventMasterId");
         if (!favourite.nt_id) missingFields.push("nt_id");
 
@@ -254,14 +258,11 @@ exports.addfavourite = async (request, reply) => {
         try {
           const favlength = await search.findfav(target);
           if (favlength.length) {
-            return reply
-              .status(statusCodes.OK)
-              .send(responseFormatter(
-                statusCodes.OK,
-                "Already Present In Favouite"
-              ));
+            responseData.alreadyPresent.push(target);
+          } else {
+            await search.addfav(target);
+            responseData.newlyAdded.push(target);
           }
-          await search.addfav(target);
         } catch (error) {
           console.error(
             `Error inserting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`,
@@ -274,18 +275,13 @@ exports.addfavourite = async (request, reply) => {
         }
       } else if (favourite.enabled == false) {
         try {
-
           const favlength = await search.findfav(target);
           if (!favlength.length) {
-            return reply
-              .status(statusCodes.OK)
-              .send(
-                responseFormatter(
-                  statusCodes.OK,
-                  "Already Deleted From Favouite"
-                ));
+            responseData.alreadyDeleted.push(target);
+          } else {
+            await search.deletefav(target);
+            responseData.newlyDeleted.push(target);
           }
-          await search.deletefav(target);
         } catch (error) {
           console.error(
             `Error deleting favourite: ${favourite.nt_id}, with ${favourite.idfunctionality}`,
@@ -308,7 +304,8 @@ exports.addfavourite = async (request, reply) => {
       .send(
         responseFormatter(
           statusCodes.OK,
-          "Favourites added/deleted successfully"
+          "Favourites added/deleted successfully",
+          responseData
         )
       );
   } catch (error) {
