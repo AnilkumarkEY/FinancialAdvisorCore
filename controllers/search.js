@@ -149,8 +149,7 @@ exports.getfavourite = async (request, reply) => {
       // If no match was found, set enabled to false and id to null
       if (!isMatch) {
         userFavouriteEventMasterDto["enabled"] = false;
-        userFavouriteEventMasterDto["nt_id"] = ntId;
-        userFavouriteEventMasterDto.idfunctionality = null;
+        // userFavouriteEventMasterDto.idfunctionality = null;
       }
     });
 
@@ -186,7 +185,7 @@ exports.getfavourite = async (request, reply) => {
 
     // Combine both lists
     returnFavList.push(...favListDisplayOrderSorted);
-    // returnFavList.push(...favListDisplayOrderNull);
+    returnFavList.push(...favListDisplayOrderNull);
     return reply
       .status(statusCodes.OK)
       .send(
