@@ -146,9 +146,10 @@ exports.getfavourite = async (request, reply) => {
         }
       });
 
-      // If no match was found, set enabled to false and id to null
+      // If no match was found, set enabled to false
       if (!isMatch) {
         userFavouriteEventMasterDto["enabled"] = false;
+        userFavouriteEventMasterDto["nt_id"] = ntId;
         // userFavouriteEventMasterDto.idfunctionality = null;
       }
     });
