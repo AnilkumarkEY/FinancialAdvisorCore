@@ -3078,3 +3078,94 @@ paths:
                     type: string
                     description: Error message describing the server error.
                     example: "Internal server error"
+
+  /admin/user-list:
+    post:
+      summary: Fetch paginated list of users
+      description: Retrieves a paginated list of users.
+      operationId: getUserList
+      requestBody:
+        description: Request body containing pagination information.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pageNumber:
+                  type: integer
+                  example: 1
+                  description: Page number to fetch.
+                pageCount:
+                  type: integer
+                  example: 10
+                  description: Number of items per page.
+              required:
+                - pageNumber
+                - pageCount
+      responses:
+        "200":
+          description: Successfully fetched the user list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User data fetched successfully"
+                  data:
+                    type: object
+                    properties:
+                      totalCount:
+                        type: integer
+                        description: Total number of users.
+                        example: 88
+                      totalPages:
+                        type: integer
+                        description: Total number of pages available.
+                        example: 88
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            user_id:
+                              type: string
+                              description: Unique identifier of the user.
+                              example: "5dceb723474645b1b5958eda0d97f6c2"
+                            name:
+                              type: string
+                              description: Full name of the user.
+                              example: "Abhishek M"
+                            business_code:
+                              type: string
+                              description: Business code of the user.
+                              example: "786"
+                            designation:
+                              type: string
+                              description: Designation of the user.
+                              example: "Senior Life Planner"
+                            email:
+                              type: string
+                              description: Email address of the user.
+                              example: "jyoti18@in.ey.com"
+                            branch:
+                              type: string
+                              description: Branch name of the user.
+                              example: "Mumbai"
+                            status:
+                              type: string
+                              description: Status of the user (Active/Inactive).
+                              example: "Active"
+                            action_view:
+                              type: boolean
+                              description: Hardcoded view action.
+                              example: true
+        "401":
+          description: Unauthorized. Invalid or missing authorization token.
+        "500":
+          description: Internal Server Error. Unexpected server error occurred.
