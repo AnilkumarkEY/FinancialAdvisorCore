@@ -7,6 +7,11 @@ async function adminRoutes(fastify, options) {
         { preHandler: [authentication, validation] },
         admin.createAgent
     );
+    fastify.post(
+        "/user-list",
+        { preHandler: [authentication, validation] },
+        admin.getUserList
+    );
   }
   
   module.exports = adminRoutes;
