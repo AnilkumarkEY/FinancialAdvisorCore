@@ -1,0 +1,13 @@
+const COMMUNICATION_TYPE = {
+    TICKER: 'COMMUNICATION_TYPE_TICKER',
+    BANNER: 'COMMUNICATION_TYPE_BANNER'
+}
+
+const USER_TYPE = {
+    LEADER: 'Leader'
+}
+
+module.exports = {
+    COMMUNICATION_TYPE,
+    USER_TYPE,
+}

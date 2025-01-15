@@ -5,6 +5,7 @@ const profile = require("./profile");
 const admin = require("./admin");
 const search = require("./search");
 const nudge = require("./nudge");
+const communicationTb = require("./communicationTb");
 
 async function routes(fastify, options) {
   // Register user and lead routes with prefixes
@@ -28,6 +29,9 @@ async function routes(fastify, options) {
   });
   fastify.register(nudge, {
     prefix: "/nudge"
+  });
+  fastify.register(communicationTb, {
+    prefix: "/communication-tbs"
   });
 }
 

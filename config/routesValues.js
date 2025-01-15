@@ -35,4 +35,5 @@ exports.routeValues = {
   "/search/get-favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/search/add-favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/search/top-categories-global-search": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/communication-tbs/banners-tickers": "c2a04e70f16541f5b52f1b0803ee46d3",
 };

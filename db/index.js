@@ -10,6 +10,7 @@ const communication = require("./communication");
 const admin = require("./admin");
 const search = require("./search");
 const nudge = require("./nudge");
+const communicationTb = require("./communicationTb");
 
 module.exports = {
   entity,
@@ -23,5 +24,6 @@ module.exports = {
   communication,
   admin,
   search,
-  nudge
+  nudge,
+  communicationTb
 };
