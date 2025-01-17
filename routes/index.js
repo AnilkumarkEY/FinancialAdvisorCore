@@ -34,9 +34,6 @@ async function routes(fastify, options) {
   fastify.register(communicationTb, {
     prefix: "/communication-tbs"
   });
-  fastify.register(contentManagement, {
-    prefix: "/content-management"
-  });
 
 }
 

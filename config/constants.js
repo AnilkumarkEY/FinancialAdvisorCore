@@ -17,8 +17,14 @@ const TABLE_NAME = {
     }
 };
 
+const ENTITY_TYPE = {
+    TARGET_SYSTEM              : 'TARGET_SYSTEM',
+    COMMUNICATION_SYSTEM_LAYOUT: 'COMMUNICATION_SYSTEM_LAYOUT'
+}
+
 module.exports = {
     COMMUNICATION_TYPE,
+    ENTITY_TYPE,
     TABLE_NAME,
     USER_TYPE,
 }

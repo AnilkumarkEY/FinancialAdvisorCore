@@ -23,7 +23,7 @@ const getAllContent = async (request, reply) => {
     }
 };
 
-const getContentById = async (request, reply) => {
+const getContentDetails = async (request, reply) => {
     try {
         const { id } = request.param;
         if (!id) {
@@ -42,7 +42,7 @@ const getContentById = async (request, reply) => {
     }
 };
 
-const createContent = async (request, reply) => {
+const addContent = async (request, reply) => {
     try {
         const { requestObject } = request.body;
         // if (!userType) {
@@ -61,7 +61,7 @@ const createContent = async (request, reply) => {
     }
 };
 
-const updateContent = async (request, reply) => {
+const updateContent1 = async (request, reply) => {
     try {
         const { id } = request.params;
         if (!id) {
@@ -79,7 +79,7 @@ const updateContent = async (request, reply) => {
     }
 };
 
-const deleteContent = async (request, reply) => {
+const deleteContent1 = async (request, reply) => {
     try {
         const { id } = request.params;
         if (!id) {
@@ -102,7 +102,7 @@ const getAllContentCategories = async (request, reply) => {
                 .status(statusCodes.BAD_REQUEST)
                 .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid User Type", null));
         }
-        const bannerAndTickers = await communicationTb.getBannerAndTickersFromDb(userType);
+        const bannerAndTickers = await communicationTb.getBannerAndTickersFromDb(userType, timeStamp);
         return reply
             .status(statusCodes.OK)
             .send(responseFormatter(statusCodes.OK, "All Tickers and Banners", bannerAndTickers));
@@ -171,13 +171,13 @@ const getAllTargetSystems = async (request, reply) => {
 };
 
 module.exports = {
-    createContent,
-    deleteContent,
+    addContent,
+    deleteContent1,
     getAllContent,
     getAllContentCategories,
     getAllContentType,
     getAllTargetSystems,
     getAllLayoutGroups,
-    getContentById,
-    updateContent
+    getContentDetails,
+    updateContent1
 }
