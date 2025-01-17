@@ -7,7 +7,18 @@ const USER_TYPE = {
     LEADER: 'Leader'
 }
 
+const TABLE_NAME = {
+    CONTENT_MANAGEMENT: {
+        CONTENT         : 'content_item',
+        CONTENT_CATEGORY: 'content_category',
+        CONTENT_TYPE    : 'content_type',
+        LAYOUT_GROUP    : 'layout_group',
+        TARGET_SYSTEMS  : 'target_systems'
+    }
+};
+
 module.exports = {
     COMMUNICATION_TYPE,
+    TABLE_NAME,
     USER_TYPE,
 }

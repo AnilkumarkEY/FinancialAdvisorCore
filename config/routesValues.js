@@ -36,4 +36,9 @@ exports.routeValues = {
   "/search/add-favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/search/top-categories-global-search": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/communication-tbs/banners-tickers": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/content-management/content": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/content-management/categories": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/content-management/contentType": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/content-management/layoutGroups": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/content-management/targetSystems": "c2a04e70f16541f5b52f1b0803ee46d3",
 };
