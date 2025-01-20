@@ -85,11 +85,10 @@ const getUserProfileFromDb = async (userId) => {
     }
 }
 
-const deleteExpiryByCommId = async (commId) => {
+const deleteCommuncationRoleMappingByCommunicationId = async (commId) => {
     try {
-        const query = `DELETE FROM CommunicationExpiry comm 
-        WHERE comm.communicationId = $1`;
-        
+        const query = `DELETE FROM core.communication_role_mapping
+         WHERE communication_id  = $1`;
         const result = await client.query(query, [commId]);
         return result.rows;
     } catch (error) {
@@ -97,11 +96,13 @@ const deleteExpiryByCommId = async (commId) => {
     }
 }
 
-const deleteRoleByCommId = async (commId) => {
+const addTCommunicationRoleMapping = async (communicationRoleId, communicationId, userTypeId) => {
     try {
-        const query = `DELETE FROM CommunicationRoleMapping role
-         WHERE role.communicationId  = $1`;
-        const result = await client.query(query, [commId]);
+        const query = `
+        INSERT INTO communication_role mapping
+        (idcommrole, communication_id, user_type_id)
+        VALUES($1, $2, $3)`;
+        const result = await client.query(query, [communicationRoleId, communicationId, userTypeId]);
         return result.rows;
     } catch (error) {
         throw error
@@ -175,24 +176,108 @@ const getAllUserTypesFromDb = async () => {
     }
 }
 
-const getApplicationMasterByIdFromDb = async (appilcationId) => {
+const getApplicationById = async (applicationId) => {
     try {
         const query = `
             SELECT * 
-            FROM core.userType
+            FROM core.application_master_tb
+            WHERE id = $1
         `;
-        const result = await client.query(query);
+        const result = await client.query(query, [applicationId]);
         return result.rows;
     } catch (error) {
         throw error
     }
 }
 
+const getUserTypeByAppId = async (applicationId) => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.userType
+            WHERE app_id = $1
+        `;
+        const result = await client.query(query, [applicationId]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const deleteUserTypeByApplicationId = async (applicationId, userTypeList) => {
+    try {
+        const query = `
+            DELETE FROM core.application_role_mapping arm
+            WHERE arm.applicationId = $1
+            AND EXISTS (SELECT utm FROM core.userType utm WHERE arm.userTypeId = utm.id AND utm.userTypeCode in $2)
+        `;
+        const result = await client.query(query, [applicationId, userTypeList]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+};
+
+const addUserTypeApplicationMapping = async (applicationId, userTypeList) => {
+    try {
+        const query = `
+            INSERT INTO core.application_role_mapping
+        `;
+        const result = await client.query(query, [applicationId, userTypeList]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+};
+
+const updateUserTypeApplicationMapping = async (applicationId, updateFields) => {
+    try {
+        const query = `
+            UPDATE core.application_role_mapping
+            WHERE aaplication_id = $1
+            SET 
+        `;
+        const result = await client.query(query, [applicationId, updateFields]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+};
+
+const deleteCommunicationExpiryByCommunicationId = async (communcationId) => {
+    try {
+        const query = `
+           DELETE FROM core.communication_expiry 
+           WHERE communicationId = $1
+        `;
+        const result = await client.query(query, [communcationId]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const saveCommunicationExpiry = async (id, communicationId, fromDate, toDate) => {
+    try {
+        const query = `INSERT INTO core.communication_expiry
+                        (id, communication_id, from_date, to_date)
+                        VALUES($1, $2, $3, $4);
+        `;
+        const result = await client.query(query, [id, communicationId, fromDate, toDate]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
 
 module.exports = {
-    deleteExpiryByCommId,
-    deleteRoleByCommId,
-    getApplicationMasterByIdFromDb,
+    addTCommunicationRoleMapping,
+    addUserTypeApplicationMapping,
+    getApplicationById,
+    getUserTypeByAppId,
+    deleteCommunicationExpiryByCommunicationId,
+    deleteCommuncationRoleMappingByCommunicationId,
+    deleteUserTypeByApplicationId,
     getAllCommunicationCategoryFromDb,
     getAllRoleMastes,
     getAllUserTypesFromDb,
@@ -202,5 +287,7 @@ module.exports = {
     getPrimaryEntityByTypeFromDB,
     getUserFromDb,
     getUserContactFromDb,
-    getUserProfileFromDb
+    getUserProfileFromDb,
+    updateUserTypeApplicationMapping,
+    saveCommunicationExpiry
 }

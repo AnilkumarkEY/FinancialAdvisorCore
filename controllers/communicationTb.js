@@ -6,16 +6,22 @@ const {
     getUserFromDb,
     getUserContactFromDb,
     getUserProfileFromDb,
-    deleteExpiryByCommId,
-    deleteRoleByCommId,
+    deleteCommunicationExpiryByCommunicationId,
+    deleteCommuncationRoleMappingByCommunicationId,
     getAllRoleMastes,
     getCommunicationCategoryWithoutMasterFromDb,
     getAllCommunicationCategoryFromDb,
     getCommunicationCategoryByCode,
     getAllUserTypesFromDb,
-    getApplicationMasterByIdFromDb
+    getApplicationById,
+    getUserTypeByAppId,
+    addUserTypeApplicationMapping,
+    updateUserTypeApplicationMapping,
+    deleteUserTypeByApplicationId,
+    saveCommunicationExpiry,
+    addTCommunicationRoleMapping
 } = require("../db/communicationTb");
-const { ENTITY_TYPE } = require('../config/constants');
+const { ENTITY_TYPE, USER_TYPE } = require('../config/constants');
 
 const getBannerAndTickers = async (request, reply) => {
     try {
@@ -161,29 +167,36 @@ const getBlobUrl = async (request, reply) => {
 
 const updateContent = async (request, reply) => {
     try {
-        // const { communicationId } = request.query;
-        // const requestObject = request.body;
-        // if (communicationId) {
-        //     await deleteExpiryByCommId(communicationId);
-        //     await deleteRoleByCommId(communicationId);
+        const { communicationId, newUserTypeToAdd, newRoleToAdd } = request.body;
+        const requestObject = request.body;
+        if (communicationId) {
+            await deleteCommunicationExpiryByCommunicationId(communicationId);
+            await deleteCommuncationRoleMappingByCommunicationId(communicationId);
 
+            const communicationExpiry = [];
+            for (const expiry of requestObject.expiries) {
+                expiry.communicationId = requestObject.id;
+                if (!expiry.fromDate) expiry.fromDate = new Date();
+                if (!expiry.toDate) expiry.toDate = new Date('2199-01-01T10:30:00Z');
+                communicationExpiry.push(expiry);
+                await saveCommunicationExpiry(expiry); // need to fix this
+            }
+            if (newUserTypeToAdd) {
+                if (!newUserTypeToAdd.length) {
+                    newUserTypeToAdd = [USER_TYPE.ADVISOR, USER_TYPE.EMPLOYEE, USER_TYPE.LEADER];
+                }
+                for (const userType of newUserTypeToAdd) {
+                    await addTCommunicationRoleMapping(communicationRoleId, communicationId, userType);
+                }
+            }
+            if (newRoleToAdd) {
 
-        //     for (const expiry of requestObject.expiries) {
-        //         expiry.communicationId = requestObject.id;
+            }
 
-        //         if (!expiry.fromDate) {
-        //             expiry.fromDate = Date.now();
-        //         }
-        //         if (!expiry.toDate) {
-        //             expiry.toDate =  moment("2199-01-01T10:30:00Z").valueOf();;
-        //         }
-        //     }
-
-        //     }
-        // }
-        // return reply
-        //     .status(statusCodes.OK)
-        //     .send(responseFormatter(statusCodes.OK, "Signed Token", finalUrl));
+        }
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "Signed Token", finalUrl));
     } catch (error) {
         return reply
             .status(statusCodes.INTERNAL_SERVER_ERROR)
@@ -272,14 +285,18 @@ const getApplicationMasterById = async (request, reply) => {
     try {
         const { applicationMasterId } = request.query;
         if (applicationMasterId) {
-            const result = await getApplicationMasterByIdFromDb(applicationMasterId);
+            const application = await getApplicationById(applicationMasterId);
+            if (application) {
+                const userType = await getUserTypeByAppId(applicationMasterId);
+                if (userType.length) application.userTypeList = userMaster;
+            }
             return reply
                 .status(statusCodes.OK)
-                .send(responseFormatter(statusCodes.OK, "Application Master", result));
+                .send(responseFormatter(statusCodes.OK, "Application Master", application));
         } else {
             return reply
                 .status(statusCodes.BAD_REQUEST)
-                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request",  null));
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", null));
         }
 
     } catch (error) {
@@ -291,12 +308,26 @@ const getApplicationMasterById = async (request, reply) => {
 
 const updateApplicationMaster = async (request, reply) => {
     try {
-        const { applicationMasterId } = request.query;
-        if (applicationMasterId) {
-            const result = await getApplicationMasterByIdFromDb(applicationMasterId);
+        const { applicationId, userTypesToDelete, userTypesToAdd, updateRequest } = request.body;
+        if (applicationId) {
+            const application = await getApplicationMasterById(applicationId);
+            if (application) {
+                if (userTypesToDelete && userTypesToDelete.length) {
+                    const deletedUserTypes = await deleteUserTypeByApplicationId(applicationId, userTypesToDelete);
+                }
+                if (userTypesToAdd && userTypesToAdd.length) {
+                    for (const userType of userTypesToAdd) {
+                        const addedUserTypeMapping = await addUserTypeApplicationMapping(userType);
+                    }
+                }
+                const result = await updateUserTypeApplicationMapping(applicationId, updateRequest);
+                return reply
+                    .status(statusCodes.OK)
+                    .send(responseFormatter(statusCodes.OK, "Application Master", result));
+            }
             return reply
-                .status(statusCodes.OK)
-                .send(responseFormatter(statusCodes.OK, "Application Master", result));
+                .status(statusCodes.BAD_REQUEST)
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", null));
         } else {
             return reply
                 .status(statusCodes.BAD_REQUEST)
@@ -310,7 +341,26 @@ const updateApplicationMaster = async (request, reply) => {
     }
 }
 
+const getContentData = async (request, reply) => {
+    try {
 
+        const allCommunicationCategories = await getCommunicationCategoryWithoutMasterFromDb();
+        const allRoles                   = await getAllRoleMastes();
+        const allUserTypes               = await getAllUserTypesFromDb();
+        const finalResult                = {
+            category : allCommunicationCategories,
+            roles    : allRoles,
+            userTypes: allUserTypes
+        };
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "Bootstrap data", finalResult));
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
 
 
 module.exports = {
@@ -328,5 +378,6 @@ module.exports = {
     getUserContact,
     getUserOfficialDetails,
     updateApplicationMaster,
-    updateContent
+    updateContent,
+    getContentData
 }
