@@ -3169,3 +3169,724 @@ paths:
           description: Unauthorized. Invalid or missing authorization token.
         "500":
           description: Internal Server Error. Unexpected server error occurred.
+
+  /communication-tbs/banners-tickers:
+    get:
+      summary: Get banners and tickers for a specific user type
+      description: Retrieves banners and tickers information for the specified user type.
+      operationId: getBannersTickers
+      parameters:
+        - name: userType
+          in: query
+          required: true
+          description: The type of user to retrieve banners and tickers for.
+          schema:
+            type: string
+            example: "Leader"
+      responses:
+        "200":
+          description: Banners and tickers information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  banners:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bannerId:
+                          type: string
+                        bannerTitle:
+                          type: string
+                  tickers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tickerId:
+                          type: string
+                        tickerMessage:
+                          type: string
+
+  /communication-tbs/user-admin:
+    get:
+      summary: Get user administration details
+      description: Retrieves administration details for the specified user.
+      operationId: getUserAdminDetails
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The unique identifier of the user to retrieve administration details for.
+          schema:
+            type: string
+            example: "userId_here"
+      responses:
+        "200":
+          description: User administration details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User details"
+                  data:
+                    type: object
+                    properties:
+                      identity:
+                        type: string
+                      firstname:
+                        type: string
+                      middlename:
+                        type: string
+                        nullable: true
+                      lastname:
+                        type: string
+                      fullname:
+                        type: string
+                      idmeta_data_gender:
+                        type: string
+                      dob:
+                        type: string
+                        nullable: true
+                      idmeta_data_entitytype:
+                        type: string
+                      eff_from_date:
+                        type: string
+                        nullable: true
+                      eff_to_date:
+                        type: string
+                        nullable: true
+                      createdby:
+                        type: string
+                        nullable: true
+                      created_date:
+                        type: string
+                        nullable: true
+                      modifiedby:
+                        type: string
+                        nullable: true
+                      modified_date:
+                        type: string
+                        nullable: true
+                      inactivedate:
+                        type: string
+                        nullable: true
+                      sortorder:
+                        type: integer
+                        nullable: true
+                      idmeta_title:
+                        type: string
+                        nullable: true
+                      activeflag:
+                        type: integer
+
+  /communication-tbs/user-address-details-admin:
+    get:
+      summary: Get user address details
+      description: Retrieves address details for the specified user.
+      operationId: getUserAddressDetailsAdmin
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The unique identifier of the user to retrieve address details for.
+          schema:
+            type: string
+            example: "cec736ef705b422a946ce2cf78f8f406"
+      responses:
+        "200":
+          description: User address details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Address"
+                  data:
+                    type: object
+                    properties:
+                      identity_contact:
+                        type: string
+                      identity_urc_auth:
+                        type: string
+                        nullable: true
+                      idmeta_contact_type:
+                        type: string
+                      contact_value:
+                        type: string
+                      countrycode:
+                        type: string
+                      dialingcode:
+                        type: string
+                      address_line_1:
+                        type: string
+                        nullable: true
+                      address_line_2:
+                        type: string
+                        nullable: true
+                      location_name:
+                        type: string
+                        nullable: true
+                      state:
+                        type: string
+                        nullable: true
+                      pincode:
+                        type: string
+                        nullable: true
+                      eff_from_date:
+                        type: string
+                        nullable: true
+                      eff_to_date:
+                        type: string
+                        nullable: true
+                      activeflag:
+                        type: boolean
+                        nullable: true
+                      createdby:
+                        type: string
+                        nullable: true
+                      created_date:
+                        type: string
+                        nullable: true
+                      modifiedby:
+                        type: string
+                        nullable: true
+                      modified_date:
+                        type: string
+                        nullable: true
+                      inactivedate:
+                        type: string
+                        nullable: true
+                      sortorder:
+                        type: integer
+                        nullable: true
+                      identity_subscription:
+                        type: string
+                        nullable: true
+                      identity:
+                        type: string
+                      idcontract:
+                        type: string
+                        nullable: true
+                      countryname:
+                        type: string
+                        nullable: true
+                      district:
+                        type: string
+                        nullable: true
+
+  /communication-tbs/user-contact-admin:
+    get:
+      summary: Get user contact details
+      description: Retrieves contact details for the specified user.
+      operationId: getUserContactAdmin
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The unique identifier of the user to retrieve contact details for.
+          schema:
+            type: string
+            example: "cec736ef705b422a946ce2cf78f8f406"
+      responses:
+        "200":
+          description: User contact details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Contact"
+                  data:
+                    type: object
+                    properties:
+                      identity_contact:
+                        type: string
+                      identity_urc_auth:
+                        type: string
+                        nullable: true
+                      idmeta_contact_type:
+                        type: string
+                      contact_value:
+                        type: string
+                      countrycode:
+                        type: string
+                      dialingcode:
+                        type: string
+                      address_line_1:
+                        type: string
+                        nullable: true
+                      address_line_2:
+                        type: string
+                        nullable: true
+                      location_name:
+                        type: string
+                        nullable: true
+                      state:
+                        type: string
+                        nullable: true
+                      pincode:
+                        type: string
+                        nullable: true
+                      eff_from_date:
+                        type: string
+                        nullable: true
+                      eff_to_date:
+                        type: string
+                        nullable: true
+                      activeflag:
+                        type: boolean
+                        nullable: true
+                      createdby:
+                        type: string
+                        nullable: true
+                      created_date:
+                        type: string
+                        nullable: true
+                      modifiedby:
+                        type: string
+                        nullable: true
+                      modified_date:
+                        type: string
+                        nullable: true
+                      inactivedate:
+                        type: string
+                        nullable: true
+                      sortorder:
+                        type: integer
+                        nullable: true
+                      identity_subscription:
+                        type: string
+                        nullable: true
+                      identity:
+                        type: string
+                      idcontract:
+                        type: string
+                        nullable: true
+                      countryname:
+                        type: string
+                        nullable: true
+                      district:
+                        type: string
+                        nullable: true
+
+  /communication-tbs/primary-entity-master/by-type:
+    get:
+      summary: Get all primary entities by type
+      description: Retrieves all primary entities of the specified type.
+      operationId: getPrimaryEntityMasterByType
+      parameters:
+        - name: entityType
+          in: query
+          required: true
+          description: The type of primary entity to retrieve.
+          schema:
+            type: string
+            example: "TARGET_SYSTEM"
+      responses:
+        "200":
+          description: All primary entities by type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "All Primary Enitity by Type"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                        meta_data_name:
+                          type: string
+                        idmetamaster:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
+                        description:
+                          type: string
+                          nullable: true
+
+  /communication-tb/blob/url-path:
+    get:
+      summary: Get URL path for blob
+      description: Retrieves the URL path for the specified blob.
+      operationId: getBlobUrlPath
+      parameters:
+        - name: blobPath
+          in: query
+          required: true
+          description: The path of the blob to retrieve the URL for.
+          schema:
+            type: string
+            example: "\"asdasd\""
+      responses:
+        "200":
+          description: URL path for blob
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "All Primary Enitity by Type"
+                  data:
+                    type: string
+                    example: "www.google.com"
+
+  /communication-tbs/communication-category:
+    get:
+      summary: Get user communication categories
+      description: Retrieves the list of user communication categories.
+      operationId: getCommunicationCategory
+      responses:
+        "200":
+          description: User communication categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Communication Category"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category_name:
+                          type: string
+                        category_code:
+                          type: string
+                        parent_category_id:
+                          type: string
+                          nullable: true
+                        active:
+                          type: boolean
+                          nullable: true
+                        master:
+                          type: boolean
+                          nullable: true
+
+  /communication-tbs/communication-category/all:
+    get:
+      summary: Get all user communication categories
+      description: Retrieves the list of all user communication categories.
+      operationId: getAllCommunicationCategory
+      responses:
+        "200":
+          description: User communication categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Communication Category"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category_name:
+                          type: string
+                        category_code:
+                          type: string
+                        parent_category_id:
+                          type: string
+                          nullable: true
+                        active:
+                          type: boolean
+                          nullable: true
+                        master:
+                          type: boolean
+
+  /communication-tbs/communication-category/tree:
+    get:
+      summary: Get communication category tree
+      description: Retrieves the communication category tree based on the specified category code.
+      operationId: getCommunicationCategoryTree
+      parameters:
+        - name: categoryCode
+          in: query
+          required: true
+          description: The code of the category to retrieve the tree for.
+          schema:
+            type: string
+            example: "KR_FAQ_GST"
+      responses:
+        "200":
+          description: User communication category tree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Communication Category"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category_name:
+                          type: string
+                        category_code:
+                          type: string
+                        parent_category_id:
+                          type: string
+                          nullable: true
+                        active:
+                          type: boolean
+                          nullable: true
+                        master:
+                          type: boolean
+
+  /communication-tbs/role-masters:
+    get:
+      summary: Get role masters
+      description: Retrieves the list of role masters.
+      operationId: getRoleMasters
+      responses:
+        "200":
+          description: Role masters list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Roles"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idrole:
+                          type: string
+                        code:
+                          type: string
+                        description:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                          nullable: true
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
+
+  /communication-tbs/user-type-masters:
+    get:
+      summary: Get user type masters
+      description: Retrieves the list of user type masters.
+      operationId: getUserTypeMasters
+      responses:
+        "200":
+          description: List of all user types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "All User Types"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idusertype:
+                          type: string
+                        description:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                          nullable: true
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
+
+  /communication-tbs/application-master/by-id:
+    get:
+      summary: Get application master by ID
+      description: Retrieves the application master details for the specified ID.
+      operationId: getApplicationMasterById
+      parameters:
+        - name: applicationMasterId
+          in: query
+          required: true
+          description: The unique identifier of the application master to retrieve.
+          schema:
+            type: string
+            example: "asd"
+      responses:
+        "200":
+          description: Application master details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Application Master"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idusertype:
+                          type: string
+                        description:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                          nullable: true
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
