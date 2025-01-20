@@ -4,7 +4,9 @@ const COMMUNICATION_TYPE = {
 }
 
 const USER_TYPE = {
-    LEADER: 'Leader'
+    LEADER  : 'Leader',
+    ADVISOR : 'Advisor',
+    EMPLOYEE: 'Employee'
 }
 
 const TABLE_NAME = {

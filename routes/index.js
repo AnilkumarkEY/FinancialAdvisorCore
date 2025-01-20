@@ -6,7 +6,6 @@ const admin = require("./admin");
 const search = require("./search");
 const nudge = require("./nudge");
 const communicationTb = require("./communicationTb");
-const contentManagement = require("./contentManagement");
 
 async function routes(fastify, options) {
   // Register user and lead routes with prefixes

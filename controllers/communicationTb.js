@@ -1,17 +1,25 @@
 const { responseFormatter, statusCodes, uniqueString } = require("../utils");
-const { entityContact } = require("../services");
+const { azureBlob } = require("../services");
 const {
     getBannerAndTickersFromDb,
     getPrimaryEntityByTypeFromDB,
     getUserFromDb,
     getUserContactFromDb,
-    getUserProfileFromDb
+    getUserProfileFromDb,
+    deleteExpiryByCommId,
+    deleteRoleByCommId,
+    getAllRoleMastes,
+    getCommunicationCategoryWithoutMasterFromDb,
+    getAllCommunicationCategoryFromDb,
+    getCommunicationCategoryByCode,
+    getAllUserTypesFromDb,
+    getApplicationMasterByIdFromDb
 } = require("../db/communicationTb");
 const { ENTITY_TYPE } = require('../config/constants');
 
 const getBannerAndTickers = async (request, reply) => {
     try {
-        const { userType } = request.body;
+        const { userType } = request.query;
         if (!userType) {
             return reply
                 .status(statusCodes.BAD_REQUEST)
@@ -131,11 +139,194 @@ const getUserAddress = async (request, reply) => {
     }
 }
 
+const getBlobUrl = async (request, reply) => {
+    try {
+        const { blobPath } = request.query;
+        if (blobPath) {
+            const sasToken = await azureBlob.getSasToken();
+            const finalUrl = blobPath + '?' + sasToken;
+            return reply
+                .status(statusCodes.OK)
+                .send(responseFormatter(statusCodes.OK, "Signed Token", finalUrl));
+        }
+        return reply
+            .status(statusCodes.BAD_REQUEST)
+            .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid url ", null));
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const updateContent = async (request, reply) => {
+    try {
+        // const { communicationId } = request.query;
+        // const requestObject = request.body;
+        // if (communicationId) {
+        //     await deleteExpiryByCommId(communicationId);
+        //     await deleteRoleByCommId(communicationId);
+
+
+        //     for (const expiry of requestObject.expiries) {
+        //         expiry.communicationId = requestObject.id;
+
+        //         if (!expiry.fromDate) {
+        //             expiry.fromDate = Date.now();
+        //         }
+        //         if (!expiry.toDate) {
+        //             expiry.toDate =  moment("2199-01-01T10:30:00Z").valueOf();;
+        //         }
+        //     }
+
+        //     }
+        // }
+        // return reply
+        //     .status(statusCodes.OK)
+        //     .send(responseFormatter(statusCodes.OK, "Signed Token", finalUrl));
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const getCommunicationCategoryWithoutMaster = async (request, reply) => {
+    try {
+        console.log("HERE")
+        const result = await getCommunicationCategoryWithoutMasterFromDb();
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "User Communication Category", result));
+
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const getAllCommunicationCategory = async (request, reply) => {
+    try {
+        const result = await getAllCommunicationCategoryFromDb();
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "User Communication Category", result));
+
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const getAllCommunicationCategoryByCode = async (request, reply) => {
+    try {
+        const { categoryCode } = request.query;
+        if (categoryCode) {
+            const result = await getCommunicationCategoryByCode(categoryCode);
+            return reply
+                .status(statusCodes.OK)
+                .send(responseFormatter(statusCodes.OK, "User Communication Category", result));
+        } else {
+            return reply
+                .status(statusCodes.BAD_REQUEST)
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Code", null));
+        }
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const getAllRoleMasters = async (request, reply) => {
+    try {
+        const result = await getAllRoleMastes();
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "All User Roles", result));
+
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const getAllUserTypes = async (request, reply) => {
+    try {
+        const result = await getAllUserTypesFromDb();
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "All User Types", result));
+
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const getApplicationMasterById = async (request, reply) => {
+    try {
+        const { applicationMasterId } = request.query;
+        if (applicationMasterId) {
+            const result = await getApplicationMasterByIdFromDb(applicationMasterId);
+            return reply
+                .status(statusCodes.OK)
+                .send(responseFormatter(statusCodes.OK, "Application Master", result));
+        } else {
+            return reply
+                .status(statusCodes.BAD_REQUEST)
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request",  null));
+        }
+
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+const updateApplicationMaster = async (request, reply) => {
+    try {
+        const { applicationMasterId } = request.query;
+        if (applicationMasterId) {
+            const result = await getApplicationMasterByIdFromDb(applicationMasterId);
+            return reply
+                .status(statusCodes.OK)
+                .send(responseFormatter(statusCodes.OK, "Application Master", result));
+        } else {
+            return reply
+                .status(statusCodes.BAD_REQUEST)
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", { error: error.message }));
+        }
+
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+
+
+
 module.exports = {
+    getApplicationMasterById,
+    getAllUserTypes,
+    getAllRoleMasters,
+    getAllCommunicationCategoryByCode,
+    getCommunicationCategoryWithoutMaster,
+    getAllCommunicationCategory,
     getBannerAndTickers,
+    getBlobUrl,
     getPrimaryEntityByType,
     getUser,
     getUserAddress,
     getUserContact,
     getUserOfficialDetails,
+    updateApplicationMaster,
+    updateContent
 }

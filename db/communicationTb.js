@@ -26,7 +26,6 @@ const getBannerAndTickersFromDb = async (userType) => {
             );
  `;
         const result = await client.query(query, [currentDate, userType]);
-        console.log("Update successful:", result);
         return result.rows;
     } catch (error) {
         throw error;
@@ -68,7 +67,7 @@ const getUserContactFromDb = async (userId) => {
         WHERE ec.identity = $1 
         AND ec.activeflag=1`;
         const result = await client.query(query, [userId]);
-        return result.rows;
+        return result.rows[0];
     } catch (error) {
         throw error;
     }
@@ -86,8 +85,120 @@ const getUserProfileFromDb = async (userId) => {
     }
 }
 
+const deleteExpiryByCommId = async (commId) => {
+    try {
+        const query = `DELETE FROM CommunicationExpiry comm 
+        WHERE comm.communicationId = $1`;
+        
+        const result = await client.query(query, [commId]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const deleteRoleByCommId = async (commId) => {
+    try {
+        const query = `DELETE FROM CommunicationRoleMapping role
+         WHERE role.communicationId  = $1`;
+        const result = await client.query(query, [commId]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const getCommunicationCategoryWithoutMasterFromDb = async () => {
+    try {
+        const query = `
+            Select * 
+            FROM core.communication_category 
+            WHERE master IS NULL
+        `;
+        const result = await client.query(query);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const getAllCommunicationCategoryFromDb = async () => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.communication_category
+        `;
+        const result = await client.query(query);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const getCommunicationCategoryByCode = async (categoryCode) => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.communication_category  
+            WHERE category_code = $1
+        `;
+        const result = await client.query(query, [categoryCode]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const getAllRoleMastes = async () => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.role
+        `;
+        const result = await client.query(query);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const getAllUserTypesFromDb = async () => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.userType
+        `;
+        const result = await client.query(query);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const getApplicationMasterByIdFromDb = async (appilcationId) => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.userType
+        `;
+        const result = await client.query(query);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+
 module.exports = {
+    deleteExpiryByCommId,
+    deleteRoleByCommId,
+    getApplicationMasterByIdFromDb,
+    getAllCommunicationCategoryFromDb,
+    getAllRoleMastes,
+    getAllUserTypesFromDb,
+    getCommunicationCategoryByCode,
     getBannerAndTickersFromDb,
+    getCommunicationCategoryWithoutMasterFromDb,
     getPrimaryEntityByTypeFromDB,
     getUserFromDb,
     getUserContactFromDb,
