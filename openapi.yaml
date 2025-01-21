@@ -3891,7 +3891,7 @@ paths:
                           type: integer
                           nullable: true
 
-  /bootstrap-data:
+  /communication-tbs/bootstrap-data:
     get:
       summary: Get bootstrap data
       description: Retrieves bootstrap data for categories, roles, and user types.
