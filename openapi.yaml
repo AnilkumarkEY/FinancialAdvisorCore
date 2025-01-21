@@ -3890,3 +3890,138 @@ paths:
                         sortorder:
                           type: integer
                           nullable: true
+
+  /bootstrap-data:
+    get:
+      summary: Get bootstrap data
+      description: Retrieves bootstrap data for categories, roles, and user types.
+      operationId: getBootstrapData
+      responses:
+        '200':
+          description: A JSON object containing bootstrap data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Bootstrap data"
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Category'
+                      roles:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Role'
+                      userTypes:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UserType'
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        category_name:
+          type: string
+        category_code:
+          type: string
+        parent_category_id:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+          nullable: true
+        master:
+          type: boolean
+          nullable: true
+    Role:
+      type: object
+      properties:
+        idrole:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        eff_from_date:
+          type: string
+          format: date-time
+          nullable: true
+        eff_to_date:
+          type: string
+          format: date-time
+          nullable: true
+        activeflag:
+          type: boolean
+          nullable: true
+        createdby:
+          type: string
+          nullable: true
+        created_date:
+          type: string
+          format: date-time
+          nullable: true
+        modifiedby:
+          type: string
+          nullable: true
+        modified_date:
+          type: string
+          format: date-time
+          nullable: true
+        inactivedate:
+          type: string
+          format: date-time
+          nullable: true
+        sortorder:
+          type: integer
+          nullable: true
+    UserType:
+      type: object
+      properties:
+        idusertype:
+          type: string
+        description:
+          type: string
+        eff_from_date:
+          type: string
+          format: date-time
+          nullable: true
+        eff_to_date:
+          type: string
+          format: date-time
+          nullable: true
+        activeflag:
+          type: boolean
+          nullable: true
+        createdby:
+          type: string
+          nullable: true
+        created_date:
+          type: string
+          format: date-time
+          nullable: true
+        modifiedby:
+          type: string
+          nullable: true
+        modified_date:
+          type: string
+          format: date-time
+          nullable: true
+        inactivedate:
+          type: string
+          format: date-time
+          nullable: true
+        sortorder:
+          type: integer
+          nullable: true
