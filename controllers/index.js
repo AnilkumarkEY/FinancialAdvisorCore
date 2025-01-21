@@ -1,7 +1,19 @@
-const userController = require('./userController');
-const dashboardController = require('./dashboardController');
+const user            = require("./user");
+const lead            = require("./lead");
+const contact         = require('./contact')
+const profile         = require('./profile')
+const admin           = require('./admin')
+const search          = require('./search')
+const nudge           = require("./nudge");
+const communicationTB = require('./communicationTb');
 
-module.exports = {
-  userController,
-  dashboardController,
+module.exports  = {
+  user,
+  lead,
+  contact,
+  profile,
+  admin,
+  search,
+  nudge,
+  communicationTB
 };
