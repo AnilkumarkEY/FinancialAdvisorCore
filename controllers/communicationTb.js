@@ -169,16 +169,15 @@ const getBlobUrl = async (request, reply) => {
 
 const updateContent = async (request, reply) => {
     try {
-        const { communicationId, newUserTypeToAdd, newRoleToAdd } = request.body;
+        const { communicationId, newRoleToAdd } = request.body;
+        let { newUserTypeToAdd } = request.body;
         const requestObject = request.body;
         if (communicationId) {
 
             const content = await getContentById(communicationId);
             if (content) {
                 await deleteCommunicationExpiryByCommunicationId(communicationId);
-                console.log("COMMUNICATION EXPIRY DELETED");
                 await deleteCommuncationRoleMappingByCommunicationId(communicationId);
-                console.log("COMMUNICATION ROLE MAPPING DELETED");
 
                 const communicationExpiry = [];
                 for (const expiry of requestObject.expiries) {
@@ -187,48 +186,39 @@ const updateContent = async (request, reply) => {
                     if (!expiry.toDate) expiry.toDate = new Date('2199-01-01T10:30:00Z');
                     communicationExpiry.push(expiry);
                     await addCommunicationExpiry(expiry); // need to fix this
-                    console.log("NEW COMMUNICATION ADDED");
                 }
                 if (newUserTypeToAdd) {
                     if (!newUserTypeToAdd.length) {
                         newUserTypeToAdd = [USER_TYPE.ADVISOR, USER_TYPE.EMPLOYEE, USER_TYPE.LEADER];
                     }
                     for (const userType of newUserTypeToAdd) {
-                        await addCommunicationRoleMapping(null, communicationId, userType);
-                        console.log("NEW ROLE MAPPING BY USER TYPE ADDED");
+                        await addCommunicationRoleMapping(uniqueString(), communicationId, userType);
                     }
                 }
                 if (newRoleToAdd) {
                     for (const roleId of newRoleToAdd) {
                         await addCommunicationRoleMapping(roleId, communicationId, null);
-                        console.log("NEW ROLE MAPPING ADDED");
                     }
                 }
-                const updateRequest = {
-                    ...(requestObject.title !== undefined && { ...requestObject.title }),
-                    ...(requestObject.description !== undefined && { ...requestObject.description }),
-                    ...(requestObject.expiryApplicable !== undefined && { ...requestObject.expiryApplicable }),
-                    ...(requestObject.demographicApplicable !== undefined && { ...requestObject.demographicApplicable }),
-                    ...(requestObject.contentUrl !== undefined && { ...requestObject.contentUrl }),
-                    ...(requestObject.contentType !== undefined && { ...requestObject.contentType }),
-                    ...(requestObject.iconUrl !== undefined && { ...requestObject.iconUrl }),
-                    ...(requestObject.active !== undefined && { ...requestObject.active }),
-                    ...(requestObject.displayOrder !== undefined && { ...requestObject.displayOrder }),
-                    ...(requestObject.target !== undefined && { ...requestObject.target }),
-                    ...(requestObject.layoutGroupName !== undefined && { ...requestObject.layoutGroupName })
-                };
+                const knownKeys = ['title', 'description', 'expiry_applicable', 'demographic_Applicable', 'content_url', 'content_type',   'active', 'display_order', 'icon_url', 'target_id', 'layout_group_name_id'];
 
+                const updateRequest = {};
+                knownKeys.forEach(key => {
+                    if (requestObject.hasOwnProperty(key)) {
+                        updateRequest[key] = requestObject[key];
+                    }
+                  });
                 const updatedContent = await updateContentInDb(communicationId, updateRequest);
-                console.log("COMMUNICATION UPDATED");
                 return reply
                     .status(statusCodes.OK)
-                    .send(responseFormatter(statusCodes.OK, "Signed Token", updatedContent));
+                    .send(responseFormatter(statusCodes.OK, "Signed Token", {...content, ...updateRequest}));
             }
         }
         return reply
             .status(statusCodes.BAD_REQUEST)
             .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Content Id", null));
     } catch (error) {
+        console.error(error);
         return reply
             .status(statusCodes.INTERNAL_SERVER_ERROR)
             .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
@@ -237,7 +227,6 @@ const updateContent = async (request, reply) => {
 
 const getCommunicationCategoryWithoutMaster = async (request, reply) => {
     try {
-        console.log("HERE")
         const result = await getCommunicationCategoryWithoutMasterFromDb();
         return reply
             .status(statusCodes.OK)
