@@ -43,7 +43,6 @@ const getPrimaryEntityByTypeFromDB = async (entityType) => {
                         LIMIT 1
                     );`
         const result = await client.query(query, [entityType]);
-        console.log("Update successful:", result);
         return result.rows;
     } catch (error) {
         throw error;
@@ -96,7 +95,7 @@ const deleteCommuncationRoleMappingByCommunicationId = async (commId) => {
     }
 }
 
-const addTCommunicationRoleMapping = async (communicationRoleId, communicationId, userTypeId) => {
+const addCommunicationRoleMapping = async (communicationRoleId, communicationId, userTypeId) => {
     try {
         const query = `
         INSERT INTO communication_role mapping
@@ -257,7 +256,7 @@ const deleteCommunicationExpiryByCommunicationId = async (communcationId) => {
     }
 }
 
-const saveCommunicationExpiry = async (id, communicationId, fromDate, toDate) => {
+const addCommunicationExpiry = async (id, communicationId, fromDate, toDate) => {
     try {
         const query = `INSERT INTO core.communication_expiry
                         (id, communication_id, from_date, to_date)
@@ -270,8 +269,55 @@ const saveCommunicationExpiry = async (id, communicationId, fromDate, toDate) =>
     }
 }
 
+const addRoleToDb = async (roleId, communicationId,) => {
+    try {
+        const query = `INSERT INTO core.communication_expiry
+                        (id, communication_id, from_date, to_date)
+                        VALUES($1, $2, $3, $4);
+        `;
+        const result = await client.query(query, [id, communicationId, fromDate, toDate]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const getContentById = async (contentId) => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.communication_tb
+            WHERE idcommrole = $1
+        `;
+        const result = await client.query(query, [contentId]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+};
+
+const updateContentInDb = async (contentId, requestObject) => {
+    try {
+        const setSql = Object.keys(updateFields)
+            .map((key, index) => `"${key}" = $${index + 2}`)
+            .join(', ');
+
+        const values = [communicationId, ...Object.values(updateFields)];
+
+        const query = `
+            UPDATE core.communication_tb
+            WHERE idcommrole = $1
+            SET  =  ${setSql}
+        `;
+        const result = await client.query(query, [contentId, ...Object.values(updateFields)]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+};
+
 module.exports = {
-    addTCommunicationRoleMapping,
+    addCommunicationRoleMapping,
     addUserTypeApplicationMapping,
     getApplicationById,
     getUserTypeByAppId,
@@ -286,8 +332,10 @@ module.exports = {
     getCommunicationCategoryWithoutMasterFromDb,
     getPrimaryEntityByTypeFromDB,
     getUserFromDb,
+    getContentById,
     getUserContactFromDb,
     getUserProfileFromDb,
     updateUserTypeApplicationMapping,
-    saveCommunicationExpiry
+    updateContentInDb,
+    addCommunicationExpiry
 }
