@@ -18,8 +18,10 @@ const {
     addUserTypeApplicationMapping,
     updateUserTypeApplicationMapping,
     deleteUserTypeByApplicationId,
-    saveCommunicationExpiry,
-    addTCommunicationRoleMapping
+    addCommunicationExpiry,
+    addCommunicationRoleMapping,
+    getContentById,
+    updateContentInDb
 } = require("../db/communicationTb");
 const { ENTITY_TYPE, USER_TYPE } = require('../config/constants');
 
@@ -167,37 +169,56 @@ const getBlobUrl = async (request, reply) => {
 
 const updateContent = async (request, reply) => {
     try {
-        const { communicationId, newUserTypeToAdd, newRoleToAdd } = request.body;
+        const { communicationId, newRoleToAdd } = request.body;
+        let { newUserTypeToAdd } = request.body;
         const requestObject = request.body;
         if (communicationId) {
-            await deleteCommunicationExpiryByCommunicationId(communicationId);
-            await deleteCommuncationRoleMappingByCommunicationId(communicationId);
 
-            const communicationExpiry = [];
-            for (const expiry of requestObject.expiries) {
-                expiry.communicationId = requestObject.id;
-                if (!expiry.fromDate) expiry.fromDate = new Date();
-                if (!expiry.toDate) expiry.toDate = new Date('2199-01-01T10:30:00Z');
-                communicationExpiry.push(expiry);
-                await saveCommunicationExpiry(expiry); // need to fix this
-            }
-            if (newUserTypeToAdd) {
-                if (!newUserTypeToAdd.length) {
-                    newUserTypeToAdd = [USER_TYPE.ADVISOR, USER_TYPE.EMPLOYEE, USER_TYPE.LEADER];
+            const content = await getContentById(communicationId);
+            if (content) {
+                await deleteCommunicationExpiryByCommunicationId(communicationId);
+                await deleteCommuncationRoleMappingByCommunicationId(communicationId);
+
+                const communicationExpiry = [];
+                for (const expiry of requestObject.expiries) {
+                    expiry.communicationId = requestObject.id;
+                    if (!expiry.fromDate) expiry.fromDate = new Date();
+                    if (!expiry.toDate) expiry.toDate = new Date('2199-01-01T10:30:00Z');
+                    communicationExpiry.push(expiry);
+                    await addCommunicationExpiry(expiry); // need to fix this
                 }
-                for (const userType of newUserTypeToAdd) {
-                    await addTCommunicationRoleMapping(communicationRoleId, communicationId, userType);
+                if (newUserTypeToAdd) {
+                    if (!newUserTypeToAdd.length) {
+                        newUserTypeToAdd = [USER_TYPE.ADVISOR, USER_TYPE.EMPLOYEE, USER_TYPE.LEADER];
+                    }
+                    for (const userType of newUserTypeToAdd) {
+                        await addCommunicationRoleMapping(uniqueString(), communicationId, userType);
+                    }
                 }
-            }
-            if (newRoleToAdd) {
+                if (newRoleToAdd) {
+                    for (const roleId of newRoleToAdd) {
+                        await addCommunicationRoleMapping(roleId, communicationId, null);
+                    }
+                }
+                const knownKeys = ['title', 'description', 'expiry_applicable', 'demographic_Applicable', 'content_url', 'content_type',   'active', 'display_order', 'icon_url', 'target_id', 'layout_group_name_id'];
 
+                const updateRequest = {};
+                knownKeys.forEach(key => {
+                    if (requestObject.hasOwnProperty(key)) {
+                        updateRequest[key] = requestObject[key];
+                    }
+                  });
+                const updatedContent = await updateContentInDb(communicationId, updateRequest);
+                return reply
+                    .status(statusCodes.OK)
+                    .send(responseFormatter(statusCodes.OK, "Signed Token", {...content, ...updateRequest}));
             }
-
         }
         return reply
-            .status(statusCodes.OK)
-            .send(responseFormatter(statusCodes.OK, "Signed Token", finalUrl));
+            .status(statusCodes.BAD_REQUEST)
+            .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Content Id", null));
     } catch (error) {
+        console.error(error);
         return reply
             .status(statusCodes.INTERNAL_SERVER_ERROR)
             .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
@@ -206,7 +227,6 @@ const updateContent = async (request, reply) => {
 
 const getCommunicationCategoryWithoutMaster = async (request, reply) => {
     try {
-        console.log("HERE")
         const result = await getCommunicationCategoryWithoutMasterFromDb();
         return reply
             .status(statusCodes.OK)
@@ -345,11 +365,11 @@ const getContentData = async (request, reply) => {
     try {
 
         const allCommunicationCategories = await getCommunicationCategoryWithoutMasterFromDb();
-        const allRoles                   = await getAllRoleMastes();
-        const allUserTypes               = await getAllUserTypesFromDb();
-        const finalResult                = {
-            category : allCommunicationCategories,
-            roles    : allRoles,
+        const allRoles = await getAllRoleMastes();
+        const allUserTypes = await getAllUserTypesFromDb();
+        const finalResult = {
+            category: allCommunicationCategories,
+            roles: allRoles,
             userTypes: allUserTypes
         };
         return reply

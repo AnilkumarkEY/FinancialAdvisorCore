@@ -3916,16 +3916,107 @@ paths:
                       category:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Category'
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            category_name:
+                              type: string
+                            category_code:
+                              type: string
+                            parent_category_id:
+                              type: string
+                              nullable: true
+                            active:
+                              type: boolean
+                              nullable: true
+                            master:
+                              type: boolean
+                              nullable: true
                       roles:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Role'
+                          type: object
+                          properties:
+                            idrole:
+                              type: string
+                            code:
+                              type: string
+                            description:
+                              type: string
+                            eff_from_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            eff_to_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            activeflag:
+                              type: boolean
+                              nullable: true
+                            createdby:
+                              type: string
+                              nullable: true
+                            created_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            modifiedby:
+                              type: string
+                              nullable: true
+                            modified_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            inactivedate:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            sortorder:
+                              type: integer
+                              nullable: true
                       userTypes:
                         type: array
                         items:
-                          $ref: '#/components/schemas/UserType'
-components:
+                          type: object
+                          properties:
+                            idusertype:
+                              type: string
+                            description:
+                              type: string
+                            eff_from_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            eff_to_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            activeflag:
+                              type: boolean
+                              nullable: true
+                            createdby:
+                              type: string
+                              nullable: true
+                            created_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            modifiedby:
+                              type: string
+                              nullable: true
+                            modified_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            inactivedate:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            sortorder:
+                              type: integer
+                              nullable: true
   schemas:
     Category:
       type: object
@@ -4025,3 +4116,139 @@ components:
         sortorder:
           type: integer
           nullable: true
+
+
+  /communication-tbs/update:
+      post:
+        summary: Update communication
+        description: Updates the details of a specific communication.
+        operationId: updateCommunication
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  communicationId:
+                    type: string
+                    example: "XXXX123ACBD"
+                  title:
+                    type: string
+                    example: "Title of the Communication"
+                  description:
+                    type: string
+                    example: "Description of the Communication"
+                  expiry_applicable:
+                    type: boolean
+                    example: true
+                  demographic_applicable:
+                    type: boolean
+                    example: false
+                  expiries:
+                    type: array
+                    items: {}
+                    example: []
+                  content_url:
+                    type: string
+                    example: "http://example.com/content"
+                  content_type:
+                    type: string
+                    example: "application/pdf"
+                  communication_type:
+                    type: object
+                    additionalProperties: false
+                  communication_type_master:
+                    type: string
+                    example: "Type Master Identifier"
+                  target_id:
+                    type: string
+                    example: ""
+                  layout_group_name_id:
+                    type: string
+                    example: ""
+                  master:
+                    type: boolean
+                    example: true
+                  target_master:
+                    type: string
+                    example: "Target Master Identifier"
+                  communication_template_id:
+                    type: string
+                    example: "uuid-goes-here"
+                  user_type_master:
+                    type: string
+                    example: "User Type Master Identifier"
+                  top_parent:
+                    type: boolean
+                    example: true
+                  external_content:
+                    type: boolean
+                    example: false
+                  parent_category:
+                    type: string
+                    example: "uuid-goes-here"
+                  category:
+                    type: string
+                    example: "uuid-goes-here"
+                  parent_category_code:
+                    type: string
+                    example: "Parent Category Code"
+                  parent_category_name:
+                    type: string
+                    example: "Parent Category Name"
+                  category_code:
+                    type: string
+                    example: "Category Code"
+                  layout_group_master:
+                    type: string
+                    example: "Layout Group Master Identifier"
+                  active:
+                    type: boolean
+                    example: true
+                  display_order:
+                    type: integer
+                    example: 2
+                  icon_url:
+                    type: string
+                    example: "http://example.com/icon.png"
+                  user_type_list:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  deletedUserTypeList:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  newUserTypeToAdd:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+                  newRoleToAdd:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+        responses:
+          '200':
+            description: Communication updated successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: integer
+                      example: 200
+                    message:
+                      type: string
+                      example: "Communication updated successfully"
+          '400':
+            description: Invalid input
+          '404':
+            description: Communication not found
+          '500':
+            description: Internal server error
