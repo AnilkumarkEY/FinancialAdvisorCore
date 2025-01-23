@@ -294,11 +294,13 @@ async function getAllUsers(pagination) {
               END AS status                               
           FROM 
               core.profile p
+          WHERE 
+              p.activeflag = 1  -- Filter for only active profiles
         ),
         contact_data AS (
           SELECT 
               ec."identity" AS user_identity,             
-              ec.contact_value AS email                  
+              ec.contact_value AS email                   
           FROM 
               core.entity_contact ec
           WHERE 
@@ -312,7 +314,7 @@ async function getAllUsers(pagination) {
             cd.email,                                    
             pd.branch,                                   
             pd.status,                                   
-            TRUE AS action_view                           
+            TRUE AS action_view                            
         FROM 
             profile_data pd
         LEFT JOIN 
@@ -326,7 +328,8 @@ async function getAllUsers(pagination) {
 
     const countQuery = `
         WITH profile_data AS (
-          SELECT p.identity AS user_id FROM core.profile p
+          SELECT p.identity AS user_id FROM core.profile p WHERE 
+          p.activeflag = 1
         )
         SELECT COUNT(*) AS totalCount FROM profile_data
       `;

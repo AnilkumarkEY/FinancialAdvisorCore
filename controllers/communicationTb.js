@@ -325,11 +325,13 @@ const getAllUserTypes = async (request, reply) => {
 const getApplicationMasterById = async (request, reply) => {
     try {
         const { applicationMasterId } = request.query;
+        let userType;
         if (applicationMasterId) {
             const application = await getApplicationById(applicationMasterId);
             if (application) {
-                const userType = await getUserTypeByAppId(applicationMasterId);
-                if (userType.length) application.userTypeList = userMaster;
+                userType = await getUserTypeByAppId(applicationMasterId);
+                // if (userType.length) application.userTypeList = userMaster;
+                if (userType.length) application[0].userTypeList = userType
             }
             return reply
                 .status(statusCodes.OK)
@@ -350,26 +352,52 @@ const getApplicationMasterById = async (request, reply) => {
 const updateApplicationMaster = async (request, reply) => {
     try {
         const { applicationId, userTypesToDelete, userTypesToAdd, updateRequest } = request.body;
+        let result = [];
+        let deletedUserTypes = [];
+        let addedUserTypes = [];
+        let updatedApplication = null;
         if (applicationId) {
-            const application = await getApplicationMasterById(applicationId);
+            //retrieve application details from db
+            const application = await getApplicationById(applicationId);
             if (application) {
-                if (userTypesToDelete && userTypesToDelete.length) {
-                    const deletedUserTypes = await deleteUserTypeByApplicationId(applicationId, userTypesToDelete);
+                if (userTypesToDelete && userTypesToDelete.length > 0) {
+                    result.push(
+                        (async () => {
+                            deletedUserTypes = await deleteUserTypeByApplicationId(applicationId, userTypesToDelete);
+                        })()
+                    );
                 }
-                if (userTypesToAdd && userTypesToAdd.length) {
-                    for (const userType of userTypesToAdd) {
-                        const addedUserTypeMapping = await addUserTypeApplicationMapping(userType);
-                    }
+
+                if (userTypesToAdd && userTypesToAdd.length > 0) {
+                    result.push(
+                        (async () => {
+                            addedUserTypes = await addUserTypeApplicationMapping(uniqueString(),applicationId, userTypesToAdd);
+                        })()
+                    );
                 }
-                const result = await updateUserTypeApplicationMapping(applicationId, updateRequest);
+
+                if (updateRequest && Object.keys(updateRequest).length > 0) {
+                    result.push(
+                        (async () => {
+                            updatedApplication = await updateUserTypeApplicationMapping(applicationId, updateRequest);
+                        })()
+                    );
+                }
+                // Wait for all DB calls to finish
+                await Promise.all(result);
                 return reply
                     .status(statusCodes.OK)
-                    .send(responseFormatter(statusCodes.OK, "Application Master", result));
+                    .send(responseFormatter(statusCodes.OK, "Application Master Updated", {
+                        deletedUserTypes,
+                        addedUserTypes,
+                        updatedApplication
+                    }));
             }
             return reply
                 .status(statusCodes.BAD_REQUEST)
-                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", null));
-        } else {
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Application ID", null));
+        }
+         else {
             return reply
                 .status(statusCodes.BAD_REQUEST)
                 .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", { error: error.message }));
