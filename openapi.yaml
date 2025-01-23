@@ -4471,7 +4471,7 @@ paths:
         "500":
           description: Internal Server Error. Unexpected server error occurred.
 
-  /application-master/patch:
+  /communication-tbs/application-master/patch:
     post:
       summary: Update Application Master
       description: Updates the application master details by adding/removing user types and modifying application settings.
