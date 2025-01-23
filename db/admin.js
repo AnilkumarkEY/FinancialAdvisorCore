@@ -351,9 +351,125 @@ async function getAllUsers(pagination) {
   }
 }
 
+async function getEntityToUpdate(agentCode) {
+  try {
+    const query = `
+    SELECT 
+    p."identity" AS identity, 
+    ec.identity_contact 
+    FROM 
+    core.profile p
+    INNER JOIN 
+    core.entity_contact ec 
+    ON p."identity" = ec."identity"
+    WHERE 
+    p.business_code = $1
+    AND ec.idmeta_contact_type = 'b8fbf7947f8b4505a91e662af6953a15';
+    `;
+    const res = await client.query(query, [agentCode]);
+    return res.rows;
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error; // Rethrow for controller error handling
+  }
+}
+
+async function updateAgent(agentData) {
+  // Start building the query
+  let query = `UPDATE agentservicing.agent_directory SET `;
+  const values = [];
+  let setClauses = [];
+  let index = 1;
+
+  // Destructure fieldToMatch from agentData and delete it
+  const { fieldToMatch } = agentData;
+  delete agentData.fieldToMatch;
+
+  // Loop through agentData to build the dynamic update set clauses
+  for (const key in agentData) {
+    // Exclude identity_contact from the SET clause
+    if (key !== fieldToMatch && agentData[key] !== undefined) {
+      setClauses.push(`${key} = $${index}`);
+      values.push(agentData[key] || null);
+      index++;
+    }
+  }
+
+  // If there are no fields to update, return early
+  if (setClauses.length === 0) {
+    console.log("No fields to update.");
+    return;
+  }
+
+  // Join the set clauses into the query
+  query += setClauses.join(", ");
+  query += ` WHERE ${fieldToMatch} = $${index}`;
+  values.push(agentData[fieldToMatch]); // Add fieldToMatch value for the WHERE clause
+
+  console.log(query, values);
+
+  try {
+    const res = await client.query(query, values);
+    console.log("Update successful:", res);
+    return res.rowCount;
+  } catch (error) {
+    console.error("Error updating data:", error);
+  }
+}
+
+async function deleteAgent(agentCode) {
+  try {
+    const queryProfile = `
+    UPDATE core.profile
+    SET activeflag = 0
+    WHERE business_code = $1`;
+    const resProfile = await client.query(queryProfile, [agentCode]);
+    const isProfileUpdated = resProfile.rowCount;
+
+    const queryEntity = `
+    UPDATE core.entity e
+    SET activeflag = 0
+    WHERE e."identity" = (SELECT "identity" FROM core.profile WHERE business_code = $1)
+    AND activeflag = 1;
+    `;
+    const resEntity = await client.query(queryEntity, [agentCode]);
+    const isEntityUpdated = resEntity.rowCount;
+
+    const queryEntityContact = `
+    UPDATE core.entity_contact ec
+    SET activeflag = 0
+    WHERE ec."identity" = (SELECT "identity" FROM core.profile WHERE business_code = $1)
+    AND activeflag = 1;
+    `;
+    const resEntityContact = await client.query(queryEntityContact, [
+      agentCode,
+    ]);
+    const isEntityContactUpdated = resEntityContact.rowCount;
+
+    const queryUserAuth = `
+    UPDATE core.user_auth_data uad
+    SET activeflag = 0
+    WHERE uad."identity" = (SELECT "identity" FROM core.profile WHERE business_code = $1)
+    AND activeflag = 1;
+    `;
+    const resUserAuth = await client.query(queryUserAuth, [agentCode]);
+    const isUserAuthUpdated = resUserAuth.rowCount;
+    if (isProfileUpdated && isEntityUpdated && isEntityContactUpdated) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error updating data:", error);
+  }
+}
+
 module.exports = {
   insertAgent,
   insertProfile,
   getIdUrcFromUserType,
   getAllUsers,
+  getEntityToUpdate,
+  updateAgent,
+  deleteAgent,
 };

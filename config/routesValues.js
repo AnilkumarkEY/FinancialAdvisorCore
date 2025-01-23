@@ -35,4 +35,6 @@ exports.routeValues = {
   "/search/get-favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/search/add-favourite": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/search/top-categories-global-search": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/admin/update-agent": "362cbcaa6bf64fae9a77c729e209e2a0",
+  "/admin/deactivate-agent": "362cbcaa6bf64fae9a77c729e209e2a0",
 };
