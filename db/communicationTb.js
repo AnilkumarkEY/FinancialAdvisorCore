@@ -167,6 +167,7 @@ const getCommunicationCategoryById = async (categoryId) => {
         throw error
     }
 }
+
 const getAllRoleMastes = async () => {
     try {
         const query = `
@@ -356,9 +357,46 @@ const getTargetById = async (targetId) => {
     }
 };
 
+
+const createContentInDb = async (createObject) => {
+    try {
+        const columns = Object.keys(createObject).map(key => `"${key}"`).join(', ');
+        const placeholders = Object.keys(createObject).map((_, index) => `$${index + 1}`).join(', ');        
+        const query = `
+            INSERT INTO core.communication_tb (${columns})
+            VALUES (${placeholders})
+            RETURNING *;
+        `;
+        const values = Object.values(requestObject);
+        const result = await client.query(query, [values]);
+        return result;
+    } catch (error) {
+        throw error
+    }
+};
+
+
+const fetchPaginatedContent = async (limit, offset) => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.communication_tb 
+            LIMIT $1 
+            OFFSET $2
+        `;
+        const result = await client.query(query, [offset, limit]);
+        return result;
+    } catch (error) {
+        throw error
+    }
+};
+
+
 module.exports = {
+    fetchPaginatedContent,
     addCommunicationRoleMapping,
     addUserTypeApplicationMapping,
+    createContentInDb,
     getApplicationById,
     getUserTypeByAppId,
     deleteCommunicationExpiryByCommunicationId,

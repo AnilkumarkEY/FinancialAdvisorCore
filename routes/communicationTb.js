@@ -6,7 +6,9 @@ const { getBannerAndTickers, getPrimaryEntityByType,
     getCommunicationCategoryWithoutMaster,
     getApplicationMasterById,
     updateApplicationMaster,
-    getContentData
+    getContentData,
+    createContent,
+    fetchContent
 } = require("../controllers/communicationTb");
 const { authentication, validation } = require("../middleware");
 
@@ -28,7 +30,9 @@ const communicationTbRoutes = async (fastify, options) => {
     fastify.get('/application-master/by-id', prehandler, getApplicationMasterById);
 
     fastify.post('/application-master/patch', prehandler, updateApplicationMaster);
-    fastify.post("/update", prehandler, updateContent);
+    fastify.post("/update", prehandler, updateContent);    
+    fastify.post("/create", prehandler, createContent);  
+    fastify.get("/listing", prehandler, fetchContent);
     
     fastify.get("/getContentData", prehandler, getContentData);
 
