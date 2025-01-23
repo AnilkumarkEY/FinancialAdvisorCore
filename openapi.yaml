@@ -4470,3 +4470,64 @@ paths:
           description: Unauthorized. Invalid or missing authorization token.
         "500":
           description: Internal Server Error. Unexpected server error occurred.
+
+  /communication-tbs/listing:
+    get:
+      summary: List communications
+      description: Retrieves a paginated list of communications.
+      operationId: listCommunications
+      parameters:
+        - name: page
+          in: query
+          description: Page number of the paginated list.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A paginated list of communications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                    example: 2
+                  limit:
+                    type: integer
+                    example: 3
+                  totalPages:
+                    type: integer
+                    example: 10
+                  totalItems:
+                    type: integer
+                    example: 30
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          example: "123e4567-e89b-12d3-a456-426614174000"
+                        title:
+                          type: string
+                          example: "Communication Title"
+                        description:
+                          type: string
+                          example: "Communication Description"
+                        # Add other communication fields as needed
+        '400':
+          description: Invalid pagination parameters
+        '500':
+          description: Internal server error

@@ -22,8 +22,10 @@ const {
     addCommunicationRoleMapping,
     getContentById,
     updateContentInDb,
+    createContentInDb,
     getCommunicationCategoryById,
-    getTargetById
+    getTargetById,
+    fetchPaginatedContent
 } = require("../db/communicationTb");
 const { ENTITY_TYPE, USER_TYPE } = require('../config/constants');
 
@@ -179,7 +181,7 @@ const updateContent = async (request, reply) => {
             const content = await getContentById(communicationId);
             if (content) {
                 const category = await getCommunicationCategoryById(category_id);
-                console.log("category", category_id,category)
+                console.log("category", category_id, category)
                 if (!category) {
                     return reply
                         .status(statusCodes.BAD_REQUEST)
@@ -192,8 +194,8 @@ const updateContent = async (request, reply) => {
                         .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid TargetId", null));
                 }
                 const updateRequest = {
-                    target_id    : target_id,
-                    category     : category_id,
+                    target_id: target_id,
+                    category: category_id,
                     category_code: category.code
                 };
                 await deleteCommunicationExpiryByCommunicationId(communicationId);
@@ -202,10 +204,10 @@ const updateContent = async (request, reply) => {
 
                 const communicationExpiry = [];
                 for (const expiry of requestObject.expiries) {
-                       expiry.id                          = uniqueString();
-                       expiry.communicationId             = requestObject.communicationId;
+                    expiry.id = uniqueString();
+                    expiry.communicationId = requestObject.communicationId;
                     if (!expiry.fromDate) expiry.fromDate = new Date();
-                    if (!expiry.toDate) expiry.toDate     = new Date('2199-01-01T10:30:00Z');
+                    if (!expiry.toDate) expiry.toDate = new Date('2199-01-01T10:30:00Z');
                     communicationExpiry.push(expiry);
                     await addCommunicationExpiry(expiry);  // need to fix this
                 }
@@ -401,8 +403,100 @@ const getContentData = async (request, reply) => {
     }
 }
 
+const createContent = async (request, reply) => {
+    try {
+        const { category_id, target_id, role_list } = request.body;
+        let { user_type_list } = request.body;
+        const requestObject = request.body;
+        const category = await getCommunicationCategoryById(category_id);
+        if (!category) {
+            return reply
+                .status(statusCodes.BAD_REQUEST)
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid category Id", null));
+        }
+        const target = await getTargetById(target_id);
+        if (!target) {
+            return reply
+                .status(statusCodes.BAD_REQUEST)
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid TargetId", null));
+        }
+        const createCommunicationObject = {
+            target_id: target_id,
+            category: category_id,
+            category_code: category.code
+        };
+
+        const knownKeys = ['title', 'description', 'category', 'category_code', 'content_url', 'content_type', 'target_id', 'target_master', 'layout_group_name_id'];
+
+        knownKeys.forEach(key => {
+            if (requestObject.hasOwnProperty(key)) createCommunicationObject[key] = requestObject[key];
+        });
+        const createdCommunication = await createContentInDb(createCommunicationObject);
+        const communicationExpiry = [];
+        for (const expiry of requestObject.expiries) {
+            expiry.id = uniqueString();
+            expiry.communicationId = createdCommunication.idcommrole;
+            if (!expiry.fromDate) expiry.fromDate = new Date();
+            if (!expiry.toDate) expiry.toDate = new Date('2199-01-01T10:30:00Z');
+            communicationExpiry.push(expiry);
+            await addCommunicationExpiry(expiry);  // need to fix this
+        }
+
+        if (user_type_list) {
+            if (!user_type_list.length) {
+                const allUserType = await getAllUserTypesFromDb();
+                user_type_list = allUserType.map(userType => userType.idusertype);
+            }
+            for (const userType of user_type_list) {
+                await addCommunicationRoleMapping(uniqueString(), createdCommunication.idcommrole, userType);
+            }
+        }
+        if (role_list) {
+            for (const roleId of role_list) {
+                await addCommunicationRoleMapping(roleId, createdCommunication.idcommrole, null);
+            }
+        }
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "Communication Created Updated", createdCommunication));
+
+    } catch (error) {
+        console.error(error);
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
+
+const fetchContent = async (request, reply) => {
+    try {
+        const page       = parseInt(request.query.page, 10) || 1;
+        const limit      = parseInt(request.query.limit, 10) || 10;
+        const offset     = (page - 1) * limit;
+        const result     = await fetchPaginatedContent(page, limit, offset);
+        const totalItems = parseInt(result.rowCount, 10);
+        const totalPages = Math.ceil(totalItems / limit);
+        return reply
+            .status(statusCodes.OK)
+            .send(responseFormatter(statusCodes.OK, "All Contents", {
+                page,
+                limit,
+                totalPages,
+                totalItems,
+                data: result.rows,
+            }));
+
+    } catch (error) {
+        return reply
+            .status(statusCodes.INTERNAL_SERVER_ERROR)
+            .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
+    }
+}
+
 
 module.exports = {
+    createContent,
     getApplicationMasterById,
     getAllUserTypes,
     getAllRoleMasters,
@@ -418,5 +512,6 @@ module.exports = {
     getUserOfficialDetails,
     updateApplicationMaster,
     updateContent,
+    fetchContent,
     getContentData
 }
