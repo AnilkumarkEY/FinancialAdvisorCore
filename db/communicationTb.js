@@ -43,7 +43,6 @@ const getPrimaryEntityByTypeFromDB = async (entityType) => {
                         LIMIT 1
                     );`
         const result = await client.query(query, [entityType]);
-        console.log("Update successful:", result);
         return result.rows;
     } catch (error) {
         throw error;
@@ -96,10 +95,10 @@ const deleteCommuncationRoleMappingByCommunicationId = async (commId) => {
     }
 }
 
-const addTCommunicationRoleMapping = async (communicationRoleId, communicationId, userTypeId) => {
+const addCommunicationRoleMapping = async (communicationRoleId, communicationId, userTypeId) => {
     try {
         const query = `
-        INSERT INTO communication_role mapping
+        INSERT INTO core.communication_role_mapping
         (idcommrole, communication_id, user_type_id)
         VALUES($1, $2, $3)`;
         const result = await client.query(query, [communicationRoleId, communicationId, userTypeId]);
@@ -208,8 +207,8 @@ const deleteUserTypeByApplicationId = async (applicationId, userTypeList) => {
     try {
         const query = `
             DELETE FROM core.application_role_mapping arm
-            WHERE arm.applicationId = $1
-            AND EXISTS (SELECT utm FROM core.userType utm WHERE arm.userTypeId = utm.id AND utm.userTypeCode in $2)
+            WHERE arm.application_id = $1
+            AND EXISTS (SELECT utm FROM core.userType utm WHERE arm.user_type_id = utm.id AND utm.description in $2)
         `;
         const result = await client.query(query, [applicationId, userTypeList]);
         return result.rows;
@@ -218,12 +217,15 @@ const deleteUserTypeByApplicationId = async (applicationId, userTypeList) => {
     }
 };
 
-const addUserTypeApplicationMapping = async (applicationId, userTypeList) => {
+const addUserTypeApplicationMapping = async (id,applicationId, userTypeList) => {
     try {
         const query = `
-            INSERT INTO core.application_role_mapping
+            INSERT INTO core.application_role_mapping 
+            (id, application_id,user_type_id)
+             VALUES ($1, $2,(SELECT idusertype FROM core.usertype ut WHERE ut.description = $3 ))
         `;
-        const result = await client.query(query, [applicationId, userTypeList]);
+        result = await client.query(query, [id,applicationId, userTypeList]);
+
         return result.rows;
     } catch (error) {
         throw error
@@ -232,15 +234,21 @@ const addUserTypeApplicationMapping = async (applicationId, userTypeList) => {
 
 const updateUserTypeApplicationMapping = async (applicationId, updateFields) => {
     try {
+        const setQuery = Object.keys(updateFields)
+             .map((key, index) => `"${key}" = $${index + 2}`) // $2, $3, etc.
+            .join(', ');
+        const values = [applicationId, ...Object.values(updateFields)];
         const query = `
-            UPDATE core.application_role_mapping
-            WHERE aaplication_id = $1
-            SET 
+            UPDATE core.application_master_tb
+            SET ${setQuery}
+            WHERE id = $1
+            RETURNING *;
         `;
-        const result = await client.query(query, [applicationId, updateFields]);
+        const result = await client.query(query, values);
         return result.rows;
     } catch (error) {
-        throw error
+        console.error("Error in updateUserTypeApplicationMapping:", error);
+        throw error;
     }
 };
 
@@ -257,7 +265,19 @@ const deleteCommunicationExpiryByCommunicationId = async (communcationId) => {
     }
 }
 
-const saveCommunicationExpiry = async (id, communicationId, fromDate, toDate) => {
+const addCommunicationExpiry = async (id, communicationId, fromDate, toDate) => {
+    try {
+        const query = `INSERT INTO core.communication_expiry
+                        (id, communication_id, from_date, to_date)
+                        VALUES($1, $2, $3, $4);
+        `;
+        const result = await client.query(query, [id, communicationId, fromDate, toDate]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+const addRoleToDb = async (roleId, communicationId,) => {
     try {
         const query = `INSERT INTO core.communication_expiry
                         (id, communication_id, from_date, to_date)
@@ -270,8 +290,39 @@ const saveCommunicationExpiry = async (id, communicationId, fromDate, toDate) =>
     }
 }
 
+const getContentById = async (contentId) => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.communication_tb
+            WHERE idcommrole = $1
+        `;
+        const result = await client.query(query, [contentId]);
+        return result.rows[0];
+    } catch (error) {
+        throw error
+    }
+};
+
+const updateContentInDb = async (communicationId, requestObject) => {
+    try {
+        const setSql = Object.keys(requestObject)
+            .map((key, index) => `"${key}" = $${index + 2}`)
+            .join(', ');
+        const query = `
+            UPDATE core.communication_tb
+            SET ${setSql} 
+            WHERE idcommrole = $1
+            RETURNING *;
+        `;
+        const result = await client.query(query, [communicationId, ...Object.values(requestObject)]);
+        return result;
+    } catch (error) {
+        throw error
+    }
+};
 module.exports = {
-    addTCommunicationRoleMapping,
+    addCommunicationRoleMapping,
     addUserTypeApplicationMapping,
     getApplicationById,
     getUserTypeByAppId,
@@ -286,8 +337,10 @@ module.exports = {
     getCommunicationCategoryWithoutMasterFromDb,
     getPrimaryEntityByTypeFromDB,
     getUserFromDb,
+    getContentById,
     getUserContactFromDb,
     getUserProfileFromDb,
     updateUserTypeApplicationMapping,
-    saveCommunicationExpiry
+    updateContentInDb,
+    addCommunicationExpiry
 }

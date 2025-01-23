@@ -29,7 +29,6 @@ const communicationTbRoutes = async (fastify, options) => {
 
     fastify.post('/application-master/patch', prehandler, updateApplicationMaster);
     fastify.post("/update", prehandler, updateContent);
-
     
     fastify.get("/getContentData", prehandler, getContentData);
 

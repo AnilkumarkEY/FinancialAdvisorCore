@@ -51,4 +51,5 @@ exports.routeValues = {
   "/communication-tbs/application-master/patch": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/communication-tbs/update": "c2a04e70f16541f5b52f1b0803ee46d3",
   "/communication-tbs/getContentData": "c2a04e70f16541f5b52f1b0803ee46d3",
+  "/communication-tbs/updateApplicationMaster" :"c2a04e70f16541f5b52f1b0803ee46d3"
 };
