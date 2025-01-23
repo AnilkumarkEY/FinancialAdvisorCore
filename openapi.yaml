@@ -4727,3 +4727,88 @@ paths:
           description: Invalid pagination parameters
         '500':
           description: Internal server error
+
+  /communication-tbs/create:
+    post:
+      summary: Create communication
+      description: Creates a new communication entry with the provided details.
+      operationId: createCommunication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Title of the Communication"
+                description:
+                  type: string
+                  example: "Description of the Communication"
+                content_url:
+                  type: string
+                  format: uri
+                  example: "http://example.com/content"
+                content_type:
+                  type: string
+                  example: "application/pdf"
+                target_id:
+                  type: string
+                  format: uuid
+                  example: "ac56817516f24e9ab24799cf2beb58e2"
+                layout_group_name_id:
+                  type: string
+                  nullable: true
+                  example: ""
+                category_id:
+                  type: string
+                  format: uuid
+                  example: "327384D80ED34BD782F9610AF26ADD83"
+                expiries:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      fromDate:
+                        type: string
+                        format: date-time
+                        example: "2025-01-24T10:30:00Z"
+                      toDate:
+                        type: string
+                        format: date-time
+                        example: "2130-01-01T10:30:00Z"
+                user_type_list:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example: ["2f4eab3a82584d5183a003dd82fc50dd"]
+                role_list:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example: ["127a15ab0b0b4ad9b468fbdd9cf556b0"]
+      responses:
+        '201':
+          description: Communication created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Communication created successfully"
+                  communicationId:
+                    type: string
+                    format: uuid
+                    example: "generated-uuid-for-new-communication"
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal server error
