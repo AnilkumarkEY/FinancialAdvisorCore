@@ -81,7 +81,7 @@ const updateEntity = async (query, entityData) => {
 
   try {
     const res = await client.query(query, values);
-    console.log("Update successful:", res);
+    // console.log("Update successful:", res);
     return res.rowCount;
   } catch (error) {
     console.error("Error updating data:", error);
