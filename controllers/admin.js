@@ -143,3 +143,90 @@ exports.getUserList = async (request, reply) => {
       );
   }
 };
+
+exports.updateAgent = async (request, reply) => {
+  try {
+    const { identity } = request.isValid;
+    const { agentCode, entityData, contactData, agentData } = request.body;
+    const entityId = await admin.getEntityToUpdate(agentCode);
+    const id = "fd789c2918db4db4852813cd147bacb0";
+
+    entityData["identity"] = entityId[0]?.identity;
+    entityData["fieldToMatch"] = "identity";
+
+    const formattedAddress = [
+      contactData.address_line_1,
+      contactData.address_line_2,
+      contactData.location_name,
+      contactData.state,
+      contactData.district,
+      contactData.pincode,
+      contactData.countryname,
+    ].join(", ");
+
+    contactData["identity_contact"] = entityId[0]?.identity_contact;
+    contactData["fieldToMatch"] = "identity_contact";
+    contactData["contact_value"] = formattedAddress;
+
+    agentData["advisor_code"] = agentCode;
+    agentData["fieldToMatch"] = "advisor_code";
+
+    const entityRes = await entityService.performAction(id, entityData);
+    const updateEntity = await entityContact.performAction(id, contactData);
+    const agentRes = await admin.updateAgent(agentData);
+
+    if (entityRes && updateEntity && agentRes) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(responseFormatter(statusCodes.OK, "Agent Updated successfully"));
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(statusCodes.NO_CONTENT, "Agent details not updated")
+        );
+    }
+  } catch (error) {
+    console.log(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+};
+
+exports.deleteAgent = async (request, reply) => {
+  try {
+    const { agentCode } = request.body;
+    const isDeleted = await admin.deleteAgent(agentCode);
+    if (isDeleted) {
+      await event.insertEventTransaction(request.isValid);
+      return reply
+        .status(statusCodes.OK)
+        .send(responseFormatter(statusCodes.OK, "Agent deleted successfully"));
+    } else {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(statusCodes.NO_CONTENT, "Agent details not deleted")
+        );
+    }
+  } catch (error) {
+    console.log(error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "Internal server error occurred",
+          { error: error.message }
+        )
+      );
+  }
+};
