@@ -4470,3 +4470,199 @@ paths:
           description: Unauthorized. Invalid or missing authorization token.
         "500":
           description: Internal Server Error. Unexpected server error occurred.
+
+  /communication-tbs/application-master/patch:
+    post:
+      summary: Update Application Master
+      description: Updates the application master details by adding/removing user types and modifying application settings.
+      operationId: updateApplicationMaster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                applicationId:
+                  type: string
+                  description: Unique identifier for the application.
+                  example: "09EC71FDC6FC42B5BEE788C1F35F717E"
+                userTypesToDelete:
+                  type: array
+                  items:
+                    type: string
+                  description: List of user types to be deleted.
+                  example: []
+                userTypesToAdd:
+                  type: array
+                  items:
+                    type: string
+                  description: List of user types to be added.
+                  example: ["Agent"]
+                updateRequest:
+                  type: object
+                  properties:
+                    last_modified_by:
+                      type: string
+                      description: The user who modified the application.
+                      example: "admin"
+                    active:
+                      type: boolean
+                      description: Flag to set whether the application is active or not.
+                      example: true
+      responses:
+        "200":
+          description: Application Master Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Application Master Updated"
+                  data:
+                    type: object
+                    properties:
+                      deletedUserTypes:
+                        type: array
+                        items:
+                          type: string
+                        description: List of user types deleted
+                        example: []
+                      addedUserTypes:
+                        type: array
+                        items:
+                          type: string
+                        description: List of user types added
+                        example: []
+                      updatedApplication:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: Application ID
+                              example: "09EC71FDC6FC42B5BEE788C1F35F717E"
+                            application_type:
+                              type: string
+                              description: Type of the application (e.g., WEB)
+                              example: "WEB"
+                            application_url:
+                              type: string
+                              description: URL for the application
+                              example: null
+                            created_by:
+                              type: string
+                              description: User who created the application
+                              example: "admin"
+                            created_date:
+                              type: string
+                              description: Date the application was created
+                              example: null
+                            icon_url:
+                              type: string
+                              description: Icon URL for the application
+                              example: "report-icon/r_r.png"
+                            last_modified_by:
+                              type: string
+                              description: User who last modified the application
+                              example: "admin"
+                            last_modified_date:
+                              type: string
+                              description: Date the application was last modified
+                              example: null
+                            name:
+                              type: string
+                              description: Application name
+                              example: "R&R"
+                            active:
+                              type: boolean
+                              description: Flag indicating whether the application is active
+                              example: true
+                            bg_color:
+                              type: string
+                              description: Background color for the application
+                              example: "#D5214A"
+                            display_in_menu:
+                              type: boolean
+                              description: Flag indicating if the application is displayed in the menu
+                              example: false
+                            display_order:
+                              type: integer
+                              description: Display order of the application
+                              example: 2
+                            icon_color:
+                              type: string
+                              description: Icon color for the application
+                              example: null
+                            client_app_id:
+                              type: string
+                              description: Client application ID
+                              example: "0x54EDAD9CC44B4277937840B950643273"
+                            application_code:
+                              type: string
+                              description: Code for the application
+                              example: "R_R"
+                            android_base_url:
+                              type: string
+                              description: Base URL for the Android app
+                              example: null
+                            android_playstore_url:
+                              type: string
+                              description: Playstore URL for the Android app
+                              example: null
+                            description:
+                              type: string
+                              description: Description of the application
+                              example: null
+                            ios_appstore_url:
+                              type: string
+                              description: Appstore URL for the iOS app
+                              example: null
+                            ios_base_url:
+                              type: string
+                              description: Base URL for the iOS app
+                              example: null
+                            schema_value:
+                              type: string
+                              description: Schema value for the application
+                              example: null
+                            talic_playstore_url:
+                              type: string
+                              description: Playstore URL for Talic app
+                              example: null
+                            web_app_url:
+                              type: string
+                              description: Web app URL
+                              example: null
+                            soft_delete:
+                              type: boolean
+                              description: Flag for soft deletion of the application
+                              example: null
+        "400":
+          description: Bad Request - Invalid data or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid request parameters."
+        "500":
+          description: Internal Server Error - Unexpected error during update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred while updating the application."
