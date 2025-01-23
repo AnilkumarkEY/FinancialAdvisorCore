@@ -361,15 +361,16 @@ const getTargetById = async (targetId) => {
 const createContentInDb = async (createObject) => {
     try {
         const columns = Object.keys(createObject).map(key => `"${key}"`).join(', ');
-        const placeholders = Object.keys(createObject).map((_, index) => `$${index + 1}`).join(', ');        
+        const placeholders = Object.keys(createObject).map((_, index) => `$${index + 1}`).join(', '); 
+        
         const query = `
             INSERT INTO core.communication_tb (${columns})
             VALUES (${placeholders})
             RETURNING *;
         `;
-        const values = Object.values(requestObject);
-        const result = await client.query(query, [values]);
-        return result;
+        const values = Object.values(createObject);
+        const result = await client.query(query, values);
+        return result.rows[0];
     } catch (error) {
         throw error
     }

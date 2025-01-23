@@ -414,11 +414,11 @@ const getContentData = async (request, reply) => {
     try {
 
         const allCommunicationCategories = await getCommunicationCategoryWithoutMasterFromDb();
-        const allRoles = await getAllRoleMastes();
-        const allUserTypes = await getAllUserTypesFromDb();
-        const finalResult = {
-            category: allCommunicationCategories,
-            roles: allRoles,
+        const allRoles                   = await getAllRoleMastes();
+        const allUserTypes               = await getAllUserTypesFromDb();
+        const finalResult                = {
+            category : allCommunicationCategories,
+            roles    : allRoles,
             userTypes: allUserTypes
         };
         return reply
@@ -434,9 +434,9 @@ const getContentData = async (request, reply) => {
 const createContent = async (request, reply) => {
     try {
         const { category_id, target_id, role_list } = request.body;
-        let { user_type_list } = request.body;
-        const requestObject = request.body;
-        const category = await getCommunicationCategoryById(category_id);
+        let   { user_type_list }                    = request.body;
+        const requestObject                         = request.body;
+        const category                              = await getCommunicationCategoryById(category_id);
         if (!category) {
             return reply
                 .status(statusCodes.BAD_REQUEST)
@@ -449,9 +449,16 @@ const createContent = async (request, reply) => {
                 .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid TargetId", null));
         }
         const createCommunicationObject = {
-            target_id: target_id,
-            category: category_id,
-            category_code: category.code
+            idcommrole            : uniqueString(),
+            target_id             : target_id,
+            category              : category_id,
+            category_code         : category.code,
+            active                : true,
+            created_date           : Date.now(),
+            last_modified_date    : Date.now(),
+            demographic_applicable: true,
+            expiry_applicable     : true,
+            communication_type_id : ''
         };
 
         const knownKeys = ['title', 'description', 'category', 'category_code', 'content_url', 'content_type', 'target_id', 'target_master', 'layout_group_name_id'];
@@ -481,7 +488,7 @@ const createContent = async (request, reply) => {
         }
         if (role_list) {
             for (const roleId of role_list) {
-                await addCommunicationRoleMapping(roleId, createdCommunication.idcommrole, null);
+                await addCommunicationRoleMapping(uniqueString(), createdCommunication.idcommrole, roleId);
             }
         }
         return reply
@@ -489,7 +496,6 @@ const createContent = async (request, reply) => {
             .send(responseFormatter(statusCodes.OK, "Communication Created Updated", createdCommunication));
 
     } catch (error) {
-        console.error(error);
         return reply
             .status(statusCodes.INTERNAL_SERVER_ERROR)
             .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
