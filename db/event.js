@@ -14,7 +14,7 @@ async function insertSessionData(oid, idsession, tokenExpiryTime) {
       sessionExpiryDate,
       oid,
     ]);
-    console.log("Update successful:", result);
+    // console.log("Update successful:", result);
     return result;
   } catch (error) {
     console.error("Error inserting data:", error);

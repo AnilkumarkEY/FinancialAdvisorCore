@@ -256,7 +256,7 @@ const deleteCommunicationExpiryByCommunicationId = async (communcationId) => {
     try {
         const query = `
            DELETE FROM core.communication_expiry 
-           WHERE communicationId = $1
+           WHERE communication_id = $1
         `;
         const result = await client.query(query, [communcationId]);
         return result.rows;
@@ -277,6 +277,7 @@ const addCommunicationExpiry = async (id, communicationId, fromDate, toDate) => 
         throw error
     }
 }
+
 const addRoleToDb = async (roleId, communicationId,) => {
     try {
         const query = `INSERT INTO core.communication_expiry

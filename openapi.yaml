@@ -3568,7 +3568,7 @@ paths:
           description: The path of the blob to retrieve the URL for.
           schema:
             type: string
-            example: "\"asdasd\""
+            example: '"asdasd"'
       responses:
         "200":
           description: URL path for blob
@@ -3897,7 +3897,7 @@ paths:
       description: Retrieves bootstrap data for categories, roles, and user types.
       operationId: getBootstrapData
       responses:
-        '200':
+        "200":
           description: A JSON object containing bootstrap data
           content:
             application/json:
@@ -3916,112 +3916,605 @@ paths:
                       category:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Category'
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            category_name:
+                              type: string
+                            category_code:
+                              type: string
+                            parent_category_id:
+                              type: string
+                              nullable: true
+                            active:
+                              type: boolean
+                              nullable: true
+                            master:
+                              type: boolean
+                              nullable: true
                       roles:
                         type: array
                         items:
-                          $ref: '#/components/schemas/Role'
+                          type: object
+                          properties:
+                            idrole:
+                              type: string
+                            code:
+                              type: string
+                            description:
+                              type: string
+                            eff_from_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            eff_to_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            activeflag:
+                              type: boolean
+                              nullable: true
+                            createdby:
+                              type: string
+                              nullable: true
+                            created_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            modifiedby:
+                              type: string
+                              nullable: true
+                            modified_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            inactivedate:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            sortorder:
+                              type: integer
+                              nullable: true
                       userTypes:
                         type: array
                         items:
-                          $ref: '#/components/schemas/UserType'
-components:
-  schemas:
-    Category:
-      type: object
-      properties:
-        id:
-          type: string
-        category_name:
-          type: string
-        category_code:
-          type: string
-        parent_category_id:
-          type: string
-          nullable: true
-        active:
-          type: boolean
-          nullable: true
-        master:
-          type: boolean
-          nullable: true
-    Role:
-      type: object
-      properties:
-        idrole:
-          type: string
-        code:
-          type: string
-        description:
-          type: string
-        eff_from_date:
-          type: string
-          format: date-time
-          nullable: true
-        eff_to_date:
-          type: string
-          format: date-time
-          nullable: true
-        activeflag:
-          type: boolean
-          nullable: true
-        createdby:
-          type: string
-          nullable: true
-        created_date:
-          type: string
-          format: date-time
-          nullable: true
-        modifiedby:
-          type: string
-          nullable: true
-        modified_date:
-          type: string
-          format: date-time
-          nullable: true
-        inactivedate:
-          type: string
-          format: date-time
-          nullable: true
-        sortorder:
-          type: integer
-          nullable: true
-    UserType:
-      type: object
-      properties:
-        idusertype:
-          type: string
-        description:
-          type: string
-        eff_from_date:
-          type: string
-          format: date-time
-          nullable: true
-        eff_to_date:
-          type: string
-          format: date-time
-          nullable: true
-        activeflag:
-          type: boolean
-          nullable: true
-        createdby:
-          type: string
-          nullable: true
-        created_date:
-          type: string
-          format: date-time
-          nullable: true
-        modifiedby:
-          type: string
-          nullable: true
-        modified_date:
-          type: string
-          format: date-time
-          nullable: true
-        inactivedate:
-          type: string
-          format: date-time
-          nullable: true
-        sortorder:
-          type: integer
-          nullable: true
+                          type: object
+                          properties:
+                            idusertype:
+                              type: string
+                            description:
+                              type: string
+                            eff_from_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            eff_to_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            activeflag:
+                              type: boolean
+                              nullable: true
+                            createdby:
+                              type: string
+                              nullable: true
+                            created_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            modifiedby:
+                              type: string
+                              nullable: true
+                            modified_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            inactivedate:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            sortorder:
+                              type: integer
+                              nullable: true
+
+  /communication-tbs/update:
+    post:
+      summary: Update communication
+      description: Updates the details of a specific communication.
+      operationId: updateCommunication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                communicationId:
+                  type: string
+                  example: "XXXX123ACBD"
+                title:
+                  type: string
+                  example: "Title of the Communication"
+                description:
+                  type: string
+                  example: "Description of the Communication"
+                expiry_applicable:
+                  type: boolean
+                  example: true
+                demographic_applicable:
+                  type: boolean
+                  example: false
+                expiries:
+                  type: array
+                  items: {}
+                  example: []
+                content_url:
+                  type: string
+                  example: "http://example.com/content"
+                content_type:
+                  type: string
+                  example: "application/pdf"
+                communication_type:
+                  type: object
+                  additionalProperties: false
+                communication_type_master:
+                  type: string
+                  example: "Type Master Identifier"
+                target_id:
+                  type: string
+                  example: ""
+                layout_group_name_id:
+                  type: string
+                  example: ""
+                master:
+                  type: boolean
+                  example: true
+                target_master:
+                  type: string
+                  example: "Target Master Identifier"
+                communication_template_id:
+                  type: string
+                  example: "uuid-goes-here"
+                user_type_master:
+                  type: string
+                  example: "User Type Master Identifier"
+                top_parent:
+                  type: boolean
+                  example: true
+                external_content:
+                  type: boolean
+                  example: false
+                parent_category:
+                  type: string
+                  example: "uuid-goes-here"
+                category:
+                  type: string
+                  example: "uuid-goes-here"
+                parent_category_code:
+                  type: string
+                  example: "Parent Category Code"
+                parent_category_name:
+                  type: string
+                  example: "Parent Category Name"
+                category_code:
+                  type: string
+                  example: "Category Code"
+                layout_group_master:
+                  type: string
+                  example: "Layout Group Master Identifier"
+                active:
+                  type: boolean
+                  example: true
+                display_order:
+                  type: integer
+                  example: 2
+                icon_url:
+                  type: string
+                  example: "http://example.com/icon.png"
+                user_type_list:
+                  type: array
+                  items:
+                    type: string
+                  example: []
+                deletedUserTypeList:
+                  type: array
+                  items:
+                    type: string
+                  example: []
+                newUserTypeToAdd:
+                  type: array
+                  items:
+                    type: string
+                  example: []
+                newRoleToAdd:
+                  type: array
+                  items:
+                    type: string
+                  example: []
+      responses:
+        "200":
+          description: Communication updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Communication updated successfully"
+        "400":
+          description: Invalid input
+        "404":
+          description: Communication not found
+        "500":
+          description: Internal server error
+
+  /admin/update-agent:
+    put:
+      summary: Update agent information
+      description: Updates the agent's details based on the provided data.
+      operationId: updateAgent
+      requestBody:
+        description: Request body containing the agent details to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agentCode:
+                  type: string
+                  example: "8597056"
+                  description: Unique code for the agent.
+                entityData:
+                  type: object
+                  properties:
+                    idmeta_title:
+                      type: string
+                      example: "468de4cb17494c67a732da2810f9c905"
+                    firstname:
+                      type: string
+                      example: "Sanal"
+                    middlename:
+                      type: string
+                      example: ""
+                    lastname:
+                      type: string
+                      example: "Gulati"
+                    fullname:
+                      type: string
+                      example: "Sanal Gulati"
+                    idmeta_data_gender:
+                      type: string
+                      example: "986bd1568afb42cca258cf17a68d60f4"
+                    idmeta_data_entitytype:
+                      type: string
+                      example: "6e913026df2b4c29aeff33212dd3ffa5"
+                    dob:
+                      type: string
+                      example: "1998/10/02"
+                contactData:
+                  type: object
+                  properties:
+                    address_line_1:
+                      type: string
+                      example: "H.No. 344"
+                    address_line_2:
+                      type: string
+                      example: "Modern Street"
+                    location_name:
+                      type: string
+                      example: "Adarsh Nagar"
+                    state:
+                      type: string
+                      example: "Telangana"
+                    pincode:
+                      type: string
+                      example: "203932"
+                    countryname:
+                      type: string
+                      example: "India"
+                    district:
+                      type: string
+                      example: "Hyderabad"
+                agentData:
+                  type: object
+                  properties:
+                    desgn_code:
+                      type: string
+                      example: "SB"
+                    desgn_desc:
+                      type: string
+                      example: "ADVISOR - BA"
+                    branch_code:
+                      type: string
+                      example: "JM01"
+                    branch_name:
+                      type: string
+                      example: "Jamshedpur 1234"
+                    dt_leader_code:
+                      type: string
+                      example: "5798147"
+                    dt_leader_name:
+                      type: string
+                      example: "AARAMBH FINANCIAL SERVICES"
+                    dt_leader_desg_desc:
+                      type: string
+                      example: "III-PROVISIONAL BUSINESS ASSOCIATE"
+                    dt_leader_designation:
+                      type: string
+                      example: "BT"
+                    dt_leader_branch:
+                      type: string
+                      example: "JM01"
+                    dt_leader_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    l1_leader_code:
+                      type: string
+                      example: "908050"
+                    l1_leader_name:
+                      type: string
+                      example: "BSC CONSULTANCY SERVICES"
+                    l1_leader_desg_desc:
+                      type: string
+                      example: "SENIOR BUSINESS ASSOCIATE LEADER"
+                    l1_leader_designation:
+                      type: string
+                      example: "LU"
+                    l1_leader_branch:
+                      type: string
+                      example: "JM01"
+                    l1_leader_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    l2_leader_code:
+                      type: string
+                      example: "181453"
+                    l2_leader_name:
+                      type: string
+                      example: "ANAMIKA ADVISORY SERVICES"
+                    l2_leader_desg_desc:
+                      type: string
+                      example: "PARTNER"
+                    l2_leader_designation:
+                      type: string
+                      example: "LW"
+                    l2_leader_branch:
+                      type: string
+                      example: "JM01"
+                    l2_leader_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    bam_ntid:
+                      type: string
+                      example: "OEACV29"
+                    bam_code:
+                      type: string
+                      example: "4807212"
+                    bam_emp_cd:
+                      type: string
+                      example: "3975701"
+                    bam_name:
+                      type: string
+                      example: "SanketKumar Sinha"
+                    bam_designation:
+                      type: string
+                      example: "S3"
+                    bam_desg_desc:
+                      type: string
+                      example: "MANAGER AGENCY BA"
+                    bam_branch:
+                      type: string
+                      example: "JM01"
+                    bam_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    bm_ntid:
+                      type: string
+                      example: "OAAIE55"
+                    bm_code:
+                      type: string
+                      example: "4653296"
+                    bm_emp_cd:
+                      type: string
+                      example: "3967298"
+                    bm_name:
+                      type: string
+                      example: "ROHITKUMAR PAHUJA"
+                    bm_designation:
+                      type: string
+                      example: "SF"
+                    bm_desg_desc:
+                      type: string
+                      example: "BRANCH MGR AGENCY SALES"
+                    bm_branch:
+                      type: string
+                      example: "JM01"
+                    bm_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    ch_ntid:
+                      type: string
+                      example: null
+                    ch_code:
+                      type: string
+                      example: null
+                    ch_emp_cd:
+                      type: string
+                      example: null
+                    ch_name:
+                      type: string
+                      example: null
+                    ch_designation:
+                      type: string
+                      example: null
+                    ch_desg_desc:
+                      type: string
+                      example: null
+                    ch_branch:
+                      type: string
+                      example: null
+                    ch_branch_name:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_ntid:
+                      type: string
+                      example: "OAGSK4615"
+                    adoa_nonsourcing_code:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_emp_cd:
+                      type: string
+                      example: "3954775"
+                    adoa_nonsourcing_name:
+                      type: string
+                      example: "Shyam Singh"
+                    adoa_nonsourcing_designation:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_desg_desc:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_branch:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_branch_name:
+                      type: string
+                      example: null
+                    adoa_ntid:
+                      type: string
+                      example: null
+                    adoa_code:
+                      type: string
+                      example: null
+                    adoa_emp_cd:
+                      type: string
+                      example: null
+                    adoa_name:
+                      type: string
+                      example: null
+                    adoa_designation:
+                      type: string
+                      example: null
+                    adoa_desg_desc:
+                      type: string
+                      example: null
+                    adoa_branch_code:
+                      type: string
+                      example: null
+                    adoa_branch_name:
+                      type: string
+                      example: null
+                    doa_ntid:
+                      type: string
+                      example: "OAGSI13"
+                    doa_code:
+                      type: string
+                      example: "4015704"
+                    doa_emp_cd:
+                      type: string
+                      example: "3808488"
+                    doa_name:
+                      type: string
+                      example: "Md. Shahid Khan"
+                    doa_designation:
+                      type: string
+                      example: "S7"
+                    doa_desg_desc:
+                      type: string
+                      example: "DIRECTOR OF AGENCY"
+                    doa_branch:
+                      type: string
+                      example: "JM01"
+                    doa_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    cao_ntid:
+                      type: string
+                      example: "OAGSC3671"
+                    cao_code:
+                      type: string
+                      example: "4456024"
+                    cao_emp_cd:
+                      type: string
+                      example: "3953517"
+                    cao_name:
+                      type: string
+                      example: "Arunkumar K"
+                    cao_designation:
+                      type: string
+                      example: "3W"
+                    cao_desg_desc:
+                      type: string
+                      example: "Head of Agency"
+                    cao_branch_code:
+                      type: string
+                      example: "LU05"
+                    cao_branch_name:
+                      type: string
+                      example: "Lucknow_2"
+      responses:
+        "200":
+          description: Successfully updated agent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Agent Updated successfully"
+                  data:
+                    type: object
+                    example: null
+        "401":
+          description: Unauthorized. Invalid or missing authorization token.
+        "500":
+          description: Internal Server Error. Unexpected server error occurred.
+
+  /admin/deactivate-agent:
+    put:
+      summary: Deactivate agent based on agent code
+      description: Deactivates the agent using the provided agent code.
+      operationId: deactivateAgent
+      requestBody:
+        description: Request body containing the agent code to deactivate.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agentCode:
+                  type: string
+                  example: "8597056"
+                  description: Unique code for the agent to be deactivated.
+      responses:
+        "204":
+          description: Agent details not deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 204
+                  message:
+                    type: string
+                    example: "Agent details not deleted"
+                  data:
+                    type: object
+                    example: null
+        "401":
+          description: Unauthorized. Invalid or missing authorization token.
+        "500":
+          description: Internal Server Error. Unexpected server error occurred.
