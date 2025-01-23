@@ -21,7 +21,9 @@ const {
     addCommunicationExpiry,
     addCommunicationRoleMapping,
     getContentById,
-    updateContentInDb
+    updateContentInDb,
+    getCommunicationCategoryById,
+    getTargetById
 } = require("../db/communicationTb");
 const { ENTITY_TYPE, USER_TYPE } = require('../config/constants');
 
@@ -169,49 +171,66 @@ const getBlobUrl = async (request, reply) => {
 
 const updateContent = async (request, reply) => {
     try {
-        const { communicationId, newRoleToAdd } = request.body;
-        let { newUserTypeToAdd } = request.body;
+        const { communicationId, category_id, target_id, role_list } = request.body;
+        let { user_type_list } = request.body;
         const requestObject = request.body;
         if (communicationId) {
 
             const content = await getContentById(communicationId);
             if (content) {
+                const category = await getCommunicationCategoryById(category_id);
+                console.log("category", category_id,category)
+                if (!category) {
+                    return reply
+                        .status(statusCodes.BAD_REQUEST)
+                        .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid category Id", null));
+                }
+                const target = await getTargetById(target_id);
+                if (!target) {
+                    return reply
+                        .status(statusCodes.BAD_REQUEST)
+                        .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid TargetId", null));
+                }
+                const updateRequest = {
+                    target_id    : target_id,
+                    category     : category_id,
+                    category_code: category.code
+                };
                 await deleteCommunicationExpiryByCommunicationId(communicationId);
                 await deleteCommuncationRoleMappingByCommunicationId(communicationId);
+                const allUserType = await getAllUserTypesFromDb();
 
                 const communicationExpiry = [];
                 for (const expiry of requestObject.expiries) {
-                    expiry.communicationId = requestObject.id;
+                       expiry.id                          = uniqueString();
+                       expiry.communicationId             = requestObject.communicationId;
                     if (!expiry.fromDate) expiry.fromDate = new Date();
-                    if (!expiry.toDate) expiry.toDate = new Date('2199-01-01T10:30:00Z');
+                    if (!expiry.toDate) expiry.toDate     = new Date('2199-01-01T10:30:00Z');
                     communicationExpiry.push(expiry);
-                    await addCommunicationExpiry(expiry); // need to fix this
+                    await addCommunicationExpiry(expiry);  // need to fix this
                 }
-                if (newUserTypeToAdd) {
-                    if (!newUserTypeToAdd.length) {
-                        newUserTypeToAdd = [USER_TYPE.ADVISOR, USER_TYPE.EMPLOYEE, USER_TYPE.LEADER];
+                if (user_type_list) {
+                    if (!user_type_list.length) {
+                        user_type_list = allUserType.map(userType => userType.idusertype);
                     }
-                    for (const userType of newUserTypeToAdd) {
+                    for (const userType of user_type_list) {
                         await addCommunicationRoleMapping(uniqueString(), communicationId, userType);
                     }
                 }
-                if (newRoleToAdd) {
-                    for (const roleId of newRoleToAdd) {
+                if (role_list) {
+                    for (const roleId of role_list) {
                         await addCommunicationRoleMapping(roleId, communicationId, null);
                     }
                 }
-                const knownKeys = ['title', 'description', 'expiry_applicable', 'demographic_Applicable', 'content_url', 'content_type',   'active', 'display_order', 'icon_url', 'target_id', 'layout_group_name_id'];
+                const knownKeys = ['title', 'description', 'category', 'category_code', 'content_url', 'content_type', 'target_id', 'target_master', 'layout_group_name_id'];
 
-                const updateRequest = {};
                 knownKeys.forEach(key => {
-                    if (requestObject.hasOwnProperty(key)) {
-                        updateRequest[key] = requestObject[key];
-                    }
-                  });
+                    if (requestObject.hasOwnProperty(key)) updateRequest[key] = requestObject[key];
+                });
                 const updatedContent = await updateContentInDb(communicationId, updateRequest);
                 return reply
                     .status(statusCodes.OK)
-                    .send(responseFormatter(statusCodes.OK, "Signed Token", {...content, ...updateRequest}));
+                    .send(responseFormatter(statusCodes.OK, "Communication Updated", { ...content, ...updateRequest }));
             }
         }
         return reply
@@ -304,11 +323,13 @@ const getAllUserTypes = async (request, reply) => {
 const getApplicationMasterById = async (request, reply) => {
     try {
         const { applicationMasterId } = request.query;
+        let userType;
         if (applicationMasterId) {
             const application = await getApplicationById(applicationMasterId);
             if (application) {
-                const userType = await getUserTypeByAppId(applicationMasterId);
-                if (userType.length) application.userTypeList = userMaster;
+                userType = await getUserTypeByAppId(applicationMasterId);
+                // if (userType.length) application.userTypeList = userMaster;
+                if (userType.length) application[0].userTypeList = userType
             }
             return reply
                 .status(statusCodes.OK)
@@ -329,26 +350,52 @@ const getApplicationMasterById = async (request, reply) => {
 const updateApplicationMaster = async (request, reply) => {
     try {
         const { applicationId, userTypesToDelete, userTypesToAdd, updateRequest } = request.body;
+        let result = [];
+        let deletedUserTypes = [];
+        let addedUserTypes = [];
+        let updatedApplication = null;
         if (applicationId) {
-            const application = await getApplicationMasterById(applicationId);
+            //retrieve application details from db
+            const application = await getApplicationById(applicationId);
             if (application) {
-                if (userTypesToDelete && userTypesToDelete.length) {
-                    const deletedUserTypes = await deleteUserTypeByApplicationId(applicationId, userTypesToDelete);
+                if (userTypesToDelete && userTypesToDelete.length > 0) {
+                    result.push(
+                        (async () => {
+                            deletedUserTypes = await deleteUserTypeByApplicationId(applicationId, userTypesToDelete);
+                        })()
+                    );
                 }
-                if (userTypesToAdd && userTypesToAdd.length) {
-                    for (const userType of userTypesToAdd) {
-                        const addedUserTypeMapping = await addUserTypeApplicationMapping(userType);
-                    }
+
+                if (userTypesToAdd && userTypesToAdd.length > 0) {
+                    result.push(
+                        (async () => {
+                            addedUserTypes = await addUserTypeApplicationMapping(uniqueString(),applicationId, userTypesToAdd);
+                        })()
+                    );
                 }
-                const result = await updateUserTypeApplicationMapping(applicationId, updateRequest);
+
+                if (updateRequest && Object.keys(updateRequest).length > 0) {
+                    result.push(
+                        (async () => {
+                            updatedApplication = await updateUserTypeApplicationMapping(applicationId, updateRequest);
+                        })()
+                    );
+                }
+                // Wait for all DB calls to finish
+                await Promise.all(result);
                 return reply
                     .status(statusCodes.OK)
-                    .send(responseFormatter(statusCodes.OK, "Application Master", result));
+                    .send(responseFormatter(statusCodes.OK, "Application Master Updated", {
+                        deletedUserTypes,
+                        addedUserTypes,
+                        updatedApplication
+                    }));
             }
             return reply
                 .status(statusCodes.BAD_REQUEST)
-                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", null));
-        } else {
+                .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Application ID", null));
+        }
+         else {
             return reply
                 .status(statusCodes.BAD_REQUEST)
                 .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", { error: error.message }));

@@ -4032,106 +4032,58 @@ paths:
               properties:
                 communicationId:
                   type: string
-                  example: "XXXX123ACBD"
+                  format: uuid
+                  example: "FEDAAFEE0A274E1586821CE2D87F7438"
                 title:
                   type: string
                   example: "Title of the Communication"
                 description:
                   type: string
                   example: "Description of the Communication"
-                expiry_applicable:
-                  type: boolean
-                  example: true
-                demographic_applicable:
-                  type: boolean
-                  example: false
-                expiries:
-                  type: array
-                  items: {}
-                  example: []
                 content_url:
                   type: string
+                  format: uri
                   example: "http://example.com/content"
                 content_type:
                   type: string
                   example: "application/pdf"
-                communication_type:
-                  type: object
-                  additionalProperties: false
-                communication_type_master:
-                  type: string
-                  example: "Type Master Identifier"
                 target_id:
                   type: string
-                  example: ""
+                  format: uuid
+                  example: "ac56817516f24e9ab24799cf2beb58e2"
                 layout_group_name_id:
                   type: string
+                  nullable: true
                   example: ""
-                master:
-                  type: boolean
-                  example: true
-                target_master:
+                category_id:
                   type: string
-                  example: "Target Master Identifier"
-                communication_template_id:
-                  type: string
-                  example: "uuid-goes-here"
-                user_type_master:
-                  type: string
-                  example: "User Type Master Identifier"
-                top_parent:
-                  type: boolean
-                  example: true
-                external_content:
-                  type: boolean
-                  example: false
-                parent_category:
-                  type: string
-                  example: "uuid-goes-here"
-                category:
-                  type: string
-                  example: "uuid-goes-here"
-                parent_category_code:
-                  type: string
-                  example: "Parent Category Code"
-                parent_category_name:
-                  type: string
-                  example: "Parent Category Name"
-                category_code:
-                  type: string
-                  example: "Category Code"
-                layout_group_master:
-                  type: string
-                  example: "Layout Group Master Identifier"
-                active:
-                  type: boolean
-                  example: true
-                display_order:
-                  type: integer
-                  example: 2
-                icon_url:
-                  type: string
-                  example: "http://example.com/icon.png"
+                  format: uuid
+                  example: "327384D80ED34BD782F9610AF26ADD83"
+                expiries:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      fromDate:
+                        type: string
+                        format: date-time
+                        example: "2025-01-24T10:30:00Z"
+                      toDate:
+                        type: string
+                        format: date-time
+                        example: "2130-01-01T10:30:00Z"
                 user_type_list:
                   type: array
                   items:
                     type: string
-                  example: []
-                deletedUserTypeList:
+                    format: uuid
+                  example: ["2f4eab3a82584d5183a003dd82fc50dd"]
+                role_list:
                   type: array
                   items:
                     type: string
-                  example: []
-                newUserTypeToAdd:
-                  type: array
-                  items:
-                    type: string
-                  example: []
-                newRoleToAdd:
-                  type: array
-                  items:
-                    type: string
-                  example: []
+                    format: uuid
+                  example: ["127a15ab0b0b4ad9b468fbdd9cf556b0"]
       responses:
         "200":
           description: Communication updated successfully
@@ -4150,7 +4102,7 @@ paths:
           description: Invalid input
         "404":
           description: Communication not found
-        "500":
+        '500':
           description: Internal server error
 
   /admin/update-agent:
