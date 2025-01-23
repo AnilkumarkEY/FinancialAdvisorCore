@@ -1,6 +1,11 @@
 const { client } = require("../config/db");
 const { USER_TYPE } = require("../config/constants");
 
+
+const category = {
+    
+}
+
 const getBannerAndTickersFromDb = async (userType) => {
     try {
         const currentDate = new Date();
@@ -149,6 +154,19 @@ const getCommunicationCategoryByCode = async (categoryCode) => {
     }
 }
 
+const getCommunicationCategoryById = async (categoryId) => {
+    try {
+        const query = `
+            SELECT * 
+            FROM core.communication_category  
+            WHERE id = $1
+        `;
+        const result = await client.query(query, [categoryId]);
+        return result.rows[0];
+    } catch (error) {
+        throw error
+    }
+}
 const getAllRoleMastes = async () => {
     try {
         const query = `
@@ -265,7 +283,7 @@ const deleteCommunicationExpiryByCommunicationId = async (communcationId) => {
     }
 }
 
-const addCommunicationExpiry = async (id, communicationId, fromDate, toDate) => {
+const addCommunicationExpiry = async ({id, communicationId, fromDate, toDate}) => {
     try {
         const query = `INSERT INTO core.communication_expiry
                         (id, communication_id, from_date, to_date)
@@ -322,6 +340,22 @@ const updateContentInDb = async (communicationId, requestObject) => {
         throw error
     }
 };
+
+const getTargetById = async (targetId) => {
+    try {
+        const query = `
+        SELECT cr_metadata.*
+        FROM core.cr_metadata
+        JOIN core.cr_metamaster ON core.cr_metadata.idmetamaster = core.cr_metamaster.idmetamaster
+        WHERE core.cr_metadata.idmetadata = $1
+        `;
+        const result = await client.query(query, [targetId]);
+        return result.rows[0];
+    } catch (error) {
+        throw error
+    }
+};
+
 module.exports = {
     addCommunicationRoleMapping,
     addUserTypeApplicationMapping,
@@ -336,9 +370,11 @@ module.exports = {
     getCommunicationCategoryByCode,
     getBannerAndTickersFromDb,
     getCommunicationCategoryWithoutMasterFromDb,
+    getCommunicationCategoryById,
     getPrimaryEntityByTypeFromDB,
     getUserFromDb,
     getContentById,
+    getTargetById,
     getUserContactFromDb,
     getUserProfileFromDb,
     updateUserTypeApplicationMapping,
