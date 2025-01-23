@@ -225,8 +225,8 @@ const deleteUserTypeByApplicationId = async (applicationId, userTypeList) => {
     try {
         const query = `
             DELETE FROM core.application_role_mapping arm
-            WHERE arm.applicationId = $1
-            AND EXISTS (SELECT utm FROM core.userType utm WHERE arm.userTypeId = utm.id AND utm.userTypeCode in $2)
+            WHERE arm.application_id = $1
+            AND EXISTS (SELECT utm FROM core.userType utm WHERE arm.user_type_id = utm.id AND utm.description in $2)
         `;
         const result = await client.query(query, [applicationId, userTypeList]);
         return result.rows;
@@ -235,12 +235,15 @@ const deleteUserTypeByApplicationId = async (applicationId, userTypeList) => {
     }
 };
 
-const addUserTypeApplicationMapping = async (applicationId, userTypeList) => {
+const addUserTypeApplicationMapping = async (id,applicationId, userTypeList) => {
     try {
         const query = `
-            INSERT INTO core.application_role_mapping
+            INSERT INTO core.application_role_mapping 
+            (id, application_id,user_type_id)
+             VALUES ($1, $2,(SELECT idusertype FROM core.usertype ut WHERE ut.description = $3 ))
         `;
-        const result = await client.query(query, [applicationId, userTypeList]);
+        result = await client.query(query, [id,applicationId, userTypeList]);
+
         return result.rows;
     } catch (error) {
         throw error
@@ -249,15 +252,21 @@ const addUserTypeApplicationMapping = async (applicationId, userTypeList) => {
 
 const updateUserTypeApplicationMapping = async (applicationId, updateFields) => {
     try {
+        const setQuery = Object.keys(updateFields)
+             .map((key, index) => `"${key}" = $${index + 2}`) // $2, $3, etc.
+            .join(', ');
+        const values = [applicationId, ...Object.values(updateFields)];
         const query = `
-            UPDATE core.application_role_mapping
-            WHERE aaplication_id = $1
-            SET 
+            UPDATE core.application_master_tb
+            SET ${setQuery}
+            WHERE id = $1
+            RETURNING *;
         `;
-        const result = await client.query(query, [applicationId, updateFields]);
+        const result = await client.query(query, values);
         return result.rows;
     } catch (error) {
-        throw error
+        console.error("Error in updateUserTypeApplicationMapping:", error);
+        throw error;
     }
 };
 
@@ -331,7 +340,6 @@ const updateContentInDb = async (communicationId, requestObject) => {
         throw error
     }
 };
-
 
 const getTargetById = async (targetId) => {
     try {
