@@ -12,7 +12,7 @@ const getBannerAndTickersFromDb = async (userType) => {
         const query = `SELECT comm.*
             FROM core.communication_tb comm
             JOIN core.cr_metadata cm
-            ON comm.target_id = cm.idmetamaster
+            ON comm.target_id = cm.idmetadata
             WHERE EXISTS (
                 SELECT *
                 FROM core.communication_expiry cexp
