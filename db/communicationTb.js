@@ -380,17 +380,22 @@ const createContentInDb = async (createObject) => {
 const fetchPaginatedContent = async (limit, offset) => {
     try {
         const query = `
-            SELECT
-                comm.*, 
-                comm_cat.category_name, 
-                comm_exp.from_date, comm_exp.to_date
-            FROM core.communication_tb comm
-            JOIN core.communication_category comm_cat
-                ON comm.category = comm_cat.id
-            JOIN core.communication_expiry comm_exp
-                ON comm_exp.communication_id = comm.idcommrole
-            LIMIT $1 
-            OFFSET $2
+        SELECT
+            ct.*,
+            cc.*,
+            JSON_AGG(DISTINCT JSONB_BUILD_OBJECT('idrole', ro.idrole, 'description', ro.description, 'code', ro.code)) FILTER (WHERE ro.idrole IS NOT NULL) AS role_lists,
+            JSON_AGG(DISTINCT JSONB_BUILD_OBJECT('idusertype', ut.idusertype, 'description', ut.description)) FILTER (WHERE ut.idusertype IS NOT NULL) AS user_types,
+            JSON_AGG(DISTINCT JSONB_BUILD_OBJECT('from_date', ce.from_date, 'to_date', ce.to_date)) AS expiries
+        FROM core.communication_tb ct
+        JOIN core.communication_category cc ON ct.category = cc.id
+        LEFT JOIN core.communication_role_mapping crm ON ct.idcommrole = crm.communication_id
+        LEFT JOIN core.userType ut ON crm.user_type_id = ut.idusertype
+        LEFT JOIN core.role ro ON ro.idrole = crm.idcommrole
+        LEFT JOIN core.communication_expiry ce ON ct.idcommrole = ce.communication_id
+        GROUP BY
+            ct.idcommrole, cc.id, ct.category
+        LIMIT $1
+        OFFSET $2
         `;
         const result = await client.query(query, [offset, limit]);
         return result;
