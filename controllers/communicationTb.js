@@ -28,6 +28,7 @@ const {
     fetchPaginatedContent
 } = require("../db/communicationTb");
 const { ENTITY_TYPE, USER_TYPE } = require('../config/constants');
+const moment = require("moment/moment");
 
 const getBannerAndTickers = async (request, reply) => {
     try {
@@ -371,7 +372,7 @@ const updateApplicationMaster = async (request, reply) => {
                 if (userTypesToAdd && userTypesToAdd.length > 0) {
                     result.push(
                         (async () => {
-                            addedUserTypes = await addUserTypeApplicationMapping(uniqueString(),applicationId, userTypesToAdd);
+                            addedUserTypes = await addUserTypeApplicationMapping(uniqueString(), applicationId, userTypesToAdd);
                         })()
                     );
                 }
@@ -397,7 +398,7 @@ const updateApplicationMaster = async (request, reply) => {
                 .status(statusCodes.BAD_REQUEST)
                 .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Application ID", null));
         }
-         else {
+        else {
             return reply
                 .status(statusCodes.BAD_REQUEST)
                 .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid Request", { error: error.message }));
@@ -454,7 +455,7 @@ const createContent = async (request, reply) => {
             category              : category_id,
             category_code         : category.code,
             active                : true,
-            created_date           : Date.now(),
+            created_date          : Date.now(),
             last_modified_date    : Date.now(),
             demographic_applicable: true,
             expiry_applicable     : true,
@@ -511,6 +512,12 @@ const fetchContent = async (request, reply) => {
         const result     = await fetchPaginatedContent(page, limit, offset);
         const totalItems = parseInt(result.rowCount, 10);
         const totalPages = Math.ceil(totalItems / limit);
+        const data       = result.rows.map((data => {
+            data.active    = data.active ? 'active' : 'inactive';
+            data.from_date = moment(data.from_date).format('DD/MM/yyyy, hh:mmA');
+            data.to_date   = moment(data.to_date).format('DD/MM/yyyy, hh:mmA');
+            return data;
+        }))
         return reply
             .status(statusCodes.OK)
             .send(responseFormatter(statusCodes.OK, "All Contents", {
@@ -518,7 +525,7 @@ const fetchContent = async (request, reply) => {
                 limit,
                 totalPages,
                 totalItems,
-                data: result.rows,
+                data: data,
             }));
 
     } catch (error) {

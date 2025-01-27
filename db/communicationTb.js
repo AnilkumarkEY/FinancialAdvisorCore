@@ -380,8 +380,15 @@ const createContentInDb = async (createObject) => {
 const fetchPaginatedContent = async (limit, offset) => {
     try {
         const query = `
-            SELECT * 
-            FROM core.communication_tb 
+            SELECT
+                comm.*, 
+                comm_cat.category_name, 
+                comm_exp.from_date, comm_exp.to_date
+            FROM core.communication_tb comm
+            JOIN core.communication_category comm_cat
+                ON comm.category = comm_cat.id
+            JOIN core.communication_expiry comm_exp
+                ON comm_exp.communication_id = comm.idcommrole
             LIMIT $1 
             OFFSET $2
         `;
