@@ -6,7 +6,7 @@ const category = {
     
 }
 
-const getBannerAndTickersFromDb = async (userType) => {
+const getBannerAndTickersFromDb = async (userType, categoryCode) => {
     try {
         const currentDate = new Date();
         const query = `SELECT comm.*
@@ -29,8 +29,9 @@ const getBannerAndTickersFromDb = async (userType) => {
                 ctrm.communication_id = comm.idcommrole and
                 utm.description = $2
             );
+            AND comm.category_code = $3
  `;
-        const result = await client.query(query, [currentDate, userType]);
+        const result = await client.query(query, [currentDate, userType, categoryCode]);
         return result.rows;
     } catch (error) {
         throw error;

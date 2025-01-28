@@ -32,13 +32,13 @@ const moment = require("moment/moment");
 
 const getBannerAndTickers = async (request, reply) => {
     try {
-        const { userType } = request.query;
+        const { userType, categoryCode } = request.query;
         if (!userType) {
             return reply
                 .status(statusCodes.BAD_REQUEST)
                 .send(responseFormatter(statusCodes.BAD_REQUEST, "Invalid User Type", null));
         }
-        const bannerAndTickers = await getBannerAndTickersFromDb(userType);
+        const bannerAndTickers = await getBannerAndTickersFromDb(userType, categoryCode);
         return reply
             .status(statusCodes.OK)
             .send(responseFormatter(statusCodes.OK, "All Tickers and Banners", bannerAndTickers));
@@ -222,7 +222,7 @@ const updateContent = async (request, reply) => {
                 }
                 if (role_list) {
                     for (const roleId of role_list) {
-                        await addCommunicationRoleMapping(roleId, communicationId, null);
+                        await addCommunicationRoleMapping(uniqueString(), communicationId, roleId);
                     }
                 }
                 const knownKeys = ['title', 'description', 'category', 'category_code', 'content_url', 'content_type', 'target_id', 'target_master', 'layout_group_name_id'];
@@ -453,7 +453,7 @@ const createContent = async (request, reply) => {
             idcommrole: uniqueString(),
             target_id: target_id,
             category: category_id,
-            category_code: category.code,
+            category_code: category.category_code,
             active: true,
             created_date: Date.now(),
             last_modified_date: Date.now(),
@@ -502,7 +502,6 @@ const createContent = async (request, reply) => {
             .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, "Internal server error occurred", { error: error.message }));
     }
 }
-
 
 const fetchContent = async (request, reply) => {
     try {
