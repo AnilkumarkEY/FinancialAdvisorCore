@@ -28,7 +28,7 @@ const getBannerAndTickersFromDb = async (userType, categoryCode) => {
                 WHERE
                 ctrm.communication_id = comm.idcommrole and
                 utm.description = $2
-            );
+            )
             AND comm.category_code = $3
  `;
         const result = await client.query(query, [currentDate, userType, categoryCode]);
