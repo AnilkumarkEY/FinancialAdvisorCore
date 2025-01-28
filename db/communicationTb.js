@@ -399,7 +399,6 @@ const fetchPaginatedContent = async (limit, offset, order) => {
         LIMIT $1
         OFFSET $2
         `;
-        console.log("limit, offset, order", limit, offset, order)
         const result = await client.query(query, [limit, offset]);
         return result;
     } catch (error) {
