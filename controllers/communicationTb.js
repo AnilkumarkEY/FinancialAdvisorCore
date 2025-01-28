@@ -27,7 +27,7 @@ const {
     getTargetById,
     fetchPaginatedContent
 } = require("../db/communicationTb");
-const { ENTITY_TYPE, USER_TYPE } = require('../config/constants');
+const { ENTITY_TYPE, USER_TYPE, STATUS } = require('../config/constants');
 const moment = require("moment/moment");
 
 const getBannerAndTickers = async (request, reply) => {
@@ -508,26 +508,29 @@ const fetchContent = async (request, reply) => {
     try {
         const page       = parseInt(request.query.page, 10) || 1;
         const limit      = parseInt(request.query.limit, 10) || 10;
+        const order      = request.query.orderBy || 'DESC';
         const offset     = (page - 1) * limit;
-        const result     = await fetchPaginatedContent(page, limit, offset);
+        const result     = await fetchPaginatedContent(limit, offset, order);
         const totalItems = parseInt(result.rowCount, 10);
         const totalPages = Math.ceil(totalItems / limit);
           // const data       = result.rows;
         const data = result.rows.map((data => {
-            data.active   = data.active ? 'active' : 'inactive';
-            data.expiries = data.expiries.map((date) => {
-                return {
-                    from_date: moment(data.from_date).format('DD/MM/yyyy'),
-                    to_date  : moment(data.to_date).format('DD/MM/yyyy'),
-                    from_time: moment(data.from_date).format('hh:mm:ssA'),
-                    to_time  : moment(data.to_date).format('hh:mm:ssA'),
+            data.active = data.active ? STATUS.ACTIVE : STATUS.INACTIVE;
+            data.expiries.forEach((date) => {
+                if (date.from_date) {
+                    date.from_time = moment(date.from_date).format('hh:mm:ssA');
+                    date.from_date = moment(date.from_date).format('DD/MM/yyyy');
+                }
+                if (date.to_date) {
+                    date.to_time = moment(date.to_date).format('hh:mm:ssA');
+                    date.to_date = moment(date.to_date).format('DD/MM/yyyy');
                 }
             });
             data.content_type = mapContentType(data.content_type);
             data.role_lists   = data.role_lists ? data.role_lists : [];
             data.user_types   = data.user_types ? data.user_types : [];
             return data;
-        }))
+        }));
         return reply
             .status(statusCodes.OK)
             .send(responseFormatter(statusCodes.OK, "All Contents", {

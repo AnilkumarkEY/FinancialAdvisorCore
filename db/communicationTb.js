@@ -377,12 +377,12 @@ const createContentInDb = async (createObject) => {
 };
 
 
-const fetchPaginatedContent = async (limit, offset) => {
+const fetchPaginatedContent = async (limit, offset, order) => {
     try {
         const query = `
         SELECT
             ct.*,
-            cc.*,
+            cc.id, cc.category_name, cc.category_code,
             JSON_AGG(DISTINCT JSONB_BUILD_OBJECT('idrole', ro.idrole, 'description', ro.description, 'code', ro.code)) FILTER (WHERE ro.idrole IS NOT NULL) AS role_lists,
             JSON_AGG(DISTINCT JSONB_BUILD_OBJECT('idusertype', ut.idusertype, 'description', ut.description)) FILTER (WHERE ut.idusertype IS NOT NULL) AS user_types,
             JSON_AGG(DISTINCT JSONB_BUILD_OBJECT('from_date', ce.from_date, 'to_date', ce.to_date)) AS expiries
@@ -394,10 +394,12 @@ const fetchPaginatedContent = async (limit, offset) => {
         LEFT JOIN core.communication_expiry ce ON ct.idcommrole = ce.communication_id
         GROUP BY
             ct.idcommrole, cc.id, ct.category
+        ORDER BY 
+            ct.created_date ${order}
         LIMIT $1
         OFFSET $2
         `;
-        const result = await client.query(query, [offset, limit]);
+        const result = await client.query(query, [limit, offset]);
         return result;
     } catch (error) {
         throw error
