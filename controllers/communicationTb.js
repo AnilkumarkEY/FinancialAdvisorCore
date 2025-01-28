@@ -27,7 +27,7 @@ const {
     getTargetById,
     fetchPaginatedContent
 } = require("../db/communicationTb");
-const { ENTITY_TYPE, USER_TYPE } = require('../config/constants');
+const { ENTITY_TYPE, USER_TYPE, STATUS } = require('../config/constants');
 const moment = require("moment/moment");
 
 const getBannerAndTickers = async (request, reply) => {
@@ -515,7 +515,7 @@ const fetchContent = async (request, reply) => {
         const totalPages = Math.ceil(totalItems / limit);
           // const data       = result.rows;
         const data = result.rows.map((data => {
-            data.active = data.active ? 'active' : 'inactive';
+            data.active = data.active ? STATUS.ACTIVE : STATUS.INACTIVE;
             data.expiries.forEach((date) => {
                 if (date.from_date) {
                     date.from_time = moment(date.from_date).format('hh:mm:ssA');

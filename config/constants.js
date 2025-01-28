@@ -24,9 +24,15 @@ const ENTITY_TYPE = {
     COMMUNICATION_SYSTEM_LAYOUT: 'COMMUNICATION_SYSTEM_LAYOUT'
 }
 
+const STATUS = {
+    INACTIVE: 'Inactive',
+    ACTIVE  : 'Active'
+}
+
 module.exports = {
     COMMUNICATION_TYPE,
     ENTITY_TYPE,
+    STATUS,
     TABLE_NAME,
     USER_TYPE,
 }
