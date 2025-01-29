@@ -19,12 +19,14 @@ exports.createAgent = async (request, reply) => {
       entityData,
       identity
     );
+
     contactData.identity = entityRes[0].identity; //taking identity of newly created entity
     agentData.advisor_name = entityRes[0].fullname;
     const [contactRes, agentRes] = await Promise.all([
       entityContact.processEntityContactData(contactData, identity),
       agent.insertAgentData(agentData),
     ]);
+
     const [profileRes, entityAuthUrcRes] = await Promise.all([
       agent.insertProfileData(entityRes[0], agentRes[0], agentData),
       entityUserAuth.processEntityAuthUrcData(entityRes[0], entityData),
@@ -52,6 +54,7 @@ exports.createAgent = async (request, reply) => {
     };
 
     const createUserInAzure = await createUser(azureUserData);
+    let authUser = [];
     if (createUserInAzure) {
       const userData = {
         iduser_auth_data: uniqueString(),
@@ -64,14 +67,16 @@ exports.createAgent = async (request, reply) => {
         reg_email: contactData.primary_email,
         createdby: identity,
       };
-      await entity.insertUserAuth(userData);
+      authUser = await entity.insertUserAuth(userData);
     }
 
     if (
       entityRes.length > 0 &&
       agentRes.length > 0 &&
       profileRes.length > 0 &&
-      entityAuthUrcRes.length > 0
+      entityAuthUrcRes.length > 0 &&
+      authUser.length > 0 &&
+      createUserInAzure
     ) {
       await mailService.sendMailTemporaryPassword(
         contactData.primary_email,

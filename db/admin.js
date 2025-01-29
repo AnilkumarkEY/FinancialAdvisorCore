@@ -215,12 +215,13 @@ const insertProfile = async (data) => {
             identity_subscriber,
             identity_subscriber_urc,
             leader_code,
-            inactivedate
+            inactivedate,
+            activeflag
             )
             VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-            $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
-            $21
+            $11, $12, $13, $14, NOW(), $15, $16, $17, $18, $19,
+            $20, $21
             )
             RETURNING *;
         `;
@@ -240,13 +241,14 @@ const insertProfile = async (data) => {
       data.eff_from_date || null,
       data.eff_to_date || null,
       data.createdby || null,
-      data.created_date || null,
+      // data.created_date || null,
       data.modified_date || null,
       data.modifiedby || null,
       data.identity_subscriber || null,
       data.identity_subscriber_urc || null,
       data.leader_code || null,
       data.inactivedate || null,
+      1
     ];
     const res = await client.query(query, values);
     return res.rows;
@@ -288,14 +290,13 @@ async function getAllUsers(pagination) {
               p.branch AS branch,                        
               p.designation AS designation,              
               p.business_code as business_code,
+              p.created_date,
               CASE 
                   WHEN p.activeflag = 1 THEN 'Active' 
                   ELSE 'Inactive' 
               END AS status                               
           FROM 
               core.profile p
-          WHERE 
-              p.activeflag = 1  -- Filter for only active profiles
         ),
         contact_data AS (
           SELECT 
@@ -322,7 +323,7 @@ async function getAllUsers(pagination) {
         ON 
             pd.user_id = cd.user_identity                
         ORDER BY 
-            pd.name ASC                                  
+            pd.created_date DESC NULLS LAST                               
         LIMIT $1 OFFSET $2
       `;
 
