@@ -248,7 +248,7 @@ const insertProfile = async (data) => {
       data.identity_subscriber_urc || null,
       data.leader_code || null,
       data.inactivedate || null,
-      1
+      1,
     ];
     const res = await client.query(query, values);
     return res.rows;
@@ -368,7 +368,7 @@ async function getEntityToUpdate(agentCode) {
     ON p."identity" = ec."identity"
     WHERE 
     p.business_code = $1
-    AND ec.idmeta_contact_type = 'b8fbf7947f8b4505a91e662af6953a15';
+    -- AND ec.idmeta_contact_type = 'b8fbf7947f8b4505a91e662af6953a15';
     `;
     const res = await client.query(query, [agentCode]);
     return res.rows;
@@ -468,6 +468,28 @@ async function deleteAgent(agentCode) {
   }
 }
 
+async function updateProfile(profileData) {
+  try {
+    const query = `
+    UPDATE core.profile SET profile_fullname = $3, designation_code = $4, branch = $5
+    WHERE identity = $1 and business_code = $2
+    `;
+    const values = [
+      profileData.identity,
+      profileData.business_code,
+      profileData.profile_fullname,
+      profileData.designation_code,
+      profileData.branch,
+    ];
+    const res = await client.query(query, values);
+    console.log("Update successful:", res);
+    return res.rowCount;
+  } catch (error) {
+    console.error("Error executing query", error.stack);
+    throw error; // Rethrow for controller error handling
+  }
+}
+
 module.exports = {
   insertAgent,
   insertProfile,
@@ -476,4 +498,5 @@ module.exports = {
   getEntityToUpdate,
   updateAgent,
   deleteAgent,
+  updateProfile,
 };

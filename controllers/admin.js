@@ -169,18 +169,26 @@ exports.updateAgent = async (request, reply) => {
       contactData.countryname,
     ].join(", ");
 
-    contactData["identity_contact"] = entityId[0]?.identity_contact;
+    contactData["identity_contact"] = "b8fbf7947f8b4505a91e662af6953a15";
     contactData["fieldToMatch"] = "identity_contact";
     contactData["contact_value"] = formattedAddress;
 
     agentData["advisor_code"] = agentCode;
     agentData["fieldToMatch"] = "advisor_code";
 
+    const profileData = {
+      identity: entityId[0]?.identity,
+      business_code: agentCode,
+      profile_fullname: agentData.advisor_name,
+      designation_code: agentData.desgn_code,
+      branch: agentData.branch_name,
+    };
+    const updateProfile = await admin.updateProfile(profileData);
     const entityRes = await entityService.performAction(id, entityData);
     const updateEntity = await entityContact.performAction(id, contactData);
     const agentRes = await admin.updateAgent(agentData);
 
-    if (entityRes && updateEntity && agentRes) {
+    if (entityRes && updateEntity && agentRes && updateProfile) {
       await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
