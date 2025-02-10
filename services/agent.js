@@ -18,6 +18,7 @@ const insertAgentData = async(data) => {
 const insertProfileData = async (entityRes, agentRes, agentReqData) => {
     try {
         const insertData = {
+            profile_picture: entityRes.profile_picture,
             idprofile: uniqueString(),
             identity: entityRes.identity,
             business_code: agentRes.advisor_code,

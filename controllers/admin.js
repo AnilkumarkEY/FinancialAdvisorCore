@@ -15,23 +15,8 @@ exports.createAgent = async (request, reply) => {
   try {
     const { identity } = request.isValid;
     const { entityData, contactData, agentData } = request.body;
-    const entityRes = await entityService.processEntityData(
-      entityData,
-      identity
-    );
 
-    contactData.identity = entityRes[0].identity; //taking identity of newly created entity
-    agentData.advisor_name = entityRes[0].fullname;
-    const [contactRes, agentRes] = await Promise.all([
-      entityContact.processEntityContactData(contactData, identity),
-      agent.insertAgentData(agentData),
-    ]);
-
-    const [profileRes, entityAuthUrcRes] = await Promise.all([
-      agent.insertProfileData(entityRes[0], agentRes[0], agentData),
-      entityUserAuth.processEntityAuthUrcData(entityRes[0], entityData),
-    ]);
-
+    //Creating user in Azure AD
     const azureUserData = {
       givenName: entityData.firstname,
       surname: entityData.lastname,
@@ -52,9 +37,31 @@ exports.createAgent = async (request, reply) => {
       postalCode: contactData.pincode,
       country: contactData.country,
     };
-
     const createUserInAzure = await createUser(azureUserData);
+
+    //Creating data in Entity table
+    const entityRes = await entityService.processEntityData(
+      entityData,
+      identity
+    );
+
+    //Creating data in Contact & Agent tables
+    contactData.identity = entityRes[0].identity; //taking identity of newly created entity
+    agentData.advisor_name = entityRes[0].fullname;
+    const [contactRes, agentRes] = await Promise.all([
+      entityContact.processEntityContactData(contactData, identity),
+      agent.insertAgentData(agentData),
+    ]);
+
+    //Creating data in Profile & EntityAuthUrcData tables
+    entityRes[0].profile_picture = entityData.profile_picture;
+    const [profileRes, entityAuthUrcRes] = await Promise.all([
+      agent.insertProfileData(entityRes[0], agentRes[0], agentData),
+      entityUserAuth.processEntityAuthUrcData(entityRes[0], entityData),
+    ]);
+
     let authUser = [];
+    //Creating data in userAuthData table
     if (createUserInAzure) {
       const userData = {
         iduser_auth_data: uniqueString(),
@@ -152,7 +159,7 @@ exports.getUserList = async (request, reply) => {
 exports.updateAgent = async (request, reply) => {
   try {
     const { identity } = request.isValid;
-    const { agentCode, entityData, contactData, agentData } = request.body;
+    const { agentCode, profile_picture, entityData, contactData, agentData } = request.body;
     const entityId = await admin.getEntityToUpdate(agentCode);
     const id = "fd789c2918db4db4852813cd147bacb0";
 
@@ -182,6 +189,7 @@ exports.updateAgent = async (request, reply) => {
       profile_fullname: agentData.advisor_name,
       designation_code: agentData.desgn_code,
       branch: agentData.branch_name,
+      profile_picture: profile_picture
     };
     const updateProfile = await admin.updateProfile(profileData);
     const entityRes = await entityService.performAction(id, entityData);
