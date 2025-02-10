@@ -181,12 +181,12 @@ const insertAgent = async (data) => {
       data.cao_desg_desc || null,
       data.cao_branch_code || null,
       data.cao_branch_name || null,
-      data.id,
+      data.id || null,
     ];
     const res = await client.query(query, values);
     return res.rows;
   } catch (error) {
-    console.error("Error inserting data:", error);
+    console.error("Error inserting agent data:", error);
     throw error;
   }
 };
@@ -216,12 +216,13 @@ const insertProfile = async (data) => {
             identity_subscriber_urc,
             leader_code,
             inactivedate,
-            activeflag
+            activeflag,
+            profile_picture
             )
             VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
             $11, $12, $13, $14, NOW(), $15, $16, $17, $18, $19,
-            $20, $21
+            $20, $21, $22
             )
             RETURNING *;
         `;
@@ -249,11 +250,12 @@ const insertProfile = async (data) => {
       data.leader_code || null,
       data.inactivedate || null,
       1,
+      data.profile_picture || null,
     ];
     const res = await client.query(query, values);
     return res.rows;
   } catch (error) {
-    console.error("Error inserting data:", error);
+    console.error("Error inserting profile data:", error);
     throw error;
   }
 };
@@ -272,7 +274,7 @@ const getIdUrcFromUserType = async (idUserType) => {
     const res = await client.query(query, [idUserType]);
     return res.rows[0].idurc;
   } catch (error) {
-    console.error("Error inserting data:", error);
+    console.error("Error getting idUrc data:", error);
     throw error;
   }
 };
@@ -285,6 +287,7 @@ async function getAllUsers(pagination) {
     const query = `
         WITH profile_data AS (
           SELECT 
+              p.profile_picture,
               p.identity AS user_id,                     
               p.profile_fullname AS name,               
               p.branch AS branch,                        
@@ -308,6 +311,7 @@ async function getAllUsers(pagination) {
               ec.idmeta_contact_type = '4678e1bb1f2d414393a85dfbe0c85fff' 
         )
         SELECT 
+            pd.profile_picture,
             pd.user_id,                                  
             pd.name,                                     
             pd.business_code,
@@ -471,7 +475,7 @@ async function deleteAgent(agentCode) {
 async function updateProfile(profileData) {
   try {
     const query = `
-    UPDATE core.profile SET profile_fullname = $3, designation_code = $4, branch = $5
+    UPDATE core.profile SET profile_fullname = $3, designation_code = $4, branch = $5, profile_picture = $6
     WHERE identity = $1 and business_code = $2
     `;
     const values = [
@@ -480,6 +484,7 @@ async function updateProfile(profileData) {
       profileData.profile_fullname,
       profileData.designation_code,
       profileData.branch,
+      profileData.profile_picture
     ];
     const res = await client.query(query, values);
     console.log("Update successful:", res);

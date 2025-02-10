@@ -2078,6 +2078,10 @@ paths:
                     - user_type
                     - dob
                   properties:
+                    profile_picture:
+                        type: string
+                        description: profile picture
+                        example: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=900&q=60"
                     idmeta_title:
                       type: string
                       description: Metadata title ID.
@@ -3133,6 +3137,10 @@ paths:
                         items:
                           type: object
                           properties:
+                            profile_picture:
+                              type: string
+                              description: profile picture
+                              example: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=900&q=60"
                             user_id:
                               type: string
                               description: Unique identifier of the user.
@@ -4122,6 +4130,10 @@ paths:
                   type: string
                   example: "8597056"
                   description: Unique code for the agent.
+                profile_picture:
+                        type: string
+                        description: profile picture
+                        example: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=900&q=60"
                 entityData:
                   type: object
                   properties:
