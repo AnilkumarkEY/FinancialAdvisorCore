@@ -33,7 +33,6 @@ const updateEntityUserAuth = async (data) => {
   try {
     let query = `UPDATE core.entity_urc_auth SET `;
     let updateEntity = await entity.updateEntity(query, data);
-    console.log("Updating entity with data:", updateEntity);
     return updateEntity;
   } catch (error) {
     throw new Error(error);
@@ -42,7 +41,7 @@ const updateEntityUserAuth = async (data) => {
 
 const processEntityAuthUrcData = async(entityRes, entityData) => {
   try {
-    const id = '2c6348cacf9a404b89667136562d3ee6';
+    const id = '2c6348cacf9a404b89667136562d3ee6'; //create id
     const idurc = await admin.getIdUrcFromUserType(entityData.user_type);
     const insertData = {
       identity_urc_auth: uniqueString(),
@@ -57,7 +56,24 @@ const processEntityAuthUrcData = async(entityRes, entityData) => {
   }
 }
 
+const updateEntityAuthUrcData = async(entityRes, userType) => {
+  try {
+    const id = 'fd789c2918db4db4852813cd147bacb0'; //update id
+    const idurc = await admin.getIdUrcFromUserType(userType);
+    const updateData = {
+      idurc,
+      identity: entityRes.identity,
+      fieldToMatch: 'identity'
+    }
+    const authUrcRes = await performAction(id ,updateData);
+    return authUrcRes;
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
 module.exports = {
   performAction,
-  processEntityAuthUrcData
+  processEntityAuthUrcData,
+  updateEntityAuthUrcData
 };
