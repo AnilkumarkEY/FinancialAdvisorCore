@@ -160,7 +160,7 @@ exports.getUserList = async (request, reply) => {
 exports.updateAgent = async (request, reply) => {
   try {
     const { identity } = request.isValid;
-    const { agentCode, profile_picture, userRole, entityData, contactData, agentData } = request.body;
+    const { agentCode, profile_picture, userType, userRole, entityData, contactData, agentData } = request.body;
     const entityId = await admin.getEntityToUpdate(agentCode);
     const id = "fd789c2918db4db4852813cd147bacb0";
 
@@ -202,12 +202,9 @@ exports.updateAgent = async (request, reply) => {
     const entityRes = await entityService.performAction(id, entityData);
     const updateEntity = await entityContact.performAction(id, contactData);
     const agentRes = await admin.updateAgent(agentData);
+    const userTypeUpdate = await entityUserAuth.updateEntityAuthUrcData(entityId[0], userType)
 
-    console.log(entityRes)
-    console.log(updateEntity)
-    console.log(agentRes)
-    console.log(updateProfile)
-    if (entityRes && updateEntity && agentRes && updateProfile) {
+    if (entityRes && updateEntity && agentRes && updateProfile && userTypeUpdate.length) {
       await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
