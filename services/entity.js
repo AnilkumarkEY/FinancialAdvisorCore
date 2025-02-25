@@ -33,7 +33,6 @@ const updateEntity = async (data) => {
   try {
     let query = `UPDATE core.entity SET `;
     let updateEntity = await entity.updateEntity(query, data);
-    console.log("Updating entity with data:", updateEntity);
     return updateEntity;
   } catch (error) {
     throw new Error(error);

@@ -54,6 +54,12 @@ const updateEntity = async (query, entityData) => {
 
   // Destructure fieldToMatch from entityData and delete it
   const { fieldToMatch } = entityData;
+  let identity = '';
+  if(query.includes('core.entity_contact')){
+    identity = entityData.identity;
+    delete entityData.identity;
+  }
+
   delete entityData.fieldToMatch;
 
   // Loop through entityData to build the dynamic update set clauses
@@ -76,12 +82,13 @@ const updateEntity = async (query, entityData) => {
   query += setClauses.join(", ");
   query += ` WHERE ${fieldToMatch} = $${index}`;
   values.push(entityData[fieldToMatch]); // Add fieldToMatch value for the WHERE clause
-
-  console.log(query, values);
-
+  if(query.includes('core.entity_contact')){
+    query += ` AND identity = $${index + 1}`;
+    values.push(identity);
+  }
+  
   try {
     const res = await client.query(query, values);
-    // console.log("Update successful:", res);
     return res.rowCount;
   } catch (error) {
     console.error("Error updating data:", error);
