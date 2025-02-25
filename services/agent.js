@@ -29,7 +29,8 @@ const insertProfileData = async (entityRes, agentRes, agentReqData) => {
             joiningdate: agentReqData.dateOf_joining,
             license_expiry_date: agentReqData.license_expiry,
             branch: agentRes.branch_name,
-            leader_code: agentRes.l1_leader_code
+            leader_code: agentRes.l1_leader_code,
+            userRole: agentRes.userRole
         }
         const profileRes = await admin.insertProfile(insertData);
         return profileRes;
