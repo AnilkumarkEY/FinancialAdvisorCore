@@ -416,11 +416,8 @@ async function updateAgent(agentData) {
   query += ` WHERE ${fieldToMatch} = $${index}`;
   values.push(agentData[fieldToMatch]); // Add fieldToMatch value for the WHERE clause
 
-  console.log(query, values);
-
   try {
     const res = await client.query(query, values);
-    console.log("Update successful:", res);
     return res.rowCount;
   } catch (error) {
     console.error("Error updating data:", error);
@@ -477,7 +474,16 @@ async function deleteAgent(agentCode) {
 async function updateProfile(profileData) {
   try {
     const query = `
-    UPDATE core.profile SET profile_fullname = $3, designation_code = $4, branch = $5, profile_picture = $6, role = $7
+    UPDATE core.profile SET 
+    profile_fullname = $3, 
+    designation_code = $4, 
+    branch = $5, 
+    profile_picture = $6, 
+    role = $7, 
+    designation =$8, 
+    joiningdate = $9, 
+    license_expiry_date = $10,
+    leader_code = $11
     WHERE identity = $1 and business_code = $2
     `;
     const values = [
@@ -487,10 +493,13 @@ async function updateProfile(profileData) {
       profileData.designation_code,
       profileData.branch,
       profileData.profile_picture,
-      profileData.userRole
+      profileData.userRole,
+      profileData.designation,
+      profileData.joiningdate,
+      profileData.license_expiry_date,
+      profileData.leader_code
     ];
     const res = await client.query(query, values);
-    console.log("Update successful:", res);
     return res.rowCount;
   } catch (error) {
     console.error("Error executing query", error.stack);

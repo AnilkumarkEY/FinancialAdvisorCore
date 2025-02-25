@@ -93,7 +93,7 @@ exports.createAgent = async (request, reply) => {
       await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
-        .send(responseFormatter(statusCodes.OK, "Agent saved successfully"));
+        .send(responseFormatter(statusCodes.OK, `Agent saved successfully with advisor code ${agentRes[0].advisor_code}`));
     } else {
       return reply
         .status(statusCodes.NO_CONTENT)
@@ -160,7 +160,7 @@ exports.getUserList = async (request, reply) => {
 exports.updateAgent = async (request, reply) => {
   try {
     const { identity } = request.isValid;
-    const { agentCode, profile_picture, entityData, contactData, agentData } = request.body;
+    const { agentCode, profile_picture, userRole, entityData, contactData, agentData } = request.body;
     const entityId = await admin.getEntityToUpdate(agentCode);
     const id = "fd789c2918db4db4852813cd147bacb0";
 
@@ -177,9 +177,10 @@ exports.updateAgent = async (request, reply) => {
       contactData.countryname,
     ].join(", ");
 
-    contactData["identity_contact"] = "b8fbf7947f8b4505a91e662af6953a15";
-    contactData["fieldToMatch"] = "identity_contact";
+    contactData["idmeta_contact_type"] = "b8fbf7947f8b4505a91e662af6953a15";
+    contactData["fieldToMatch"] = "idmeta_contact_type";
     contactData["contact_value"] = formattedAddress;
+    contactData["identity"] = entityId[0]?.identity;
 
     agentData["advisor_code"] = agentCode;
     agentData["fieldToMatch"] = "advisor_code";
@@ -191,13 +192,21 @@ exports.updateAgent = async (request, reply) => {
       designation_code: agentData.desgn_code,
       branch: agentData.branch_name,
       profile_picture: profile_picture,
-      userRole: entityData.userRole
+      userRole: userRole,
+      designation: agentData.desgn_desc,
+      joiningdate: agentData.dateOf_joining,
+      license_expiry_date: agentData.license_expiry,
+      leader_code: agentData.l1_leader_code
     };
     const updateProfile = await admin.updateProfile(profileData);
     const entityRes = await entityService.performAction(id, entityData);
     const updateEntity = await entityContact.performAction(id, contactData);
     const agentRes = await admin.updateAgent(agentData);
 
+    console.log(entityRes)
+    console.log(updateEntity)
+    console.log(agentRes)
+    console.log(updateProfile)
     if (entityRes && updateEntity && agentRes && updateProfile) {
       await event.insertEventTransaction(request.isValid);
       return reply
