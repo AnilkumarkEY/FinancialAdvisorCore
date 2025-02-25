@@ -50,14 +50,15 @@ exports.createAgent = async (request, reply) => {
     agentData.advisor_name = entityRes[0].fullname;
     const [contactRes, agentRes] = await Promise.all([
       entityContact.processEntityContactData(contactData, identity),
-      agent.insertAgentData(agentData),
+      agent.insertAgentData(agentData)
     ]);
 
     //Creating data in Profile & EntityAuthUrcData tables
     entityRes[0].profile_picture = entityData.profile_picture;
+    entityRes[0].userRole = entityData.userRole;
     const [profileRes, entityAuthUrcRes] = await Promise.all([
       agent.insertProfileData(entityRes[0], agentRes[0], agentData),
-      entityUserAuth.processEntityAuthUrcData(entityRes[0], entityData),
+      entityUserAuth.processEntityAuthUrcData(entityRes[0], entityData)
     ]);
 
     let authUser = [];
@@ -189,7 +190,8 @@ exports.updateAgent = async (request, reply) => {
       profile_fullname: agentData.advisor_name,
       designation_code: agentData.desgn_code,
       branch: agentData.branch_name,
-      profile_picture: profile_picture
+      profile_picture: profile_picture,
+      userRole: entityData.userRole
     };
     const updateProfile = await admin.updateProfile(profileData);
     const entityRes = await entityService.performAction(id, entityData);

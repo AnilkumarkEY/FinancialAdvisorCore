@@ -217,12 +217,13 @@ const insertProfile = async (data) => {
             leader_code,
             inactivedate,
             activeflag,
-            profile_picture
+            profile_picture,
+            role
             )
             VALUES (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
             $11, $12, $13, $14, NOW(), $15, $16, $17, $18, $19,
-            $20, $21, $22
+            $20, $21, $22, $23
             )
             RETURNING *;
         `;
@@ -251,6 +252,7 @@ const insertProfile = async (data) => {
       data.inactivedate || null,
       1,
       data.profile_picture || null,
+      data.userRole || null
     ];
     const res = await client.query(query, values);
     return res.rows;
@@ -475,7 +477,7 @@ async function deleteAgent(agentCode) {
 async function updateProfile(profileData) {
   try {
     const query = `
-    UPDATE core.profile SET profile_fullname = $3, designation_code = $4, branch = $5, profile_picture = $6
+    UPDATE core.profile SET profile_fullname = $3, designation_code = $4, branch = $5, profile_picture = $6, role = $7
     WHERE identity = $1 and business_code = $2
     `;
     const values = [
@@ -484,7 +486,8 @@ async function updateProfile(profileData) {
       profileData.profile_fullname,
       profileData.designation_code,
       profileData.branch,
-      profileData.profile_picture
+      profileData.profile_picture,
+      profileData.userRole
     ];
     const res = await client.query(query, values);
     console.log("Update successful:", res);
