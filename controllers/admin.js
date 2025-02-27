@@ -204,7 +204,7 @@ exports.updateAgent = async (request, reply) => {
     const agentRes = await admin.updateAgent(agentData);
     const userTypeUpdate = await entityUserAuth.updateEntityAuthUrcData(entityId[0], userType)
 
-    if (entityRes && updateEntity && agentRes && updateProfile && userTypeUpdate.length) {
+    if (entityRes && updateEntity && agentRes && updateProfile && userTypeUpdate) {
       await event.insertEventTransaction(request.isValid);
       return reply
         .status(statusCodes.OK)
