@@ -20,6 +20,7 @@ const {
     deleteUserTypeByApplicationId,
     addCommunicationExpiry,
     addCommunicationRoleMapping,
+    addCommunicationUserTypeMapping,
     getContentById,
     updateContentInDb,
     createContentInDb,
@@ -197,7 +198,7 @@ const updateContent = async (request, reply) => {
                 const updateRequest = {
                     target_id: target_id,
                     category: category_id,
-                    category_code: category.code
+                    category_code: category.category_code
                 };
                 await deleteCommunicationExpiryByCommunicationId(communicationId);
                 await deleteCommuncationRoleMappingByCommunicationId(communicationId);
@@ -217,12 +218,12 @@ const updateContent = async (request, reply) => {
                         user_type_list = allUserType.map(userType => userType.idusertype);
                     }
                     for (const userType of user_type_list) {
-                        await addCommunicationRoleMapping(uniqueString(), communicationId, userType);
+                        await addCommunicationUserTypeMapping(communicationId, userType);
                     }
                 }
                 if (role_list) {
                     for (const roleId of role_list) {
-                        await addCommunicationRoleMapping(uniqueString(), communicationId, roleId);
+                        await addCommunicationRoleMapping(communicationId, roleId);
                     }
                 }
                 const knownKeys = ['title', 'description', 'category', 'category_code', 'content_url', 'content_type', 'target_id', 'target_master', 'layout_group_name_id'];
@@ -484,12 +485,12 @@ const createContent = async (request, reply) => {
                 user_type_list = allUserType.map(userType => userType.idusertype);
             }
             for (const userType of user_type_list) {
-                await addCommunicationRoleMapping(uniqueString(), createdCommunication.idcommrole, userType);
+                await addCommunicationUserTypeMapping(communicationId, userType);
             }
         }
         if (role_list) {
             for (const roleId of role_list) {
-                await addCommunicationRoleMapping(uniqueString(), createdCommunication.idcommrole, roleId);
+                await addCommunicationRoleMapping(createdCommunication.idcommrole, roleId);
             }
         }
         return reply

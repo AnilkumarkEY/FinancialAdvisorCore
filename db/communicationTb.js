@@ -101,13 +101,26 @@ const deleteCommuncationRoleMappingByCommunicationId = async (commId) => {
     }
 }
 
-const addCommunicationRoleMapping = async (communicationRoleId, communicationId, userTypeId) => {
+const addCommunicationRoleMapping = async (communicationRoleId, communicationId) => {
     try {
         const query = `
         INSERT INTO core.communication_role_mapping
-        (idcommrole, communication_id, user_type_id)
+        (idcommrole, communication_id)
         VALUES($1, $2, $3)`;
-        const result = await client.query(query, [communicationRoleId, communicationId, userTypeId]);
+        const result = await client.query(query, [communicationRoleId, communicationId]);
+        return result.rows;
+    } catch (error) {
+        throw error
+    }
+}
+
+const addCommunicationUserTypeMapping = async (communicationId, userTypeId) => {
+    try {
+        const query = `
+        INSERT INTO core.communication_role_mapping
+        (communication_id, user_type_id)
+        VALUES($1, $2)`;
+        const result = await client.query(query, [communicationId, userTypeId]);
         return result.rows;
     } catch (error) {
         throw error
@@ -411,6 +424,7 @@ const fetchPaginatedContent = async (limit, offset, order) => {
 module.exports = {
     fetchPaginatedContent,
     addCommunicationRoleMapping,
+    addCommunicationUserTypeMapping,
     addUserTypeApplicationMapping,
     createContentInDb,
     getApplicationById,
