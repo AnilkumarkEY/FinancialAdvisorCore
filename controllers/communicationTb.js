@@ -25,7 +25,8 @@ const {
     createContentInDb,
     getCommunicationCategoryById,
     getTargetById,
-    fetchPaginatedContent
+    fetchPaginatedContent,
+    addCommunicationUsertypeMapping
 } = require("../db/communicationTb");
 const { ENTITY_TYPE, USER_TYPE, STATUS } = require('../config/constants');
 const moment = require("moment/moment");
@@ -197,7 +198,7 @@ const updateContent = async (request, reply) => {
                 const updateRequest = {
                     target_id: target_id,
                     category: category_id,
-                    category_code: category.code
+                    category_code: category.category_code
                 };
                 await deleteCommunicationExpiryByCommunicationId(communicationId);
                 await deleteCommuncationRoleMappingByCommunicationId(communicationId);
@@ -217,7 +218,7 @@ const updateContent = async (request, reply) => {
                         user_type_list = allUserType.map(userType => userType.idusertype);
                     }
                     for (const userType of user_type_list) {
-                        await addCommunicationRoleMapping(uniqueString(), communicationId, userType);
+                        await addCommunicationUsertypeMapping(uniqueString(), communicationId, userType);
                     }
                 }
                 if (role_list) {
@@ -484,12 +485,14 @@ const createContent = async (request, reply) => {
                 user_type_list = allUserType.map(userType => userType.idusertype);
             }
             for (const userType of user_type_list) {
-                await addCommunicationRoleMapping(uniqueString(), createdCommunication.idcommrole, userType);
+                const communcationId = uniqueString()
+                await addCommunicationUsertypeMapping(communcationId, createdCommunication.idcommrole, userType);
+    
             }
         }
         if (role_list) {
             for (const roleId of role_list) {
-                await addCommunicationRoleMapping(uniqueString(), createdCommunication.idcommrole, roleId);
+                await addCommunicationRoleMapping(uniqueString(),createdCommunication.idcommrole, roleId);
             }
         }
         return reply

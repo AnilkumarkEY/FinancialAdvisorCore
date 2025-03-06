@@ -101,18 +101,35 @@ const deleteCommuncationRoleMappingByCommunicationId = async (commId) => {
     }
 }
 
-const addCommunicationRoleMapping = async (communicationRoleId, communicationId, userTypeId) => {
+const addCommunicationUsertypeMapping = async (communicationRoleId, communicationId, user_type_id) => {
     try {
         const query = `
         INSERT INTO core.communication_role_mapping
         (idcommrole, communication_id, user_type_id)
         VALUES($1, $2, $3)`;
-        const result = await client.query(query, [communicationRoleId, communicationId, userTypeId]);
+        console.log('addCommunicationUsertypeMapping',communicationRoleId, communicationId, user_type_id);
+        
+        const result = await client.query(query, [communicationRoleId, communicationId, user_type_id]);
         return result.rows;
     } catch (error) {
         throw error
     }
 }
+
+const addCommunicationRoleMapping = async (communicationRoleId, communicationId, role_id) => {
+    try {
+        const query = `
+        INSERT INTO core.communication_role_mapping
+        (idcommrole, communication_id, role_id)
+        VALUES($1, $2, $3)`;
+        console.log('addCommunicationRoleMapping',communicationRoleId, communicationId, role_id);
+        const result = await client.query(query, [communicationRoleId, communicationId, role_id]);
+        return result.rowCount; // Returns the number of affected rows
+    } catch (error) {
+        throw error;
+    }
+};
+
 
 const getCommunicationCategoryWithoutMasterFromDb = async () => {
     try {
@@ -391,7 +408,7 @@ const fetchPaginatedContent = async (limit, offset, order) => {
         JOIN core.communication_category cc ON ct.category = cc.id
         LEFT JOIN core.communication_role_mapping crm ON ct.idcommrole = crm.communication_id
         LEFT JOIN core.userType ut ON crm.user_type_id = ut.idusertype
-        LEFT JOIN core.role ro ON ro.idrole = crm.idcommrole
+        LEFT JOIN core.role ro ON ro.idrole = crm.role_id
         LEFT JOIN core.communication_expiry ce ON ct.idcommrole = ce.communication_id
         GROUP BY
             ct.idcommrole, cc.id, ct.category
@@ -433,5 +450,6 @@ module.exports = {
     getUserProfileFromDb,
     updateUserTypeApplicationMapping,
     updateContentInDb,
-    addCommunicationExpiry
+    addCommunicationExpiry,
+    addCommunicationUsertypeMapping
 }
