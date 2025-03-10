@@ -1,0 +1,4826 @@
+openapi: 3.0.0
+info:
+  title: Financial Advisor Backend API
+  description: Backend service for the financial advisor frontend.
+  version: "1.0"
+servers:
+  - url: http://localhost:8080
+    description: Development server
+paths:
+  /users/login:
+    post:
+      summary: User Login
+      description: Authenticates a user and returns a token if successful.
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userName:
+                  type: string
+                  description: The username of the user.
+                  example: "test@example.com"
+                password:
+                  type: string
+                  description: The password for the user account.
+                  example: "your_password"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Login successful"
+                  data:
+                    type: object
+                    properties:
+                      token_type:
+                        type: string
+                        description: Type of the token
+                        example: "Bearer"
+                      scope:
+                        type: string
+                        description: Permissions granted
+                        example: "5d7a7727-2a96-45ba-a82f-275e573cda4e/User.Read 5d7a7727-2a96-45ba-a82f-275e573cda4e/.default"
+                      expires_in:
+                        type: integer
+                        description: Token expiration time in seconds
+                        example: 5397
+                      ext_expires_in:
+                        type: integer
+                        description: Extended expiration time in seconds
+                        example: 5397
+                      access_token:
+                        type: string
+                        description: The JWT access token
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+                      refresh_token:
+                        type: string
+                        description: The refresh token
+                        example: "0.Ab4ANhzjhUbV_U6CEB2Go6EXQCd3el2WKrpFqC8nXlc82k6..."
+                      id_token:
+                        type: string
+                        description: The ID token
+                        example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+        "401":
+          description: Unauthorized - Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid username or password."
+        "400":
+          description: Bad Request - Missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Username and password are required."
+
+  /lead/create-lead:
+    post:
+      summary: Create a new lead
+      description: Creates a new lead with the provided details.
+      operationId: createLead
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - gender
+                - mobileNumber
+                - leadType
+                - city
+                - state
+                - isNRI
+                - isHNI
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the lead.
+                gender:
+                  type: string
+                  description: Gender of the lead.
+                mobileNumber:
+                  type: string
+                  description: Mobile number of the lead.
+                leadType:
+                  type: string
+                  description: Type of the lead.
+                email:
+                  type: string
+                  description: Email address of the lead.
+                productInterestedIn:
+                  type: array
+                  items:
+                    type: string
+                  description: List of product IDs the lead is interested in.
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the lead.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the lead.
+                zipCode:
+                  type: string
+                  description: Zip code of the lead's address.
+                city:
+                  type: string
+                  description: City of the lead's address.
+                state:
+                  type: string
+                  description: State of the lead's address.
+                isNRI:
+                  type: string
+                  description: Whether the lead is an NRI.
+                isHNI:
+                  type: string
+                  description: Whether the lead is an HNI.
+      responses:
+        "200":
+          description: Lead created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Lead created successfully."
+                  leadId:
+                    type: string
+                    example: "12345"
+
+  /lead/product-intrested:
+    get:
+      summary: Get products interested by lead
+      description: Retrieves the list of products a lead is interested in.
+      operationId: getProductInterested
+      parameters:
+        - name: leadId
+          in: query
+          required: true
+          description: The ID of the lead for which products are to be fetched.
+          schema:
+            type: string
+            example: "c9357f00e6524ef7ba0b045dbfcfeba5"
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: List of products interested by the lead
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      type: string
+
+  /lead/get-lead-list:
+    get:
+      summary: Get lead list
+      description: Retrieves the list of leads.
+      operationId: getLeadList
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Lead list retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  leads:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        leadId:
+                          type: string
+                        fullName:
+                          type: string
+
+  /lead/get-all-products:
+    post:
+      summary: Get all products
+      description: Retrieves the list of all products.
+      operationId: getAllProducts
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: List of all products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: string
+                        productName:
+                          type: string
+
+  /contact/update-contact:
+    put:
+      summary: Update an existing contact
+      description: Updates an existing contact with the provided details.
+      operationId: updateContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiasfsgergdte"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressLine1
+                - idmetaContactType
+                - contactValue
+                - countryCode
+                - state
+                - pincode
+                - idContact
+              properties:
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the contact.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the contact.
+                idmetaContactType:
+                  type: string
+                  description: Meta contact type ID.
+                contactValue:
+                  type: string
+                  description: Contact value, such as phone number or email.
+                countryCode:
+                  type: string
+                  description: Country code.
+                locationName:
+                  type: string
+                  description: Name of the location.
+                state:
+                  type: string
+                  description: State of the contact's address.
+                pincode:
+                  type: string
+                  description: Pincode of the contact's address.
+                idContact:
+                  type: string
+                  description: Unique identifier of the contact.
+      responses:
+        "201":
+          description: Entity contact updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Entity contact updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: Additional data (if any)
+
+  /contact/create-contact:
+    post:
+      summary: Create a new contact
+      description: Creates a new contact with the provided details.
+      operationId: createContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - addressLine1
+                - idmetaContactType
+                - contactValue
+                - countryCode
+                - state
+                - pincode
+              properties:
+                addressLine1:
+                  type: string
+                  description: Address line 1 of the contact.
+                addressLine2:
+                  type: string
+                  description: Address line 2 of the contact.
+                idmetaContactType:
+                  type: string
+                  description: Meta contact type ID.
+                contactValue:
+                  type: string
+                  description: Contact value, such as phone number or email.
+                countryCode:
+                  type: string
+                  description: Country code.
+                locationName:
+                  type: string
+                  description: Name of the location.
+                state:
+                  type: string
+                  description: State of the contact's address.
+                pincode:
+                  type: string
+                  description: Pincode of the contact's address.
+      responses:
+        "201":
+          description: Entity contact inserted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Entity contact inserted successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: Additional data (if any)
+
+  /users/get-otp:
+    post:
+      summary: Get OTP
+      description: Sends an OTP to the user based on the provided agent code.
+      operationId: getOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agent_code:
+                  type: string
+                  description: The agent code for which the OTP is requested.
+                  example: "786"
+      responses:
+        "200":
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "OTP sent successfully"
+                  data:
+                    type: object
+                    nullable: true
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+        "400":
+          description: Bad Request - Invalid agent code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid agent code."
+
+  /users/verify-otp:
+    post:
+      summary: Verify OTP
+      description: Verifies the provided OTP against the stored value.
+      operationId: verifyOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otpToVerify:
+                  type: string
+                  description: The OTP to verify.
+                  example: "771089"
+      responses:
+        "200":
+          description: Provided OTP is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Provided OTP is correct"
+                  data:
+                    type: boolean
+                    description: Indicates if the OTP verification was successful
+                    example: true
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+        "400":
+          description: Bad Request - Missing or invalid OTP
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid or missing OTP."
+
+  /lead/get-lead-tags:
+    get:
+      summary: Get Lead Tags
+      description: Fetches all available lead tags.
+      operationId: getLeadTags
+      responses:
+        "200":
+          description: Lead Tags fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Lead Tags fetch successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tagmetadata:
+                          type: string
+                          description: Unique identifier for the tag
+                          example: "0d744c04a320452d8d8343147f1089ba"
+                        tagname:
+                          type: string
+                          description: Name of the lead tag
+                          example: "HNI"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-locality:
+    post:
+      summary: Get Locality
+      description: Fetches lead details based on the provided zipcode.
+      operationId: getLocality
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zipcode:
+                  type: string
+                  description: The zipcode to fetch locality details for.
+                  example: "110094"
+      responses:
+        "200":
+          description: Locality data fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Locality data fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id_district:
+                          type: integer
+                          description: Unique identifier for the district
+                          example: 118
+                        district:
+                          type: string
+                          description: Name of the district
+                          example: "East Delhi"
+                        id_state:
+                          type: integer
+                          description: Unique identifier for the state
+                          example: 10
+                        state:
+                          type: string
+                          description: Name of the state
+                          example: "Delhi"
+                        idcountry:
+                          type: string
+                          description: Unique identifier for the country
+                          example: "ff604a944f1c4810b265519937d1ceb8"
+                        countryname:
+                          type: string
+                          description: Name of the country
+                          example: "India"
+                        dialingcode:
+                          type: string
+                          description: Dialing code for the country
+                          example: "+91"
+                        longitude:
+                          type: string
+                          description: Longitude of the locality
+                          example: "77.488839"
+                        latitude:
+                          type: string
+                          description: Latitude of the locality
+                          example: "13.765421"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-lead-tags-by-id:
+    post:
+      summary: Get Lead Tags by ID
+      description: Fetches tags associated with a specific lead based on the provided lead ID.
+      operationId: getLeadTagsById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idlead:
+                  type: string
+                  description: The unique identifier for the lead.
+                  example: "974fc64c97b34dd6a9ec547a8532fcff"
+      responses:
+        "200":
+          description: Lead tags fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Lead tags fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmeta_tag_type:
+                          type: string
+                          description: Unique identifier for the meta tag type
+                          example: "0d744c04a320452d8d8343147f1089ba"
+                        tag:
+                          type: string
+                          description: Name of the tag
+                          example: "HNI"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-lead-by-id:
+    post:
+      summary: Get Lead by ID
+      description: Fetches details of a lead based on the provided lead ID.
+      operationId: getLeadById
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idlead:
+                  type: string
+                  description: The unique identifier for the lead.
+                  example: "974fc64c97b34dd6a9ec547a8532fcff"
+      responses:
+        "200":
+          description: Lead fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Lead fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idlead:
+                          type: string
+                          description: Unique identifier for the lead
+                          example: "974fc64c97b34dd6a9ec547a8532fcff"
+                        fullname:
+                          type: string
+                          description: Full name of the lead
+                          example: "Rajesh Gupta"
+                        idmeta_lead_status:
+                          type: string
+                          description: Identifier for the lead status
+                          example: "eb50fefac7f147d09049ccd156679a66"
+                        leadstatus:
+                          type: string
+                          description: Current status of the lead
+                          example: "Not Contacted"
+                        idmeta_lead_type:
+                          type: string
+                          description: Identifier for the lead type
+                          example: "b59726e1c21b4d3ab4067d08b27196b3"
+                        leadtype:
+                          type: string
+                          description: Type of the lead
+                          example: "Hot"
+                        idmeta_source_type:
+                          type: string
+                          description: Identifier for the source type
+                          example: "8dba7a199d904c0699b0da6b5510d318"
+                        source:
+                          type: string
+                          description: Source of the lead
+                          example: "Own"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-lead-contact-list:
+    post:
+      summary: Get lead contact list
+      description: Retrieves the contact details for leads.
+      operationId: getLeadContactList
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Contact records fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Contact records fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        identity_contact:
+                          type: string
+                          description: Unique identifier for the contact
+                        contact_type:
+                          type: string
+                          description: Type of contact information
+                        contact_value:
+                          type: string
+                          description: Contact value (e.g., phone number)
+                        countrycode:
+                          type: string
+                          description: Country code associated with the contact
+                        countryname:
+                          type: string
+                          description: Name of the country associated with the contact
+                        dialingcode:
+                          type: string
+                          description: Dialing code for the country
+                        address_line_1:
+                          type: string
+                          description: First line of the address
+                        address_line_2:
+                          type: string
+                          description: Second line of the address
+                        location_name:
+                          type: string
+                          description: Location name for the contact
+                        state:
+                          type: string
+                          description: State of the contact address
+                        pincode:
+                          type: integer
+                          description: Pincode of the contact address
+
+  /profile/get-entity-contact-list:
+    get:
+      summary: Get entity contact list
+      description: Retrieves the contact details for an entity.
+      operationId: getEntityContactList
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      responses:
+        "200":
+          description: Contact records fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Contact records fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        identity_contact:
+                          type: string
+                          description: Unique identifier for the contact
+                          example: "d754ea56a598141bac61f0317b5ef700"
+                        contact_type:
+                          type: string
+                          description: Type of contact information
+                          example: "Primary Mobile Number"
+                        contact_value:
+                          type: string
+                          description: Contact value (e.g., phone number)
+                          example: "9091342931"
+                        countrycode:
+                          type: string
+                          description: Country code associated with the contact
+                          example: "IN"
+                        countryname:
+                          type: string
+                          description: Name of the country associated with the contact
+                          example: "India"
+                        dialingcode:
+                          type: string
+                          description: Dialing code for the country
+                          example: "+91"
+                        address_line_1:
+                          type: string
+                          description: First line of the address
+                          example: "123 Main St"
+                        address_line_2:
+                          type: string
+                          description: Second line of the address
+                          example: "Apt 4B"
+                        location_name:
+                          type: string
+                          description: Location name for the contact
+                          example: "Gurugram"
+                        state:
+                          type: string
+                          description: State of the contact address
+                          example: "Haryana"
+                        pincode:
+                          type: integer
+                          description: Pincode of the contact address
+
+  /profile/get-nominee-details:
+    get:
+      summary: Get Nominee details
+      description: Retrieves the nominee details for entity.
+      operationId: getNomineeDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Nominee details fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Meta Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity_nominee:
+                          type: string
+                          description: Unique identifier for the Nominee
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        nominee_title_meta:
+                          type: string
+                          description: Title meta of the Nominee
+                          example: "3f5536eacbda4d21bf568b6c3eb34982"
+                        nominee_title:
+                          type: string
+                          description: Title of the Nominee
+                          example: "Mr"
+                        fullname:
+                          type: string
+                          description: Full name of the Nominee
+                          example: "Amit Kumar"
+                        nominee_relationship_meta:
+                          type: string
+                          description: Relationship meta of the Nominee
+                          example: "1b2d70de-6a1e-4b7a-98b5-7c61fd5e3f88"
+                        nominee_relationship:
+                          type: string
+                          description: Relationship of the Nominee
+                          example: "Mother"
+                        nominee_dob:
+                          type: string
+                          description: DOB of the Nominee
+                          example: "12/12/2000"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/update-contact:
+    put:
+      summary: Update the contact details
+      description: Update the contact details with the provided information.
+      operationId: updateProfileContact
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - sr_meta_value
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
+                sr_meta_value:
+                  type: object
+                  description: Contains details of the contact to update.
+                  required:
+                    - idmeta_contact_type
+                    - oldValues
+                    - newValues
+                  properties:
+                    idmeta_contact_type:
+                      type: string
+                      description: The contact type ID (e.g., Primary phone, Email, Address).
+                      example: "eef8f47d787041b59afd37937deed705"
+                    oldValues:
+                      type: object
+                      description: Existing contact details that need to be updated.
+                      properties:
+                        contact_value:
+                          type: string
+                          description: Existing phone/Email value.
+                          example: "7827265851"
+                        address_line_1:
+                          type: string
+                          description: Existing Address line 1.
+                          example: "Gurgaon"
+                        address_line_2:
+                          type: string
+                          description: Existing Address line 2.
+                          example: "sector 47"
+                        location_name:
+                          type: string
+                          description: Existing location name.
+                          example: "Y hub"
+                        state:
+                          type: string
+                          description: Existing state.
+                          example: "Haryana"
+                        pincode:
+                          type: string
+                          description: Existing pincode.
+                          example: "140007"
+                    newValues:
+                      type: object
+                      description: New values to update the contact details.
+                      properties:
+                        contact_value:
+                          type: string
+                          description: New phone/Email value.
+                          example: "7827265859"
+                        address_line_1:
+                          type: string
+                          description: New Address line 1.
+                          example: "Gurgaon"
+                        address_line_2:
+                          type: string
+                          description: New Address line 2.
+                          example: "sector 47"
+                        location_name:
+                          type: string
+                          description: New location name.
+                          example: "Y hub"
+                        state:
+                          type: string
+                          description: New state.
+                          example: "Haryana"
+                        pincode:
+                          type: string
+                          description: New pincode.
+                          example: "140007"
+      responses:
+        "200":
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Contact updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /lead/get-lead-incomes:
+    get:
+      summary: Get Lead Incomes
+      description: Retrieves the income details associated with leads.
+      operationId: getLeadIncomes
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      responses:
+        "200":
+          description: Incomes fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Incomes fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the income metadata.
+                          example: "7966dba9159843039cb6a75e857a0610"
+                        meta_data_name:
+                          type: string
+                          description: Name of the income category.
+                          example: "5-7 Lakhs"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized - Invalid token."
+        "400":
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad Request - Invalid input data."
+        "500":
+          description: Internal Server Error - Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+
+  /users/download-file:
+    get:
+      summary: Download File
+      description: Downloads a specified file by filename.
+      operationId: downloadFile
+      parameters:
+        - name: fileName
+          in: query
+          required: true
+          description: Name of the file to be downloaded.
+          schema:
+            type: string
+            example: "Steps.docx"
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      responses:
+        "200":
+          description: File downloaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "File downloaded successfully"
+                  data:
+                    type: string
+                    description: URL to access the downloaded file.
+                    example: "https://financialstorage.blob.core.windows.net/advisor-storage/Steps.docx?sv=2024-11-04&se=2024-11-08T11%3A54%3A26Z&sr=b&sp=r&sig=0LaW%2FwMaDyjh4vFA4AqaCFEG5wUNJdJp4%2FukeOilZfE%3D"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized - Invalid token."
+        "400":
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad Request - Invalid input data."
+        "500":
+          description: Internal Server Error - Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+
+  /users/upload-file:
+    post:
+      summary: Upload File
+      description: Uploads a file to the server and stores it in Azure Blob Storage.
+      operationId: uploadFile
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCIsImtpZCI6IjNQYUs0RWZ5Qk5RdTNDdGpZc2EzWW1oUTVFMCJ9."
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: string
+                  format: binary
+                  description: The file to be uploaded.
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "File uploaded successfully"
+                  data:
+                    type: object
+                    properties:
+                      fileName:
+                        type: string
+                        description: Name of the uploaded file.
+                        example: "Steps.docx"
+                      isFileUploaded:
+                        type: string
+                        description: URL where the uploaded file is stored.
+                        example: "https://financialstorage.blob.core.windows.net/advisor-storage/Steps.docx"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized - Invalid token."
+        "400":
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad Request - Invalid input data."
+        "500":
+          description: Internal Server Error - Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+
+  /profile/get-core-meta-data:
+    get:
+      summary: Get meta data
+      description: Retrieves the meta data.
+      operationId: getMetaData
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Meta Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Meta Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the meta data
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        meta_data_name:
+                          type: string
+                          description: Name of the meta data
+                          example: "Primary Email"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/update-nominee-details:
+    put:
+      summary: Update the Nominee details
+      description: Update the Nominee details with the provided information.
+      operationId: updateNomineeDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - sr_meta_value
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
+                sr_meta_value:
+                  type: object
+                  description: Contains details of the contact to update.
+                  required:
+                    - identity_nominee
+                    - oldValues
+                    - newValues
+                  properties:
+                    identity_nominee:
+                      type: string
+                      description: Identity of the nominee.
+                      example: "eef8f47d787041b59afd37937deed705"
+                    oldValues:
+                      type: object
+                      description: Existing contact details that need to be updated.
+                      properties:
+                        title:
+                          type: string
+                          description: Existing title.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                        dob:
+                          type: string
+                          description: Existing dob.
+                          example: "1995/11/28 (in YYYY/MM/DD)"
+                        fullname:
+                          type: string
+                          description: Existing fullname.
+                          example: "Shivam Singh"
+                        relationship:
+                          type: string
+                          description: Existing relationship.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                    newValues:
+                      type: object
+                      description: New values to update the contact details.
+                      properties:
+                        title:
+                          type: string
+                          description: New title.
+                          example: "468de4cb17494c67a732da2810f9c905"
+                        dob:
+                          type: string
+                          description: New dob.
+                          example: "1995/11/28 (in YYYY/MM/DD)"
+                        fullname:
+                          type: string
+                          description: New fullname.
+                          example: "Shivam Singh"
+                        relationship:
+                          type: string
+                          description: New relationship.
+                          example: "468de4cb17494c67a732da2810f9c905"
+      responses:
+        "200":
+          description: Data updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Data updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/get-sr-subcategory:
+    get:
+      summary: Get SR SubCategories
+      description: Retrieves the SR SubCategories.
+      operationId: getSrSubCategory
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: SubCategory Data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "SubCategory Data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                          description: Unique identifier for the meta data
+                          example: "4678e1bb1f2d414393a85dfbe0c85fff"
+                        meta_data_name:
+                          type: string
+                          description: Name of the meta data
+                          example: "Primary Email"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/get-profile-official-details:
+    get:
+      summary: Get Profile Official details
+      description: Retrieves Profile Official details.
+      operationId: getProfileOfficialDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Profile retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        agent_code:
+                          type: string
+                          description: Agent code of the profile
+                          example: "786"
+                        fullname:
+                          type: string
+                          description: Name of the profile holder
+                          example: "Abhishek M"
+                        designation:
+                          type: string
+                          description: designation of the profile holder
+                          example: "Senior Life Planner"
+                        irda_number:
+                          type: string
+                          description: irda_number of the profile holder
+                          example: "0005678678"
+                        joiningdate:
+                          type: string
+                          description: joiningdate of the profile holder
+                          example: "2005-02-07T18:30:00.000Z"
+                        license_expiry_date:
+                          type: string
+                          description: license_expiry_date of the profile holder
+                          example: "2005-02-07T18:30:00.000Z"
+                        agent_status:
+                          type: string
+                          description: agent_status of the profile holder
+                          example: "Active"
+                        leader_code:
+                          type: string
+                          description: leader_code of the profile holder
+                          example: "001748007"
+                        branch:
+                          type: string
+                          description: branch of the profile holder
+                          example: "Mumbai"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/verify-otp-forgot-password:
+    post:
+      summary: Verify OTP for forgot password
+      description: Verifies the provided OTP against the stored value.
+      operationId: verifyOtpForgotPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                otpToVerify:
+                  type: string
+                  description: The OTP to verify.
+                  example: "771089"
+                identity:
+                  type: string
+                  description: The identity of the user.
+                  example: "5dceb723474645b1b5958eda0d97f6c2"
+      responses:
+        "200":
+          description: Provided OTP is correct
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Provided OTP is correct"
+                  data:
+                    type: boolean
+                    description: Indicates if the OTP verification was successful
+                    example: true
+        "400":
+          description: Bad Request - Missing or invalid OTP
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid or missing OTP."
+
+  /profile/azure-check-user:
+    post:
+      summary: Check if the user is present in Azure AD
+      description: Check if the user is present in Azure AD and send OTP to the registered mail and phone.
+      operationId: checkUserInAzure
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userEmail:
+                  type: string
+                  description: Email of the user.
+                  example: "4721571@impigerpocguests.onmicrosoft.com"
+                identity:
+                  type: string
+                  description: The unique identifier for the lead.
+                  example: "974fc64c97b34dd6a9ec547a8532fcff"
+                agent_code:
+                  type: string
+                  description: Agent code of the user.
+                  example: "786"
+      responses:
+        "200":
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "OTP sent successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        displayName:
+                          type: string
+                          description: Display name of the User
+                          example: "Rajesh Gupta"
+                        givenName:
+                          type: string
+                          description: Given name of the User
+                          example: "Rajesh"
+                        jobTitle:
+                          type: string
+                          description: Job title of the user
+                          example: "Senior Planner"
+                        mail:
+                          type: string
+                          description: Email of the user
+                          example: "4721571@impigerpocguests.onmicrosoft.com"
+                        mobilePhone:
+                          type: string
+                          description: Phone of the user
+                          example: "9876543210"
+                        officeLocation:
+                          type: string
+                          description: Office location of the user
+                          example: "Gurugram"
+                        preferredLanguage:
+                          type: string
+                          description: Language preference of the user
+                          example: "Hindi"
+                        surname:
+                          type: string
+                          description: Surname of the user
+                          example: "Gupta"
+                        userPrincipalName:
+                          type: string
+                          description: UPN of the user
+                          example: "4721571_impigerpocguests.onmicrosoft.com#EXT#@impigerssopocoutlook.onmicrosoft.com"
+                        id:
+                          type: string
+                          description: Id of the user
+                          example: "78b491cf-dc61-4899-b3f1-e7dbb37d1695"
+
+  /profile/reset-password:
+    post:
+      summary: Reset password of the user
+      description: Reset password of the user.
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: Id of the user.
+                  example: "78b491cf-dc61-4899-b3f1-e7dbb37d1695"
+                newPassword:
+                  type: string
+                  description: New Password for the user.
+                  example: "newPassword@123"
+      responses:
+        "200":
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Password changed successfully"
+
+  /profile/update-bank-details:
+    put:
+      summary: Update the bank details
+      description: Update the bank details with the provided information.
+      operationId: updateBankDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - idsrcategory
+                - idsr_subcategory
+                - sr_meta_value
+              properties:
+                idsrcategory:
+                  type: string
+                  description: SR Category of the SR Transaction.
+                  example: "6651c969e2764b318cc8853aa5972813"
+                idsr_subcategory:
+                  type: string
+                  description: SR Sub-Category of the SR Transaction.
+                  example: "8b1a35a3ac7a4a6f863c1fb34de40845"
+                sr_meta_value:
+                  type: object
+                  description: Contains details of the contact to update.
+                  required:
+                    - oldValues
+                    - newValues
+                  properties:
+                    oldValues:
+                      type: object
+                      description: Existing bank details to update.
+                      properties:
+                        bank_name:
+                          type: string
+                          description: Bank name.
+                          example: "HDFC"
+                        ifsc_code:
+                          type: string
+                          description: IFSC code of the bank.
+                          example: "HDFC000312"
+                        bank_branch:
+                          type: string
+                          description: Branch Name.
+                          example: "Pune"
+                        idmeta_account_type:
+                          type: string
+                          description: Account type (Savings/Current).
+                          example: "66369d3536d44a7fa043249c0393a4e3"
+                        account_number:
+                          type: string
+                          description: Account number.
+                          example: "98765432100"
+                        account_holder_name:
+                          type: string
+                          description: Account holder name.
+                          example: "Abhishek M"
+                    newValues:
+                      type: object
+                      description: New values to update the bank details.
+                      properties:
+                        bank_name:
+                          type: string
+                          description: Bank name.
+                          example: "HDFC"
+                        ifsc_code:
+                          type: string
+                          description: IFSC code of the bank.
+                          example: "HDFC000312"
+                        bank_branch:
+                          type: string
+                          description: Branch Name.
+                          example: "Pune"
+                        idmeta_account_type:
+                          type: string
+                          description: Account type (Savings/Current).
+                          example: "66369d3536d44a7fa043249c0393a4e3"
+                        account_number:
+                          type: string
+                          description: Account number.
+                          example: "98765432100"
+                        account_holder_name:
+                          type: string
+                          description: Account holder name.
+                          example: "Abhishek M"
+      responses:
+        "200":
+          description: Bank details updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Bank details updated successfully"
+                  data:
+                    type: object
+                    nullable: true
+                    description: The response data is null since the update is performed.
+                    example: null
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /profile/get-profile-bank-details:
+    get:
+      summary: Get bank details
+      description: Retrieves the bank details of the user.
+      operationId: getProfileBankDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      responses:
+        "200":
+          description: Bank data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Bank data retrieved successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        account_holder_name:
+                          type: string
+                          description: Account holder name.
+                          example: "Abhishek M"
+                        accountnumber:
+                          type: string
+                          description: Account number.
+                          example: "98765432100"
+                        idmeta_account_type:
+                          type: string
+                          description: Account type meta of the bank.
+                          example: "66369d3536d44a7fa043249c0393a4e3"
+                        accounttype:
+                          type: string
+                          description: Account type.
+                          example: "Savings"
+                        bankname:
+                          type: string
+                          description: Bank name.
+                          example: "HDFC"
+                        ifsccode:
+                          type: string
+                          description: IFSC code of the bank.
+                          example: "HDFC000312"
+                        bank_branch:
+                          type: string
+                          description: Branch name of the bank.
+                          example: "Pune"
+        "401":
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /admin/create-agent:
+    post:
+      summary: Create agent Data
+      description: Adds new agent data along with contact and agent details.
+      operationId: createAgent
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - entityData
+                - contactData
+                - agentData
+              properties:
+                entityData:
+                  type: object
+                  required:
+                    - idmeta_title
+                    - firstname
+                    - lastname
+                    - gender
+                    - metaEntityType
+                    - user_type
+                    - dob
+                  properties:
+                    profile_picture:
+                        type: string
+                        description: profile picture
+                        example: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=900&q=60"
+                    idmeta_title:
+                      type: string
+                      description: Metadata title ID.
+                      example: "468de4cb17494c67a732da2810f9c905"
+                    firstname:
+                      type: string
+                      description: First name of the entity.
+                      example: "Sahil"
+                    middlename:
+                      type: string
+                      description: Middle name of the entity.
+                      example: ""
+                    lastname:
+                      type: string
+                      description: Last name of the entity.
+                      example: "Gujral"
+                    gender:
+                      type: string
+                      description: Gender ID.
+                      example: "986bd1568afb42cca258cf17a68d60f4"
+                    metaEntityType:
+                      type: string
+                      description: Metadata entity type.
+                      example: "6e913026df2b4c29aeff33212dd3ffa5"
+                    user_type:
+                      type: string
+                      description: User type ID.
+                      example: "2f4eab3a82584d5183a003dd82fc50dd"
+                    dob:
+                      type: string
+                      format: date
+                      description: Date of birth.
+                      example: "1998/10/01"
+                contactData:
+                  type: object
+                  required:
+                    - primary_phone
+                    - primary_email
+                    - address_line_1
+                    - city
+                    - state
+                    - country
+                    - pincode
+                  properties:
+                    primary_phone:
+                      type: string
+                      description: Primary phone number.
+                      example: "9876543210"
+                    primary_email:
+                      type: string
+                      description: Primary email address.
+                      example: "example.com"
+                    address_line_1:
+                      type: string
+                      description: First line of the address.
+                      example: "H.No. 343"
+                    address_line_2:
+                      type: string
+                      description: Second line of the address.
+                      example: "Modern Street"
+                    location_name:
+                      type: string
+                      description: Location name.
+                      example: "Adarsh Nagar"
+                    city:
+                      type: string
+                      description: City name.
+                      example: "Hyderabad"
+                    district:
+                      type: string
+                      description: District name.
+                      example: "Hyderabad"
+                    state:
+                      type: string
+                      description: State name.
+                      example: "Telangana"
+                    country:
+                      type: string
+                      description: Country name.
+                      example: "India"
+                    pincode:
+                      type: string
+                      description: Postal code.
+                      example: "203932"
+                agentData:
+                  type: object
+                  required:
+                    - desgn_code
+                    - desgn_desc
+                    - branch_code
+                    - branch_name
+                    - dateOf_joining
+                    - license_expiry
+                    - dt_leader_code
+                    - dt_leader_name
+                    - dt_leader_desg_desc
+                    - dt_leader_designation
+                    - dt_leader_branch
+                    - dt_leader_branch_name
+                    - l1_leader_code
+                    - l1_leader_name
+                    - l1_leader_desg_desc
+                    - l1_leader_designation
+                    - l1_leader_branch
+                    - l1_leader_branch_name
+                    - l2_leader_code
+                    - l2_leader_name
+                    - l2_leader_desg_desc
+                    - l2_leader_designation
+                    - l2_leader_branch
+                    - l2_leader_branch_name
+                    - bam_ntid
+                    - bam_code
+                    - bam_emp_cd
+                    - bam_name
+                    - bam_designation
+                    - bam_desg_desc
+                    - bam_branch
+                    - bam_branch_name
+                    - bm_ntid
+                    - bm_code
+                    - bm_emp_cd
+                    - bm_name
+                    - bm_designation
+                    - bm_desg_desc
+                    - bm_branch
+                    - bm_branch_name
+                    - ch_ntid
+                    - ch_code
+                    - ch_emp_cd
+                    - ch_name
+                    - ch_designation
+                    - ch_desg_desc
+                    - ch_branch
+                    - ch_branch_name
+                    - adoa_nonsourcing_ntid
+                    - adoa_nonsourcing_code
+                    - adoa_nonsourcing_emp_cd
+                    - adoa_nonsourcing_name
+                    - adoa_nonsourcing_designation
+                    - adoa_nonsourcing_desg_desc
+                    - adoa_nonsourcing_branch
+                    - adoa_nonsourcing_branch_name
+                    - adoa_ntid
+                    - adoa_code
+                    - adoa_emp_cd
+                    - adoa_name
+                    - adoa_designation
+                    - adoa_desg_desc
+                    - adoa_branch_code
+                    - adoa_branch_name
+                    - doa_ntid
+                    - doa_code
+                    - doa_emp_cd
+                    - doa_name
+                    - doa_designation
+                    - doa_desg_desc
+                    - doa_branch
+                    - doa_branch_name
+                    - cao_ntid
+                    - cao_code
+                    - cao_emp_cd
+                    - cao_name
+                    - cao_designation
+                    - cao_desg_desc
+                    - cao_branch_code
+                    - cao_branch_name
+                  properties:
+                    desgn_code:
+                      type: string
+                      description: Designation code.
+                      example: "SB"
+                    desgn_desc:
+                      type: string
+                      description: Designation description.
+                      example: "ADVISOR - BA"
+                    branch_code:
+                      type: string
+                      description: Branch code.
+                      example: "JM01"
+                    branch_name:
+                      type: string
+                      description: Branch name.
+                      example: "Jamshedpur"
+                    dateOf_joining:
+                      type: string
+                      format: date
+                      description: Date of joining.
+                      example: "2024/12/03"
+                    license_expiry:
+                      type: string
+                      format: date
+                      description: License expiry date.
+                      example: "2025/12/02"
+                    dt_leader_code:
+                      type: string
+                      description: Direct leader code.
+                      example: "5798147"
+                    dt_leader_name:
+                      type: string
+                      description: Direct leader name.
+                      example: "AARAMBH FINANCIAL SERVICES"
+                    dt_leader_desg_desc:
+                      type: string
+                      description: Direct leader designation description.
+                      example: "III-PROVISIONAL BUSINESS ASSOCIATE"
+                    dt_leader_designation:
+                      type: string
+                      description: Direct leader designation.
+                      example: "BT"
+                    dt_leader_branch:
+                      type: string
+                      description: Direct leader branch code.
+                      example: "JM01"
+                    dt_leader_branch_name:
+                      type: string
+                      description: Direct leader branch name.
+                      example: "Jamshedpur"
+                    l1_leader_code:
+                      type: string
+                      description: Level 1 leader code.
+                      example: "908050"
+                    l1_leader_name:
+                      type: string
+                      description: Level 1 leader name.
+                      example: "BSC CONSULTANCY SERVICES"
+                    l1_leader_desg_desc:
+                      type: string
+                      description: Level 1 leader designation description.
+                      example: "SENIOR BUSINESS ASSOCIATE LEADER"
+                    l1_leader_designation:
+                      type: string
+                      description: Level 1 leader designation.
+                      example: "LU"
+                    l1_leader_branch:
+                      type: string
+                      description: Level 1 leader branch code.
+                      example: "JM01"
+                    l1_leader_branch_name:
+                      type: string
+                      description: Level 1 leader branch name.
+                      example: "Jamshedpur"
+                    l2_leader_code:
+                      type: string
+                      description: Level 1 leader code.
+                      example: "908050"
+                    l2_leader_name:
+                      type: string
+                      description: Level 1 leader name.
+                      example: "BSC CONSULTANCY SERVICES"
+                    l2_leader_desg_desc:
+                      type: string
+                      description: Level 1 leader designation description.
+                      example: "SENIOR BUSINESS ASSOCIATE LEADER"
+                    l2_leader_designation:
+                      type: string
+                      description: Level 1 leader designation.
+                      example: "LU"
+                    l2_leader_branch:
+                      type: string
+                      description: Level 1 leader branch code.
+                      example: "JM01"
+                    l2_leader_branch_name:
+                      type: string
+                      description: Level 1 leader branch name.
+                      example: "Jamshedpur"
+                    bam_ntid:
+                      type: string
+                      description: BAM NTID.
+                      example: "OEACV29"
+                    bam_code:
+                      type: string
+                      description: BAM code.
+                      example: "4807212"
+                    bam_emp_cd:
+                      type: string
+                      description: BAM employee code.
+                      example: "3975701"
+                    bam_name:
+                      type: string
+                      description: BAM name.
+                      example: "SanketKumar Sinha"
+                    bam_designation:
+                      type: string
+                      description: BAM designation.
+                      example: "S3"
+                    bam_desg_desc:
+                      type: string
+                      description: BAM designation description.
+                      example: "MANAGER AGENCY BA"
+                    bam_branch:
+                      type: string
+                      description: BAM branch code.
+                      example: "JM01"
+                    bam_branch_name:
+                      type: string
+                      description: BAM branch name.
+                      example: "Jamshedpur"
+                    bm_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    bm_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    bm_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    bm_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    bm_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    bm_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    bm_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    bm_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    ch_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    ch_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    ch_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    ch_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    ch_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    ch_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    ch_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    ch_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    adoa_nonsourcing_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    adoa_nonsourcing_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    adoa_nonsourcing_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    adoa_nonsourcing_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    adoa_nonsourcing_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    adoa_nonsourcing_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    adoa_nonsourcing_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    adoa_nonsourcing_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    adoa_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    adoa_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    adoa_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    adoa_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    adoa_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    adoa_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    adoa_branch_code:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    adoa_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    doa_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    doa_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    doa_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    doa_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    doa_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    doa_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    doa_branch:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    doa_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+                    cao_ntid:
+                      type: string
+                      description: BM NTID.
+                      example: "OAAIE55"
+                    cao_code:
+                      type: string
+                      description: BM code.
+                      example: "4653296"
+                    cao_emp_cd:
+                      type: string
+                      description: BM employee code.
+                      example: "3967298"
+                    cao_name:
+                      type: string
+                      description: BM name.
+                      example: "ROHITKUMAR PAHUJA"
+                    cao_designation:
+                      type: string
+                      description: BM designation.
+                      example: "SF"
+                    cao_desg_desc:
+                      type: string
+                      description: BM designation description.
+                      example: "BRANCH MGR AGENCY SALES"
+                    cao_branch_code:
+                      type: string
+                      description: BM branch code.
+                      example: "JM01"
+                    cao_branch_name:
+                      type: string
+                      description: BM branch name.
+                      example: "Jamshedpur"
+      responses:
+        "200":
+          description: Agent saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code.
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message.
+                    example: "Agent saved successfully"
+                  data:
+                    type: object
+                    description: Returned data
+        "400":
+          description: Bad Request - Missing or invalid parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid request body."
+        "401":
+          description: Unauthorized - Invalid token.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access."
+
+  /search/global-search:
+    post:
+      summary: Perform a global search based on the given search text.
+      description: This endpoint allows users to search globally for functionalities using a search term.
+      operationId: globalSearch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ntid:
+                  type: string
+                  description: NTID of the user (optional).
+                  example: ""
+                userType:
+                  type: string
+                  description: Type of user initiating the search.
+                  example: "Leader"
+                searchText:
+                  type: string
+                  description: Text to search for.
+                  example: "app"
+      responses:
+        "200":
+          description: Global search successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code.
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message.
+                    example: "Global Search successful"
+                  data:
+                    type: array
+                    description: List of functionalities that match the search query.
+                    items:
+                      type: object
+                      properties:
+                        idfunctionality:
+                          type: string
+                          description: Unique identifier for the functionality.
+                          example: "C68BBBDE6B62411F91634C36EE61C0ED"
+                        created_by:
+                          type: string
+                          nullable: true
+                          description: User who created the functionality.
+                          example: null
+                        last_modified_by:
+                          type: string
+                          nullable: true
+                          description: User who last modified the functionality.
+                          example: null
+                        active:
+                          type: boolean
+                          description: Whether the functionality is active.
+                          example: true
+                        functionality_class_path:
+                          type: string
+                          nullable: true
+                          description: Path for the functionality class.
+                          example: null
+                        functionality_class_type:
+                          type: string
+                          nullable: true
+                          description: Type of the functionality class.
+                          example: null
+                        functionality_code:
+                          type: string
+                          description: Code identifying the functionality.
+                          example: "GLOBAL_SEARCH_APP_TRACKER"
+                        icon_url:
+                          type: string
+                          description: URL to the icon associated with the functionality.
+                          example: "global-search-icon/App_Tracker.png"
+                        name:
+                          type: string
+                          description: Name of the functionality.
+                          example: "App Tracker"
+                        functionality_type_id:
+                          type: string
+                          nullable: true
+                          description: ID of the functionality type.
+                          example: null
+                        functionality_type_master:
+                          type: string
+                          description: Master type of the functionality.
+                          example: "FUNCTIONALITY_GLOBAL_SEARCH"
+                        created_date:
+                          type: string
+                          nullable: true
+                          description: Date the functionality was created.
+                          example: null
+                        last_modified_date:
+                          type: string
+                          nullable: true
+                          description: Date the functionality was last modified.
+                          example: null
+
+  /nudge/get-events:
+    post:
+      summary: Get nudge event details
+      description: Get nudge event details
+      operationId: getNudgeEventDetails
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - agentCode
+                - status
+                - limit
+                - pageNo
+              properties:
+                agentCode:
+                  type: string
+                  description: Logged In agent code.
+                status:
+                  type: string
+                  description: Current status of nudge (Ongoing -> 5e1910281d564c4580f4ab8b6c1686af, Done -> 5e02ce427847479bae422a102b1ab9ed, Cancelled -> 47d7154f1373479590729c7cd9742534, Over Due -> 36451293c90c4c8b81aa27840515456b).
+                limit:
+                  type: string
+                  description: No of records want in list.
+                pageNo:
+                  type: string
+                  description: Current page no (start from 0 to n).
+      responses:
+        "201":
+          description: Nudge Events Fetched successfully!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+
+  /search/top-categories-global-search:
+    post:
+      summary: Fetch top categories for global search
+      description: API to fetch top categories based on the user type for global search functionality.
+      operationId: fetchTopCategoriesGlobalSearch
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userType
+              properties:
+                userType:
+                  type: string
+                  description: Type of the user making the request.
+                  example: "Leader"
+      responses:
+        "200":
+          description: Global Search successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 200
+                  message:
+                    type: string
+                    description: Description of the response.
+                    example: "Global Search successful"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idfunctionality:
+                          type: string
+                          description: Unique identifier for the functionality.
+                          example: "06D553D1426E8E4981AE65CB6F1D34DF"
+                        created_by:
+                          type: string
+                          description: Creator of the functionality.
+                          nullable: true
+                        last_modified_by:
+                          type: string
+                          description: Last modifier of the functionality.
+                          nullable: true
+                        active:
+                          type: boolean
+                          description: Status indicating if the functionality is active.
+                          example: true
+                        functionality_class_path:
+                          type: string
+                          description: Path of the functionality class.
+                          nullable: true
+                        functionality_class_type:
+                          type: string
+                          description: Type of the functionality class.
+                          nullable: true
+                        functionality_code:
+                          type: string
+                          description: Code of the functionality.
+                          example: "GLOBAL_SEARCH_LEADER_ONE_VIEW"
+                        icon_url:
+                          type: string
+                          description: URL to the functionality icon.
+                          example: "global-search-icon/leader_one_view.png"
+                        name:
+                          type: string
+                          description: Name of the functionality.
+                          example: "Leader one view"
+                        functionality_type_id:
+                          type: string
+                          description: ID of the functionality type.
+                          nullable: true
+                        functionality_type_master:
+                          type: string
+                          description: Master type of the functionality.
+                          example: "FUNCTIONALITY_GLOBAL_SEARCH"
+                        created_date:
+                          type: string
+                          description: Creation date of the functionality.
+                          nullable: true
+                        last_modified_date:
+                          type: string
+                          description: Last modified date of the functionality.
+                          nullable: true
+
+  /search/get-favourite:
+    post:
+      summary: Fetch favourite functionalities
+      description: API to retrieve the list of favourite functionalities for a user based on their NT ID and user type.
+      operationId: fetchFavouriteFunctionalities
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ntId
+                - userType
+              properties:
+                ntId:
+                  type: string
+                  description: Unique NT ID of the user.
+                  example: "90764"
+                userType:
+                  type: string
+                  description: Type of the user (e.g., Leader, Agent).
+                  example: "Leader"
+      responses:
+        "200":
+          description: Favourite list fetched successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 200
+                  message:
+                    type: string
+                    description: Message describing the response.
+                    example: "Favourite list fetched successfully"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idfunctionality:
+                          type: string
+                          description: Unique identifier for the functionality.
+                          example: "0030F25067DE4511B8C4BAE138D1FF71"
+                        name:
+                          type: string
+                          description: Name of the functionality.
+                          example: "Agency Virtual Assistant"
+                        functionality_code:
+                          type: string
+                          description: Code of the functionality.
+                          example: "FUNCTIONALITY_BOT"
+                        icon_url:
+                          type: string
+                          description: URL of the functionality icon.
+                          example: "https://salesasset.blob.core.windows.net/salesassetblob/fav-icon/RnR%20icon.png"
+                        functionality_class_type:
+                          type: string
+                          description: Type of the functionality class.
+                          nullable: true
+                          example: "EVENT_CLASS"
+                        default_functionality:
+                          type: boolean
+                          description: Indicates if this is the default functionality.
+                          example: true
+                        display_order:
+                          type: integer
+                          description: Order in which the functionality is displayed.
+                          example: 4
+                        eventMasterId:
+                          type: string
+                          description: Master ID of the event associated with the functionality.
+                          example: "A6F8DC9A822DE649AA9989414DB459ED"
+                        enabled:
+                          type: boolean
+                          description: Indicates if the functionality is enabled.
+                          example: true
+                        nt_id:
+                          type: string
+                          description: NT ID of the user.
+                          example: "90764"
+        "500":
+          description: Error fetching favourite functionalities.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 500
+                  message:
+                    type: string
+                    description: Error message.
+                    example: "Favourite list fetch failed"
+
+  /search/add-favourite:
+    post:
+      summary: Add or update favourite functionalities
+      description: API to add or update favourite functionalities for a user.
+      operationId: addOrUpdateFavourites
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          description: Bearer token for authorization.
+          schema:
+            type: string
+            example: "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IjNQYUs0..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - favouriteManageDto
+              properties:
+                favouriteManageDto:
+                  type: array
+                  description: List of favourite functionalities to be added or updated.
+                  items:
+                    type: object
+                    required:
+                      - idfunctionality
+                      - display_order
+                      - eventMasterId
+                      - nt_id
+                      - enabled
+                    properties:
+                      idfunctionality:
+                        type: string
+                        description: Unique identifier for the functionality.
+                        example: "F120DB2DD51B42DA9E83164C207C0881"
+                      display_order:
+                        type: string
+                        description: Order in which the functionality is displayed.
+                        example: "6"
+                      eventMasterId:
+                        type: string
+                        description: Master ID of the event associated with the functionality.
+                        example: "C6CD58A46CF3413684B57719F215CAC2"
+                      nt_id:
+                        type: string
+                        description: NT ID of the user.
+                        example: "90764"
+                      enabled:
+                        type: boolean
+                        description: Indicates if the functionality is enabled.
+                        example: true
+      responses:
+        "200":
+          description: Favourites added or updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 200
+                  message:
+                    type: string
+                    description: Message indicating the result of the operation.
+                    example: "Favourites added/deleted successfully"
+                  data:
+                    type: string
+                    nullable: true
+                    description: Additional data (if any) returned by the API.
+                    example: null
+        "400":
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 400
+                  message:
+                    type: string
+                    description: Error message describing the issue.
+                    example: "Invalid request payload"
+        "500":
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code of the response.
+                    example: 500
+                  message:
+                    type: string
+                    description: Error message describing the server error.
+                    example: "Internal server error"
+
+  /admin/user-list:
+    post:
+      summary: Fetch paginated list of users
+      description: Retrieves a paginated list of users.
+      operationId: getUserList
+      requestBody:
+        description: Request body containing pagination information.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pageNumber:
+                  type: integer
+                  example: 1
+                  description: Page number to fetch.
+                pageCount:
+                  type: integer
+                  example: 10
+                  description: Number of items per page.
+              required:
+                - pageNumber
+                - pageCount
+      responses:
+        "200":
+          description: Successfully fetched the user list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User data fetched successfully"
+                  data:
+                    type: object
+                    properties:
+                      totalCount:
+                        type: integer
+                        description: Total number of users.
+                        example: 88
+                      totalPages:
+                        type: integer
+                        description: Total number of pages available.
+                        example: 88
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            profile_picture:
+                              type: string
+                              description: profile picture
+                              example: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=900&q=60"
+                            user_id:
+                              type: string
+                              description: Unique identifier of the user.
+                              example: "5dceb723474645b1b5958eda0d97f6c2"
+                            name:
+                              type: string
+                              description: Full name of the user.
+                              example: "Abhishek M"
+                            business_code:
+                              type: string
+                              description: Business code of the user.
+                              example: "786"
+                            designation:
+                              type: string
+                              description: Designation of the user.
+                              example: "Senior Life Planner"
+                            email:
+                              type: string
+                              description: Email address of the user.
+                              example: "jyoti18@in.ey.com"
+                            branch:
+                              type: string
+                              description: Branch name of the user.
+                              example: "Mumbai"
+                            status:
+                              type: string
+                              description: Status of the user (Active/Inactive).
+                              example: "Active"
+                            action_view:
+                              type: boolean
+                              description: Hardcoded view action.
+                              example: true
+        "401":
+          description: Unauthorized. Invalid or missing authorization token.
+        "500":
+          description: Internal Server Error. Unexpected server error occurred.
+
+  /communication-tbs/banners-tickers:
+    get:
+      summary: Get banners and tickers for a specific user type
+      description: Retrieves banners and tickers information for the specified user type.
+      operationId: getBannersTickers
+      parameters:
+        - name: userType
+          in: query
+          required: true
+          description: The type of user to retrieve banners and tickers for.
+          schema:
+            type: string
+            example: "Leader"
+      responses:
+        "200":
+          description: Banners and tickers information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  banners:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bannerId:
+                          type: string
+                        bannerTitle:
+                          type: string
+                  tickers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tickerId:
+                          type: string
+                        tickerMessage:
+                          type: string
+
+  /communication-tbs/user-admin:
+    get:
+      summary: Get user administration details
+      description: Retrieves administration details for the specified user.
+      operationId: getUserAdminDetails
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The unique identifier of the user to retrieve administration details for.
+          schema:
+            type: string
+            example: "userId_here"
+      responses:
+        "200":
+          description: User administration details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User details"
+                  data:
+                    type: object
+                    properties:
+                      identity:
+                        type: string
+                      firstname:
+                        type: string
+                      middlename:
+                        type: string
+                        nullable: true
+                      lastname:
+                        type: string
+                      fullname:
+                        type: string
+                      idmeta_data_gender:
+                        type: string
+                      dob:
+                        type: string
+                        nullable: true
+                      idmeta_data_entitytype:
+                        type: string
+                      eff_from_date:
+                        type: string
+                        nullable: true
+                      eff_to_date:
+                        type: string
+                        nullable: true
+                      createdby:
+                        type: string
+                        nullable: true
+                      created_date:
+                        type: string
+                        nullable: true
+                      modifiedby:
+                        type: string
+                        nullable: true
+                      modified_date:
+                        type: string
+                        nullable: true
+                      inactivedate:
+                        type: string
+                        nullable: true
+                      sortorder:
+                        type: integer
+                        nullable: true
+                      idmeta_title:
+                        type: string
+                        nullable: true
+                      activeflag:
+                        type: integer
+
+  /communication-tbs/user-address-details-admin:
+    get:
+      summary: Get user address details
+      description: Retrieves address details for the specified user.
+      operationId: getUserAddressDetailsAdmin
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The unique identifier of the user to retrieve address details for.
+          schema:
+            type: string
+            example: "cec736ef705b422a946ce2cf78f8f406"
+      responses:
+        "200":
+          description: User address details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Address"
+                  data:
+                    type: object
+                    properties:
+                      identity_contact:
+                        type: string
+                      identity_urc_auth:
+                        type: string
+                        nullable: true
+                      idmeta_contact_type:
+                        type: string
+                      contact_value:
+                        type: string
+                      countrycode:
+                        type: string
+                      dialingcode:
+                        type: string
+                      address_line_1:
+                        type: string
+                        nullable: true
+                      address_line_2:
+                        type: string
+                        nullable: true
+                      location_name:
+                        type: string
+                        nullable: true
+                      state:
+                        type: string
+                        nullable: true
+                      pincode:
+                        type: string
+                        nullable: true
+                      eff_from_date:
+                        type: string
+                        nullable: true
+                      eff_to_date:
+                        type: string
+                        nullable: true
+                      activeflag:
+                        type: boolean
+                        nullable: true
+                      createdby:
+                        type: string
+                        nullable: true
+                      created_date:
+                        type: string
+                        nullable: true
+                      modifiedby:
+                        type: string
+                        nullable: true
+                      modified_date:
+                        type: string
+                        nullable: true
+                      inactivedate:
+                        type: string
+                        nullable: true
+                      sortorder:
+                        type: integer
+                        nullable: true
+                      identity_subscription:
+                        type: string
+                        nullable: true
+                      identity:
+                        type: string
+                      idcontract:
+                        type: string
+                        nullable: true
+                      countryname:
+                        type: string
+                        nullable: true
+                      district:
+                        type: string
+                        nullable: true
+
+  /communication-tbs/user-contact-admin:
+    get:
+      summary: Get user contact details
+      description: Retrieves contact details for the specified user.
+      operationId: getUserContactAdmin
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          description: The unique identifier of the user to retrieve contact details for.
+          schema:
+            type: string
+            example: "cec736ef705b422a946ce2cf78f8f406"
+      responses:
+        "200":
+          description: User contact details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Contact"
+                  data:
+                    type: object
+                    properties:
+                      identity_contact:
+                        type: string
+                      identity_urc_auth:
+                        type: string
+                        nullable: true
+                      idmeta_contact_type:
+                        type: string
+                      contact_value:
+                        type: string
+                      countrycode:
+                        type: string
+                      dialingcode:
+                        type: string
+                      address_line_1:
+                        type: string
+                        nullable: true
+                      address_line_2:
+                        type: string
+                        nullable: true
+                      location_name:
+                        type: string
+                        nullable: true
+                      state:
+                        type: string
+                        nullable: true
+                      pincode:
+                        type: string
+                        nullable: true
+                      eff_from_date:
+                        type: string
+                        nullable: true
+                      eff_to_date:
+                        type: string
+                        nullable: true
+                      activeflag:
+                        type: boolean
+                        nullable: true
+                      createdby:
+                        type: string
+                        nullable: true
+                      created_date:
+                        type: string
+                        nullable: true
+                      modifiedby:
+                        type: string
+                        nullable: true
+                      modified_date:
+                        type: string
+                        nullable: true
+                      inactivedate:
+                        type: string
+                        nullable: true
+                      sortorder:
+                        type: integer
+                        nullable: true
+                      identity_subscription:
+                        type: string
+                        nullable: true
+                      identity:
+                        type: string
+                      idcontract:
+                        type: string
+                        nullable: true
+                      countryname:
+                        type: string
+                        nullable: true
+                      district:
+                        type: string
+                        nullable: true
+
+  /communication-tbs/primary-entity-master/by-type:
+    get:
+      summary: Get all primary entities by type
+      description: Retrieves all primary entities of the specified type.
+      operationId: getPrimaryEntityMasterByType
+      parameters:
+        - name: entityType
+          in: query
+          required: true
+          description: The type of primary entity to retrieve.
+          schema:
+            type: string
+            example: "TARGET_SYSTEM"
+      responses:
+        "200":
+          description: All primary entities by type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "All Primary Enitity by Type"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idmetadata:
+                          type: string
+                        meta_data_name:
+                          type: string
+                        idmetamaster:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
+                        description:
+                          type: string
+                          nullable: true
+
+  /communication-tb/blob/url-path:
+    get:
+      summary: Get URL path for blob
+      description: Retrieves the URL path for the specified blob.
+      operationId: getBlobUrlPath
+      parameters:
+        - name: blobPath
+          in: query
+          required: true
+          description: The path of the blob to retrieve the URL for.
+          schema:
+            type: string
+            example: '"asdasd"'
+      responses:
+        "200":
+          description: URL path for blob
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "All Primary Enitity by Type"
+                  data:
+                    type: string
+                    example: "www.google.com"
+
+  /communication-tbs/communication-category:
+    get:
+      summary: Get user communication categories
+      description: Retrieves the list of user communication categories.
+      operationId: getCommunicationCategory
+      responses:
+        "200":
+          description: User communication categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Communication Category"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category_name:
+                          type: string
+                        category_code:
+                          type: string
+                        parent_category_id:
+                          type: string
+                          nullable: true
+                        active:
+                          type: boolean
+                          nullable: true
+                        master:
+                          type: boolean
+                          nullable: true
+
+  /communication-tbs/communication-category/all:
+    get:
+      summary: Get all user communication categories
+      description: Retrieves the list of all user communication categories.
+      operationId: getAllCommunicationCategory
+      responses:
+        "200":
+          description: User communication categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Communication Category"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category_name:
+                          type: string
+                        category_code:
+                          type: string
+                        parent_category_id:
+                          type: string
+                          nullable: true
+                        active:
+                          type: boolean
+                          nullable: true
+                        master:
+                          type: boolean
+
+  /communication-tbs/communication-category/tree:
+    get:
+      summary: Get communication category tree
+      description: Retrieves the communication category tree based on the specified category code.
+      operationId: getCommunicationCategoryTree
+      parameters:
+        - name: categoryCode
+          in: query
+          required: true
+          description: The code of the category to retrieve the tree for.
+          schema:
+            type: string
+            example: "KR_FAQ_GST"
+      responses:
+        "200":
+          description: User communication category tree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Communication Category"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        category_name:
+                          type: string
+                        category_code:
+                          type: string
+                        parent_category_id:
+                          type: string
+                          nullable: true
+                        active:
+                          type: boolean
+                          nullable: true
+                        master:
+                          type: boolean
+
+  /communication-tbs/role-masters:
+    get:
+      summary: Get role masters
+      description: Retrieves the list of role masters.
+      operationId: getRoleMasters
+      responses:
+        "200":
+          description: Role masters list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "User Roles"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idrole:
+                          type: string
+                        code:
+                          type: string
+                        description:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                          nullable: true
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
+
+  /communication-tbs/user-type-masters:
+    get:
+      summary: Get user type masters
+      description: Retrieves the list of user type masters.
+      operationId: getUserTypeMasters
+      responses:
+        "200":
+          description: List of all user types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "All User Types"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idusertype:
+                          type: string
+                        description:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                          nullable: true
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
+
+  /communication-tbs/application-master/by-id:
+    get:
+      summary: Get application master by ID
+      description: Retrieves the application master details for the specified ID.
+      operationId: getApplicationMasterById
+      parameters:
+        - name: applicationMasterId
+          in: query
+          required: true
+          description: The unique identifier of the application master to retrieve.
+          schema:
+            type: string
+            example: "asd"
+      responses:
+        "200":
+          description: Application master details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Application Master"
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        idusertype:
+                          type: string
+                        description:
+                          type: string
+                        eff_from_date:
+                          type: string
+                          nullable: true
+                        eff_to_date:
+                          type: string
+                          nullable: true
+                        activeflag:
+                          type: boolean
+                          nullable: true
+                        createdby:
+                          type: string
+                          nullable: true
+                        created_date:
+                          type: string
+                          nullable: true
+                        modifiedby:
+                          type: string
+                          nullable: true
+                        modified_date:
+                          type: string
+                          nullable: true
+                        inactivedate:
+                          type: string
+                          nullable: true
+                        sortorder:
+                          type: integer
+                          nullable: true
+
+  /communication-tbs/getContentData:
+    get:
+      summary: Get bootstrap data
+      description: Retrieves bootstrap data for categories, roles, and user types.
+      operationId: getBootstrapData
+      responses:
+        "200":
+          description: A JSON object containing bootstrap data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Bootstrap data"
+                  data:
+                    type: object
+                    properties:
+                      category:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            category_name:
+                              type: string
+                            category_code:
+                              type: string
+                            parent_category_id:
+                              type: string
+                              nullable: true
+                            active:
+                              type: boolean
+                              nullable: true
+                            master:
+                              type: boolean
+                              nullable: true
+                      roles:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            idrole:
+                              type: string
+                            code:
+                              type: string
+                            description:
+                              type: string
+                            eff_from_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            eff_to_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            activeflag:
+                              type: boolean
+                              nullable: true
+                            createdby:
+                              type: string
+                              nullable: true
+                            created_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            modifiedby:
+                              type: string
+                              nullable: true
+                            modified_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            inactivedate:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            sortorder:
+                              type: integer
+                              nullable: true
+                      userTypes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            idusertype:
+                              type: string
+                            description:
+                              type: string
+                            eff_from_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            eff_to_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            activeflag:
+                              type: boolean
+                              nullable: true
+                            createdby:
+                              type: string
+                              nullable: true
+                            created_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            modifiedby:
+                              type: string
+                              nullable: true
+                            modified_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            inactivedate:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            sortorder:
+                              type: integer
+                              nullable: true
+
+  /communication-tbs/update:
+    post:
+      summary: Update communication
+      description: Updates the details of a specific communication.
+      operationId: updateCommunication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                communicationId:
+                  type: string
+                  format: uuid
+                  example: "FEDAAFEE0A274E1586821CE2D87F7438"
+                title:
+                  type: string
+                  example: "Title of the Communication"
+                description:
+                  type: string
+                  example: "Description of the Communication"
+                content_url:
+                  type: string
+                  format: uri
+                  example: "http://example.com/content"
+                content_type:
+                  type: string
+                  example: "application/pdf"
+                target_id:
+                  type: string
+                  format: uuid
+                  example: "ac56817516f24e9ab24799cf2beb58e2"
+                layout_group_name_id:
+                  type: string
+                  nullable: true
+                  example: ""
+                category_id:
+                  type: string
+                  format: uuid
+                  example: "327384D80ED34BD782F9610AF26ADD83"
+                expiries:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      fromDate:
+                        type: string
+                        format: date-time
+                        example: "2025-01-24T10:30:00Z"
+                      toDate:
+                        type: string
+                        format: date-time
+                        example: "2130-01-01T10:30:00Z"
+                user_type_list:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example: ["2f4eab3a82584d5183a003dd82fc50dd"]
+                role_list:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example: ["127a15ab0b0b4ad9b468fbdd9cf556b0"]
+      responses:
+        "200":
+          description: Communication updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Communication updated successfully"
+        "400":
+          description: Invalid input
+        "404":
+          description: Communication not found
+        '500':
+          description: Internal server error
+
+  /admin/update-agent:
+    put:
+      summary: Update agent information
+      description: Updates the agent's details based on the provided data.
+      operationId: updateAgent
+      requestBody:
+        description: Request body containing the agent details to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agentCode:
+                  type: string
+                  example: "8597056"
+                  description: Unique code for the agent.
+                profile_picture:
+                        type: string
+                        description: profile picture
+                        example: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=900&q=60"
+                entityData:
+                  type: object
+                  properties:
+                    idmeta_title:
+                      type: string
+                      example: "468de4cb17494c67a732da2810f9c905"
+                    firstname:
+                      type: string
+                      example: "Sanal"
+                    middlename:
+                      type: string
+                      example: ""
+                    lastname:
+                      type: string
+                      example: "Gulati"
+                    fullname:
+                      type: string
+                      example: "Sanal Gulati"
+                    idmeta_data_gender:
+                      type: string
+                      example: "986bd1568afb42cca258cf17a68d60f4"
+                    idmeta_data_entitytype:
+                      type: string
+                      example: "6e913026df2b4c29aeff33212dd3ffa5"
+                    dob:
+                      type: string
+                      example: "1998/10/02"
+                contactData:
+                  type: object
+                  properties:
+                    address_line_1:
+                      type: string
+                      example: "H.No. 344"
+                    address_line_2:
+                      type: string
+                      example: "Modern Street"
+                    location_name:
+                      type: string
+                      example: "Adarsh Nagar"
+                    state:
+                      type: string
+                      example: "Telangana"
+                    pincode:
+                      type: string
+                      example: "203932"
+                    countryname:
+                      type: string
+                      example: "India"
+                    district:
+                      type: string
+                      example: "Hyderabad"
+                agentData:
+                  type: object
+                  properties:
+                    desgn_code:
+                      type: string
+                      example: "SB"
+                    desgn_desc:
+                      type: string
+                      example: "ADVISOR - BA"
+                    branch_code:
+                      type: string
+                      example: "JM01"
+                    branch_name:
+                      type: string
+                      example: "Jamshedpur 1234"
+                    dt_leader_code:
+                      type: string
+                      example: "5798147"
+                    dt_leader_name:
+                      type: string
+                      example: "AARAMBH FINANCIAL SERVICES"
+                    dt_leader_desg_desc:
+                      type: string
+                      example: "III-PROVISIONAL BUSINESS ASSOCIATE"
+                    dt_leader_designation:
+                      type: string
+                      example: "BT"
+                    dt_leader_branch:
+                      type: string
+                      example: "JM01"
+                    dt_leader_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    l1_leader_code:
+                      type: string
+                      example: "908050"
+                    l1_leader_name:
+                      type: string
+                      example: "BSC CONSULTANCY SERVICES"
+                    l1_leader_desg_desc:
+                      type: string
+                      example: "SENIOR BUSINESS ASSOCIATE LEADER"
+                    l1_leader_designation:
+                      type: string
+                      example: "LU"
+                    l1_leader_branch:
+                      type: string
+                      example: "JM01"
+                    l1_leader_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    l2_leader_code:
+                      type: string
+                      example: "181453"
+                    l2_leader_name:
+                      type: string
+                      example: "ANAMIKA ADVISORY SERVICES"
+                    l2_leader_desg_desc:
+                      type: string
+                      example: "PARTNER"
+                    l2_leader_designation:
+                      type: string
+                      example: "LW"
+                    l2_leader_branch:
+                      type: string
+                      example: "JM01"
+                    l2_leader_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    bam_ntid:
+                      type: string
+                      example: "OEACV29"
+                    bam_code:
+                      type: string
+                      example: "4807212"
+                    bam_emp_cd:
+                      type: string
+                      example: "3975701"
+                    bam_name:
+                      type: string
+                      example: "SanketKumar Sinha"
+                    bam_designation:
+                      type: string
+                      example: "S3"
+                    bam_desg_desc:
+                      type: string
+                      example: "MANAGER AGENCY BA"
+                    bam_branch:
+                      type: string
+                      example: "JM01"
+                    bam_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    bm_ntid:
+                      type: string
+                      example: "OAAIE55"
+                    bm_code:
+                      type: string
+                      example: "4653296"
+                    bm_emp_cd:
+                      type: string
+                      example: "3967298"
+                    bm_name:
+                      type: string
+                      example: "ROHITKUMAR PAHUJA"
+                    bm_designation:
+                      type: string
+                      example: "SF"
+                    bm_desg_desc:
+                      type: string
+                      example: "BRANCH MGR AGENCY SALES"
+                    bm_branch:
+                      type: string
+                      example: "JM01"
+                    bm_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    ch_ntid:
+                      type: string
+                      example: null
+                    ch_code:
+                      type: string
+                      example: null
+                    ch_emp_cd:
+                      type: string
+                      example: null
+                    ch_name:
+                      type: string
+                      example: null
+                    ch_designation:
+                      type: string
+                      example: null
+                    ch_desg_desc:
+                      type: string
+                      example: null
+                    ch_branch:
+                      type: string
+                      example: null
+                    ch_branch_name:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_ntid:
+                      type: string
+                      example: "OAGSK4615"
+                    adoa_nonsourcing_code:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_emp_cd:
+                      type: string
+                      example: "3954775"
+                    adoa_nonsourcing_name:
+                      type: string
+                      example: "Shyam Singh"
+                    adoa_nonsourcing_designation:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_desg_desc:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_branch:
+                      type: string
+                      example: null
+                    adoa_nonsourcing_branch_name:
+                      type: string
+                      example: null
+                    adoa_ntid:
+                      type: string
+                      example: null
+                    adoa_code:
+                      type: string
+                      example: null
+                    adoa_emp_cd:
+                      type: string
+                      example: null
+                    adoa_name:
+                      type: string
+                      example: null
+                    adoa_designation:
+                      type: string
+                      example: null
+                    adoa_desg_desc:
+                      type: string
+                      example: null
+                    adoa_branch_code:
+                      type: string
+                      example: null
+                    adoa_branch_name:
+                      type: string
+                      example: null
+                    doa_ntid:
+                      type: string
+                      example: "OAGSI13"
+                    doa_code:
+                      type: string
+                      example: "4015704"
+                    doa_emp_cd:
+                      type: string
+                      example: "3808488"
+                    doa_name:
+                      type: string
+                      example: "Md. Shahid Khan"
+                    doa_designation:
+                      type: string
+                      example: "S7"
+                    doa_desg_desc:
+                      type: string
+                      example: "DIRECTOR OF AGENCY"
+                    doa_branch:
+                      type: string
+                      example: "JM01"
+                    doa_branch_name:
+                      type: string
+                      example: "Jamshedpur"
+                    cao_ntid:
+                      type: string
+                      example: "OAGSC3671"
+                    cao_code:
+                      type: string
+                      example: "4456024"
+                    cao_emp_cd:
+                      type: string
+                      example: "3953517"
+                    cao_name:
+                      type: string
+                      example: "Arunkumar K"
+                    cao_designation:
+                      type: string
+                      example: "3W"
+                    cao_desg_desc:
+                      type: string
+                      example: "Head of Agency"
+                    cao_branch_code:
+                      type: string
+                      example: "LU05"
+                    cao_branch_name:
+                      type: string
+                      example: "Lucknow_2"
+      responses:
+        "200":
+          description: Successfully updated agent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Agent Updated successfully"
+                  data:
+                    type: object
+                    example: null
+        "401":
+          description: Unauthorized. Invalid or missing authorization token.
+        "500":
+          description: Internal Server Error. Unexpected server error occurred.
+
+  /admin/deactivate-agent:
+    put:
+      summary: Deactivate agent based on agent code
+      description: Deactivates the agent using the provided agent code.
+      operationId: deactivateAgent
+      requestBody:
+        description: Request body containing the agent code to deactivate.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                agentCode:
+                  type: string
+                  example: "8597056"
+                  description: Unique code for the agent to be deactivated.
+      responses:
+        "204":
+          description: Agent details not deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 204
+                  message:
+                    type: string
+                    example: "Agent details not deleted"
+                  data:
+                    type: object
+                    example: null
+        "401":
+          description: Unauthorized. Invalid or missing authorization token.
+        "500":
+          description: Internal Server Error. Unexpected server error occurred.
+
+  /communication-tbs/application-master/patch:
+    post:
+      summary: Update Application Master
+      description: Updates the application master details by adding/removing user types and modifying application settings.
+      operationId: updateApplicationMaster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                applicationId:
+                  type: string
+                  description: Unique identifier for the application.
+                  example: "09EC71FDC6FC42B5BEE788C1F35F717E"
+                userTypesToDelete:
+                  type: array
+                  items:
+                    type: string
+                  description: List of user types to be deleted.
+                  example: []
+                userTypesToAdd:
+                  type: array
+                  items:
+                    type: string
+                  description: List of user types to be added.
+                  example: ["Agent"]
+                updateRequest:
+                  type: object
+                  properties:
+                    last_modified_by:
+                      type: string
+                      description: The user who modified the application.
+                      example: "admin"
+                    active:
+                      type: boolean
+                      description: Flag to set whether the application is active or not.
+                      example: true
+      responses:
+        "200":
+          description: Application Master Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: HTTP status code
+                    example: 200
+                  message:
+                    type: string
+                    description: Status message
+                    example: "Application Master Updated"
+                  data:
+                    type: object
+                    properties:
+                      deletedUserTypes:
+                        type: array
+                        items:
+                          type: string
+                        description: List of user types deleted
+                        example: []
+                      addedUserTypes:
+                        type: array
+                        items:
+                          type: string
+                        description: List of user types added
+                        example: []
+                      updatedApplication:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              description: Application ID
+                              example: "09EC71FDC6FC42B5BEE788C1F35F717E"
+                            application_type:
+                              type: string
+                              description: Type of the application (e.g., WEB)
+                              example: "WEB"
+                            application_url:
+                              type: string
+                              description: URL for the application
+                              example: null
+                            created_by:
+                              type: string
+                              description: User who created the application
+                              example: "admin"
+                            created_date:
+                              type: string
+                              description: Date the application was created
+                              example: null
+                            icon_url:
+                              type: string
+                              description: Icon URL for the application
+                              example: "report-icon/r_r.png"
+                            last_modified_by:
+                              type: string
+                              description: User who last modified the application
+                              example: "admin"
+                            last_modified_date:
+                              type: string
+                              description: Date the application was last modified
+                              example: null
+                            name:
+                              type: string
+                              description: Application name
+                              example: "R&R"
+                            active:
+                              type: boolean
+                              description: Flag indicating whether the application is active
+                              example: true
+                            bg_color:
+                              type: string
+                              description: Background color for the application
+                              example: "#D5214A"
+                            display_in_menu:
+                              type: boolean
+                              description: Flag indicating if the application is displayed in the menu
+                              example: false
+                            display_order:
+                              type: integer
+                              description: Display order of the application
+                              example: 2
+                            icon_color:
+                              type: string
+                              description: Icon color for the application
+                              example: null
+                            client_app_id:
+                              type: string
+                              description: Client application ID
+                              example: "0x54EDAD9CC44B4277937840B950643273"
+                            application_code:
+                              type: string
+                              description: Code for the application
+                              example: "R_R"
+                            android_base_url:
+                              type: string
+                              description: Base URL for the Android app
+                              example: null
+                            android_playstore_url:
+                              type: string
+                              description: Playstore URL for the Android app
+                              example: null
+                            description:
+                              type: string
+                              description: Description of the application
+                              example: null
+                            ios_appstore_url:
+                              type: string
+                              description: Appstore URL for the iOS app
+                              example: null
+                            ios_base_url:
+                              type: string
+                              description: Base URL for the iOS app
+                              example: null
+                            schema_value:
+                              type: string
+                              description: Schema value for the application
+                              example: null
+                            talic_playstore_url:
+                              type: string
+                              description: Playstore URL for Talic app
+                              example: null
+                            web_app_url:
+                              type: string
+                              description: Web app URL
+                              example: null
+                            soft_delete:
+                              type: boolean
+                              description: Flag for soft deletion of the application
+                              example: null
+        "400":
+          description: Bad Request - Invalid data or missing parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid request parameters."
+        "500":
+          description: Internal Server Error - Unexpected error during update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred while updating the application."
+
+  /communication-tbs/listing:
+    get:
+      summary: List communications
+      description: Retrieves a paginated list of communications.
+      operationId: listCommunications
+      parameters:
+        - name: page
+          in: query
+          description: Page number of the paginated list.
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page.
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A paginated list of communications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                    example: 2
+                  limit:
+                    type: integer
+                    example: 3
+                  totalPages:
+                    type: integer
+                    example: 10
+                  totalItems:
+                    type: integer
+                    example: 30
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          example: "123e4567-e89b-12d3-a456-426614174000"
+                        title:
+                          type: string
+                          example: "Communication Title"
+                        description:
+                          type: string
+                          example: "Communication Description"
+                        # Add other communication fields as needed
+        '400':
+          description: Invalid pagination parameters
+        '500':
+          description: Internal server error
+
+  /communication-tbs/create:
+    post:
+      summary: Create communication
+      description: Creates a new communication entry with the provided details.
+      operationId: createCommunication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Title of the Communication"
+                description:
+                  type: string
+                  example: "Description of the Communication"
+                content_url:
+                  type: string
+                  format: uri
+                  example: "http://example.com/content"
+                content_type:
+                  type: string
+                  example: "application/pdf"
+                target_id:
+                  type: string
+                  format: uuid
+                  example: "ac56817516f24e9ab24799cf2beb58e2"
+                layout_group_name_id:
+                  type: string
+                  nullable: true
+                  example: ""
+                category_id:
+                  type: string
+                  format: uuid
+                  example: "327384D80ED34BD782F9610AF26ADD83"
+                expiries:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      fromDate:
+                        type: string
+                        format: date-time
+                        example: "2025-01-24T10:30:00Z"
+                      toDate:
+                        type: string
+                        format: date-time
+                        example: "2130-01-01T10:30:00Z"
+                user_type_list:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example: ["2f4eab3a82584d5183a003dd82fc50dd"]
+                role_list:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example: ["127a15ab0b0b4ad9b468fbdd9cf556b0"]
+      responses:
+        '201':
+          description: Communication created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Communication created successfully"
+                  communicationId:
+                    type: string
+                    format: uuid
+                    example: "generated-uuid-for-new-communication"
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal server error
