@@ -26,22 +26,21 @@ async function sendOTP(userData, identity) {
   const sender = templateForOtp[0].smsg_sendid;
   const templateId = templateForOtp[0].smsg_tempid;
 
-  const url = `https://alerts.solutionsinfini.com/api/v4/?api_key=${apiKey}&method=sms&message=${encodeURIComponent(
+  /*const url = `https://alerts.solutionsinfini.com/api/v4/?api_key=${apiKey}&method=sms&message=${encodeURIComponent(
     message
-  )}&to=${phoneNumber}&sender=${sender}&templateid_text=${templateId}`;
-
+  )}&to=${phoneNumber}&sender=${sender}&templateid_text=${templateId}`;*/
   try {
     const instance = axios.create({
       httpsAgent: new require("https").Agent({
         rejectUnauthorized: false, // Disable SSL certificate verification
       }),
     });
-    const response = await instance.get(url);
+    //const response = await instance.get(url) ;
     const mailResponse = await sendMail(email, otp, identity);
-    console.log(response.data, mailResponse?.includes("Ok"));
+    console.log("mail response",mailResponse);
     if (
-      response.data &&
-      response.data.status === "OK" &&
+      //response.data &&
+      //response.data.status === "OK" &&
       mailResponse?.includes("Ok")
     ) {
       const logDataForSms = {
@@ -57,13 +56,13 @@ async function sendOTP(userData, identity) {
         receiver_mode_detail: null,
         message_text: templateForOtp[0].message,
         message_subject: templateForOtp[0].message_subject,
-        message_delivery_status: response.data.data[0].status,
+        message_delivery_status: null/*response.data.data[0].status*/,
       };
       await communication.createCommLogs(logDataForSms);
-      console.log("OTP sent successfully:", response.data);
+      console.log("OTP sent successfully:"/*, response.data*/);
       return otp; // OTP sent successfully
     } else {
-      console.error("Error sending OTP:", response.data);
+      console.error("Error sending OTP:", /*response.data*/);
       return false; // OTP sending failed
     }
   } catch (error) {
