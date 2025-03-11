@@ -118,7 +118,7 @@ exports.sendOtp = async (request, reply) => {
           responseFormatter(statusCodes.BAD_REQUEST, "Agent code is required")
         );
     }
-
+    console.log(agent_code,request.isValid.identity);
     // Find user based on agent code
     const userData = await user.getUserDataForOtp(
       request.isValid.identity,
@@ -127,6 +127,8 @@ exports.sendOtp = async (request, reply) => {
     if (userData.length) {
       // Simulate sending OTP (in a real scenario, you would send the OTP via email/SMS)
       const sentOtp = await otpService.sendOTP(userData[0], request.isValid);
+      console.log("sendotp",sentOtp);
+      
       if (sentOtp) {
         const addOtpToVerify = await otp.insertOtp(
           request.isValid.identity,
