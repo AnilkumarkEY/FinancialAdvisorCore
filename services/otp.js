@@ -56,7 +56,7 @@ async function sendOTP(userData, identity) {
         receiver_mode_detail: null,
         message_text: templateForOtp[0].message,
         message_subject: templateForOtp[0].message_subject,
-        message_delivery_status: null/*response.data.data[0].status*/,
+        message_delivery_status: mailResponse/*response.data.data[0].status*/,
       };
       await communication.createCommLogs(logDataForSms);
       console.log("OTP sent successfully:"/*, response.data*/);
