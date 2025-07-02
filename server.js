@@ -2,7 +2,7 @@ import express from "express";
 import { AccessToken } from "livekit-server-sdk";
 import dotenv from "dotenv";
 import cors from "cors";
-import { AccessToken } from "livekit-server-sdk";
+
 
 dotenv.config(); // Load environment variables from .env
 
