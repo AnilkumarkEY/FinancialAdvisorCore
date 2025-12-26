@@ -259,3 +259,154 @@ exports.deleteAgent = async (request, reply) => {
       );
   }
 };
+
+exports.getDynamicForm = async (req, reply) => {
+  try {
+    const { feature } = req.query;
+    const data = await admin.getDynamicForm(feature);
+    console.log(data)
+
+    if (data.length) {
+      return reply
+        .status(statusCodes.OK)
+        .send(
+          responseFormatter(
+            statusCodes.OK,
+            "Form data fetched successfully",
+            data[0]
+          )
+        );
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "No data available",
+            null
+          )
+        );
+    }
+  } catch (error) {
+    console.error("Error fetching form data:", error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(
+        responseFormatter(
+          statusCodes.INTERNAL_SERVER_ERROR,
+          "An unexpected error occurred"
+        )
+      );
+  }
+};
+
+exports.insertDynmicForm = async (req, reply) => {
+  try {
+     const { feature, config } = req.body;
+
+    if (!feature || !config) {
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send(responseFormatter(statusCodes.BAD_REQUEST, "Feature and config are required", null));
+    }
+
+    const error = validateFormConfig(config);
+    if (error) {
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send(responseFormatter(statusCodes.BAD_REQUEST, error, null));
+    }
+
+    const data = await admin.insertDynamicForm(feature, config);
+    if (data) {
+      return reply
+      .status(statusCodes.CREATED)
+      .send(responseFormatter(statusCodes.CREATED, "Form created successfully", data));
+    } else {
+      return reply
+        .status(statusCodes.NO_CONTENT)
+        .send(
+          responseFormatter(
+            statusCodes.NO_CONTENT,
+            "No data available",
+            null
+          )
+        );
+    }
+  } catch (error) {
+    console.error("Error insert form data:", error);
+    if (error.code === "23505") { // unique_violation
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send(responseFormatter(statusCodes.BAD_REQUEST, "Feature already exists", null));
+    }
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, error.message, null));
+  }
+};
+
+exports.updateDynamicForm = async (req, reply) => {
+  try {
+    const { feature } = req.query;
+    const { config } = req.body;
+
+    if (!config) {
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send(responseFormatter(statusCodes.BAD_REQUEST, "Config is required", null));
+    }
+
+    const error = validateFormConfig(config);
+    if (error) {
+      return reply
+        .status(statusCodes.BAD_REQUEST)
+        .send(responseFormatter(statusCodes.BAD_REQUEST, error, null));
+    }
+
+    const data = await admin.updateDynamicForm(feature, config);
+    if (data.length === 0) {
+      return reply
+        .status(statusCodes.NOT_FOUND)
+        .send(responseFormatter(statusCodes.NOT_FOUND, "Form not found", null));
+    }
+    return reply.status(statusCodes.OK).send(responseFormatter(statusCodes.OK, "Form updated successfully", data));
+  } catch (error) {
+    console.error("Error updating form data:", error);
+    return reply
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .send(responseFormatter(statusCodes.INTERNAL_SERVER_ERROR, error.message, null));
+  }
+};
+
+function validateFormConfig(config) {
+  if (!config.pages || !Array.isArray(config.pages)) {
+    return "Config must have a 'pages' array";
+  }
+
+  for (let page of config.pages) {
+    if (!page.page_id || !page.title || typeof page.order !== "number") {
+      return "Each page must have 'page_id', 'title', and numeric 'order'";
+    }
+
+    if (!page.fields || !Array.isArray(page.fields)) {
+      return `Page ${page.page_id} must have 'fields' array`;
+    }
+
+    for (let field of page.fields) {
+      if (!field.key || !field.label || !field.type) {
+        return `Field in page ${page.page_id} must have 'key', 'label', and 'type'`;
+      }
+
+      if (field.regex) {
+        try {
+          new RegExp(field.regex);
+        } catch (err) {
+          return `Invalid regex for field ${field.key} in page ${page.page_id}`;
+        }
+      }
+    }
+  }
+
+  return null; // no errors
+}

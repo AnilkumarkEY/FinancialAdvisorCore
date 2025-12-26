@@ -22,6 +22,21 @@ async function adminRoutes(fastify, options) {
     { preHandler: [authentication, validation] },
     admin.deleteAgent
   );
+  fastify.get(
+    "/dynamic_forms",
+    { preHandler: [authentication] },
+    admin.getDynamicForm
+  );
+  fastify.post(
+    "/dynamic_forms",
+    { preHandler: [authentication] },
+    admin.insertDynmicForm
+  );
+  fastify.put(
+    "/dynamic_forms",
+    { preHandler: [authentication] },
+    admin.updateDynamicForm
+  );
 }
 
 module.exports = adminRoutes;

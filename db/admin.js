@@ -471,6 +471,31 @@ async function deleteAgent(agentCode) {
   }
 }
 
+async function getDynamicForm(feature) {
+    const query = `
+      SELECT * FROM core.dynamic_forms where feature = $1;
+    `;
+    const res = await client.query(query, [feature]);
+    return res.rows;
+}
+
+async function insertDynamicForm(feature, config) {
+    const query =  `INSERT INTO core.dynamic_forms (feature, config)
+       VALUES ($1, $2)
+       RETURNING *`;
+    const res = await client.query(query,  [feature, config]);
+    return res.rows?.[0];
+}
+
+async function updateDynamicForm(feature, config) {
+    const query =  `UPDATE core.dynamic_forms
+       SET config=$1, updated_at=NOW()
+       WHERE feature=$2
+       RETURNING *`;
+    const res = await client.query(query,  [config, feature]);
+    return res.rows;
+}
+
 async function updateProfile(profileData) {
   try {
     const query = `
@@ -515,5 +540,8 @@ module.exports = {
   getEntityToUpdate,
   updateAgent,
   deleteAgent,
+  getDynamicForm,
+  insertDynamicForm,
+  updateDynamicForm,
   updateProfile,
 };
