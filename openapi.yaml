@@ -4825,8 +4825,8 @@ paths:
         '500':
           description: Internal server error
   
-  /admin/dynamic_forms:
-    post:
+  /admin/getDynamicForms:
+    get:
       summary: Get Dynamic Form Data
       description: Get Dynamic Form Data based on feature name
       operationId: getDynamicForms
@@ -4879,7 +4879,7 @@ paths:
         "500":
           description: Internal Server Error.
 
-  /admin/dynamic_forms/insert:
+  /admin/insertDynamicForms:
     post:
       summary: Insert Dynamic Form Config
       description: Create a new dynamic form entry
@@ -4934,7 +4934,7 @@ paths:
         "500":
           description: Internal Server Error
 
-  /admin/dynamic_forms/update:
+  /admin/updateDynamicForms:
     put:
       summary: Update Dynamic Form Config
       description: Update an existing dynamic form entry

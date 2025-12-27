@@ -23,17 +23,17 @@ async function adminRoutes(fastify, options) {
     admin.deleteAgent
   );
   fastify.get(
-    "/dynamic_forms",
+    "/getDynamicForms",
     { preHandler: [authentication, validation ] },
     admin.getDynamicForm
   );
   fastify.post(
-    "/dynamic_forms",
+    "/insertDynamicForms",
     { preHandler: [authentication, validation ] },
     admin.insertDynmicForm
   );
   fastify.put(
-    "/dynamic_forms",
+    "/updateDynamicForms",
     { preHandler: [authentication, validation ] },
     admin.updateDynamicForm
   );
