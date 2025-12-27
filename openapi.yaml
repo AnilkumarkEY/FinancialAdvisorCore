@@ -4520,48 +4520,11 @@ paths:
           description: Unauthorized. Invalid or missing authorization token.
         "500":
           description: Internal Server Error. Unexpected server error occurred.
-  /admin/dynamic_forms:
-    post:
-      summary: Update Dyanmic Form Data
-      description: Deactivates the agent using the provided agent code.
-      operationId: dynamicForms
-      requestBody:
-        description: Request body containing the form related data.
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                feature:
-                  type: string
-                  example: "8597056"
-                  description: Unique feature name.
-      responses:
-        "204":
-          description: feature form not updated.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: integer
-                    example: 204
-                  message:
-                    type: string
-                    example: "feature details not updated"
-                  data:
-                    type: object
-                    example: null
-        "401":
-          description: Unauthorized. Invalid or missing authorization token.
-        "500":
-          description: Internal Server Error. Unexpected server error occurred.
+  
   /admin/dynamic_forms:
     get:
-      summary: Update Dyanmic Form Data
-      description: Deactivates the agent using the provided agent code.
+      summary: Get Dyanmic Form Data
+      description: Get Dyanmic Form Data
       operationId: dynamicForms
       requestBody:
         description: Request body containing the form related data.
@@ -4596,6 +4559,7 @@ paths:
           description: Unauthorized. Invalid or missing authorization token.
         "500":
           description: Internal Server Error. Unexpected server error occurred.
+
   /communication-tbs/application-master/patch:
     post:
       summary: Update Application Master
