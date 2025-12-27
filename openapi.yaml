@@ -4825,182 +4825,182 @@ paths:
         '500':
           description: Internal server error
   
-/admin/dynamic_forms:
-  post:
-    summary: Get Dynamic Form Data
-    description: Get Dynamic Form Data based on feature name
-    operationId: getDynamicForms
-    requestBody:
-      description: Contains the feature identifier.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              feature:
-                type: string
-                example: "kyc_form"
-                description: Unique feature name.
-    responses:
-      "200":
-        description: Form config fetched successfully.
+  /admin/dynamic_forms:
+    post:
+      summary: Get Dynamic Form Data
+      description: Get Dynamic Form Data based on feature name
+      operationId: getDynamicForms
+      requestBody:
+        description: Contains the feature identifier.
+        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                status:
-                  type: integer
-                  example: 200
-                message:
+                feature:
                   type: string
-                  example: "Form config fetched successfully"
-                data:
-                  type: object
-      "204":
-        description: Feature form not found.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: integer
-                  example: 204
-                message:
-                  type: string
-                  example: "Feature not found"
-                data:
-                  type: object
-                  example: null
-      "401":
-        description: Unauthorized. Invalid or missing authorization token.
-      "500":
-        description: Internal Server Error.
-
-/admin/dynamic_forms/insert:
-  post:
-    summary: Insert Dynamic Form Config
-    description: Create a new dynamic form entry
-    operationId: insertDynamicForm
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - feature
-              - config
-            properties:
-              feature:
-                type: string
-                example: "kyc_form"
-              config:
+                  example: "kyc_form"
+                  description: Unique feature name.
+      responses:
+        "200":
+          description: Form config fetched successfully.
+          content:
+            application/json:
+              schema:
                 type: object
-                example:
-                  pages:
-                    - page_id: "personal"
-                      title: "Personal Info"
-                      order: 1
-                      fields:
-                        - key: "full_name"
-                          label: "Full Name"
-                          type: "text"
-                          show_flag: true
-                          regex: "^[A-Za-z ]+$"
-                          error_message: "Only alphabets allowed"
-    responses:
-      "201":
-        description: Dynamic form created successfully.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: integer
-                  example: 201
-                message:
-                  type: string
-                  example: "Dynamic form created successfully"
-                data:
-                  type: object
-      "400":
-        description: Invalid config structure.
-      "401":
-        description: Unauthorized
-      "500":
-        description: Internal Server Error
-
-/admin/dynamic_forms/update:
-  put:
-    summary: Update Dynamic Form Config
-    description: Update an existing dynamic form entry
-    operationId: updateDynamicForm
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - feature
-              - config
-            properties:
-              feature:
-                type: string
-                example: "kyc_form"
-              config:
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Form config fetched successfully"
+                  data:
+                    type: object
+        "204":
+          description: Feature form not found.
+          content:
+            application/json:
+              schema:
                 type: object
-                example:
-                  pages:
-                    - page_id: "address"
-                      title: "Address Information"
-                      order: 2
-                      fields:
-                        - key: "pincode"
-                          label: "Pincode"
-                          type: "number"
-                          show_flag: true
-                          regex: "^[0-9]{6}$"
-                          error_message: "Invalid pincode"
-    responses:
-      "200":
-        description: Dynamic form updated successfully.
+                properties:
+                  status:
+                    type: integer
+                    example: 204
+                  message:
+                    type: string
+                    example: "Feature not found"
+                  data:
+                    type: object
+                    example: null
+        "401":
+          description: Unauthorized. Invalid or missing authorization token.
+        "500":
+          description: Internal Server Error.
+
+  /admin/dynamic_forms/insert:
+    post:
+      summary: Insert Dynamic Form Config
+      description: Create a new dynamic form entry
+      operationId: insertDynamicForm
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - feature
+                - config
               properties:
-                status:
-                  type: integer
-                  example: 200
-                message:
+                feature:
                   type: string
-                  example: "Dynamic form updated successfully"
-                data:
-                  type: object  
-      "204":
-        description: Feature not found to update.
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: integer
-                  example: 204
-                message:
-                  type: string
-                  example: "Feature not found"
-                data:
+                  example: "kyc_form"
+                config:
                   type: object
-                  example: null
-      "400":
-        description: Invalid config structure.
-      "401":
-        description: Unauthorized
-      "500":
-        description: Internal Server Error
+                  example:
+                    pages:
+                      - page_id: "personal"
+                        title: "Personal Info"
+                        order: 1
+                        fields:
+                          - key: "full_name"
+                            label: "Full Name"
+                            type: "text"
+                            show_flag: true
+                            regex: "^[A-Za-z ]+$"
+                            error_message: "Only alphabets allowed"
+      responses:
+        "201":
+          description: Dynamic form created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: "Dynamic form created successfully"
+                  data:
+                    type: object
+        "400":
+          description: Invalid config structure.
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+
+  /admin/dynamic_forms/update:
+    put:
+      summary: Update Dynamic Form Config
+      description: Update an existing dynamic form entry
+      operationId: updateDynamicForm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - feature
+                - config
+              properties:
+                feature:
+                  type: string
+                  example: "kyc_form"
+                config:
+                  type: object
+                  example:
+                    pages:
+                      - page_id: "address"
+                        title: "Address Information"
+                        order: 2
+                        fields:
+                          - key: "pincode"
+                            label: "Pincode"
+                            type: "number"
+                            show_flag: true
+                            regex: "^[0-9]{6}$"
+                            error_message: "Invalid pincode"
+      responses:
+        "200":
+          description: Dynamic form updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: "Dynamic form updated successfully"
+                  data:
+                    type: object  
+        "204":
+          description: Feature not found to update.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 204
+                  message:
+                    type: string
+                    example: "Feature not found"
+                  data:
+                    type: object
+                    example: null
+        "400":
+          description: Invalid config structure.
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
